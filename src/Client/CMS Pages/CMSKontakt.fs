@@ -98,9 +98,9 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
             model with
                        KontaktValues =
                           {
-                            V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
-                            V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
-                            V007 = valueNew.V007
+                              V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
+                              V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
+                              V007 = valueNew.V007
                           }
         },  Cmd.none
 
@@ -109,9 +109,9 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
             model with
                        OldKontaktValues =
                           {
-                            V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
-                            V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
-                            V007 = valueOld.V007
+                              V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
+                              V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
+                              V007 = valueOld.V007
                           }
         },  Cmd.none  
    

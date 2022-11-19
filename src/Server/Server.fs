@@ -19,8 +19,8 @@ let private verifyCredentials (credentials: GetRouteUsrPsw) =
         | true  ->                 
                    let route = 
                        match credentials.Usr, credentials.Psw with
-                       | "Hanka", "qwe" -> "CMSRozcestnik"                       
-                       | _              -> "Invalid"
+                       | "Hanka", "meskamvkrpolu" -> "CMSRozcestnik"                       
+                       | _                        -> "Invalid"
                    Ok(), route
         | false -> Error "", "Invalid"                  
 

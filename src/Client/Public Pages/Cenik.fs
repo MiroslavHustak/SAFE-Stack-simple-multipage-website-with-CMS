@@ -25,7 +25,7 @@ type Msg =
     | SendCenikValuesToServer 
     | GetCenikValues of GetCenikValues    
 
-let sentDeserialisedCenikValues =
+let sendDeserialisedCenikValues =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
     |> Remoting.buildProxy<IGetApi>
@@ -54,7 +54,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with       
         | SendCenikValuesToServer ->
              let loadEvent = SharedDeserialisedCenikValues.create model.CenikInputValues
-             let cmd = Cmd.OfAsync.perform sentDeserialisedCenikValues.sendDeserialisedCenikValues loadEvent GetCenikValues
+             let cmd = Cmd.OfAsync.perform sendDeserialisedCenikValues.sendDeserialisedCenikValues loadEvent GetCenikValues
              model, cmd            
         | GetCenikValues value -> { model with CenikValues =
                                                   {

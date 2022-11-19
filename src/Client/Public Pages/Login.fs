@@ -54,8 +54,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         let cmd = Cmd.OfAsync.perform getCredentialsApi.getCredentials buttonClickEvent GetRouteUsrPsw
         model, cmd
 
-    | GetRouteUsrPsw value -> { model with Route = value.Route; InputUsr = value.Usr; InputPsw = value.Psw }, Cmd.none
- 
+    | GetRouteUsrPsw value -> { model with Route = value.Route; InputUsr = value.Usr; InputPsw = value.Psw }, Cmd.none 
 
 let view (model: Model) (dispatch: Msg -> unit) = 
 
