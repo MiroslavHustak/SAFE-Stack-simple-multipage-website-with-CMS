@@ -4,7 +4,8 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project>
   <PropertyGroup>
-    <History>True|2022-11-19T21:51:58.9946552Z;True|2022-11-19T19:15:51.1895061+01:00;</History>
+    <_PublishTargetUrl>E:\SAFE Stack\SAFE-Nutricni-terapie4\src\Server\bin\Release\net6.0\publish\</_PublishTargetUrl>
+    <History>True|2022-11-19T21:59:26.2451009Z;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

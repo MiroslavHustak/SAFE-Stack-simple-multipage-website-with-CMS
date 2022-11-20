@@ -73,19 +73,19 @@ let private setRoute (optRoute: Router.Route option) model =
 
     | Some (Router.Route.Sluzby sluzbyId) ->
         let (sluzbyModel, sluzbyCmd) = Sluzby.init sluzbyId
-        { model with ActivePage = Page.Sluzby sluzbyModel }, Cmd.map SluzbyMsg sluzbyCmd 
+        { model with ActivePage = Page.Sluzby sluzbyModel }, cmd SluzbyMsg sluzbyCmd SendLinkAndLinkNameValuesToServer
 
     | Some (Router.Route.Cenik cenikId) ->
         let (cenikModel, cenikCmd) = Cenik.init cenikId
-        { model with ActivePage = Page.Cenik cenikModel }, Cmd.map CenikMsg cenikCmd 
+        { model with ActivePage = Page.Cenik cenikModel }, cmd CenikMsg cenikCmd SendLinkAndLinkNameValuesToServer
 
     | Some (Router.Route.Nenajdete nenajdeteId) ->
         let (nenajdeteModel, nenajdeteCmd) = Nenajdete.init nenajdeteId
-        { model with ActivePage = Page.Nenajdete nenajdeteModel }, Cmd.map NenajdeteMsg nenajdeteCmd 
+        { model with ActivePage = Page.Nenajdete nenajdeteModel }, cmd NenajdeteMsg nenajdeteCmd SendLinkAndLinkNameValuesToServer
 
     | Some (Router.Route.Kontakt kontaktId) ->
         let (kontaktModel, kontaktCmd) = Kontakt.init kontaktId
-        { model with ActivePage = Page.Kontakt kontaktModel }, Cmd.map KontaktMsg kontaktCmd 
+        { model with ActivePage = Page.Kontakt kontaktModel }, cmd KontaktMsg kontaktCmd SendLinkAndLinkNameValuesToServer
 
     | Some (Router.Route.Login loginId) ->
         let (loginModel, loginCmd) = Login.init loginId
