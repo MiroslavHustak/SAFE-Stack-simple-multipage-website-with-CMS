@@ -231,77 +231,78 @@ let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameVal
                         ]
                     ]
                 ]
+                Html.br []
+                Html.div [
+                    prop.id "templatemo_footer1"
+                    prop.children [
+                        Html.text "This website uses an HTML/CSS template downloaded from "
+                        Html.a [
+                            prop.href "http://all-free-download.com/free-website-templates/"
+                            prop.target "_blank"
+                            prop.text "Free Website Templates"
+                            prop.fontSize(12)
+                        ]
+                        Html.text " and adapted by "
+                        Html.a [
+                            prop.href "http://hustak.somee.com"
+                            prop.target "_blank"
+                            prop.text "Miroslav Husťák"
+                        ]
+                        Html.text " with the help of "
+                        Html.a [
+                            prop.href "https://safe-stack.github.io"
+                            prop.target "_blank"
+                            prop.text "SAFE Stack"
+                        ]
+                        Html.text " and F#."
+                    ]
+                ]
+                Html.div [
+                    prop.id "templatemo_footer1"
+                    prop.children [
+                        Html.text "Icons made by "
+                        Html.a [
+                            prop.href "https://www.flaticon.com/authors/smashicons"
+                            prop.target "_blank"
+                            prop.title "Smashicons"
+                            prop.text "Smashicons"
+                        ]
+                        Html.text " and downloaded from "
+                        Html.a [
+                            prop.href "https://www.flaticon.com/"
+                            prop.title "Flaticon"
+                            prop.text "www.flaticon.com"
+                        ]
+                        Html.text " are licensed under "
+                        Html.a [
+                            prop.href "http://creativecommons.org/licenses/by/3.0/"
+                            prop.target "_blank"
+                            prop.title "Creative Commons BY 3.0"
+                            prop.text "Creative Commons BY 3.0."
+                        ]
+                    ]
+                ]
+                Html.div [
+                    prop.id "templatemo_footer1"
+                    prop.children [
+                        Html.a [
+                            prop.href "https://stackoverflow.com/questions/54970180/how-can-i-do-a-simple-elmish-router"
+                            prop.target "_blank"
+                            prop.title "Elmish (F#) code"
+                            prop.text "Elmish (F#) code"
+                        ]   
+                        Html.text " for routing by "
+                        Html.a [
+                            prop.href "https://stackoverflow.com/users/2911775/maxime-mangel"
+                            prop.target "_blank"
+                            prop.title "Maxime Mangel"
+                            prop.text "Maxime Mangel"
+                        ]
+                        Html.text "."
+                    ]
+                ]
             ]
-        ]
-        Html.div [
-            prop.className "body1"
-            prop.children [
-                Html.text "This website uses an HTML/CSS template downloaded from "
-                Html.a [
-                    prop.href "http://all-free-download.com/free-website-templates/"
-                    prop.target "_blank"
-                    prop.text "Free Website Templates"
-                ]
-                Html.text " and adapted by "
-                Html.a [
-                    prop.href "http://hustak.somee.com"
-                    prop.target "_blank"
-                    prop.text "Miroslav Husťák"
-                ]
-                Html.text " with the help of "
-                Html.a [
-                    prop.href "https://safe-stack.github.io"
-                    prop.target "_blank"
-                    prop.text "SAFE Stack"
-                ]
-                Html.text " and F#."
-            ]
-        ]
-    
-        Html.div [
-            prop.className "body1"
-            prop.children [
-                Html.text "Icons made by "
-                Html.a [
-                    prop.href "https://www.flaticon.com/authors/smashicons"
-                    prop.target "_blank"
-                    prop.title "Smashicons"
-                    prop.text "Smashicons"
-                ]
-                Html.text " and downloaded from "
-                Html.a [
-                    prop.href "https://www.flaticon.com/"
-                    prop.title "Flaticon"
-                    prop.text "www.flaticon.com"
-                ]
-                Html.text " are licensed under "
-                Html.a [
-                    prop.href "http://creativecommons.org/licenses/by/3.0/"
-                    prop.target "_blank"
-                    prop.title "Creative Commons BY 3.0"
-                    prop.text "Creative Commons BY 3.0."
-                ]
-            ]
-        ]
-        Html.div [
-            prop.className "body1"
-            prop.children [
-                Html.a [
-                    prop.href "https://stackoverflow.com/questions/54970180/how-can-i-do-a-simple-elmish-router"
-                    prop.target "_blank"
-                    prop.title "Elmish (F#) code"
-                    prop.text "Elmish (F#) code"
-                ]   
-                Html.text " for routing by "
-                Html.a [
-                    prop.href "https://stackoverflow.com/users/2911775/maxime-mangel"
-                    prop.target "_blank"
-                    prop.title "Maxime Mangel"
-                    prop.text "Maxime Mangel"
-                ]
-                Html.text "."
-            ]
-        ]
+        ]        
         Html.div [
             Html.br []
         ] 
