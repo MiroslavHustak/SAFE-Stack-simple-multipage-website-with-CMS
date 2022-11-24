@@ -6,7 +6,7 @@ open Feliz
 open Fable.Remoting.Client
 
 open Shared
-open SharedTypesAndRecords
+open SharedTypes
 
 open Layout
 open Records

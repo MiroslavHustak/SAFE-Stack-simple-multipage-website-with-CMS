@@ -16,7 +16,7 @@ open Router
 open ContentHome
 open ContentMaintenance
 
-open SharedTypesAndRecords
+open SharedTypes
 open Fable.Remoting.Client
 open Shared
 

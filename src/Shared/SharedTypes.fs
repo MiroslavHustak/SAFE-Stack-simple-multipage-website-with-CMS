@@ -1,33 +1,55 @@
-module SharedTypes
+namespace SharedTypes
 
-type SecurityToken = SecurityToken of string
-
-type LoginInfo = { Username: string; Password: string }
-
-// possible errors when logging in
-type LoginError = 
-    | UserDoesNotExist
-    | PasswordIncorrect
-    | AccountBanned
-
-type BookId = BookId of int
-// domain model
-type Book = { Id: BookId; Title: string; (* other propeties *) }
-
-// things that could happen when requesting to remove a book
-type BookRemovalResult = 
-    | BookSuccessfullyRemoved
-    | BookDoesNotExist
-
-// the book store protocol
-type IBookStoreApi =
+type GetCredentials =
     {
-        // login to acquire an auth token   
-        login : LoginInfo -> Async<Result<SecurityToken, LoginError>>
-        // "public" function: no auth needed
-        searchBooksByTitle : string -> Async<list<Book>> 
-        // secure function, requires a token
-        booksOnWishlist : SecurityToken -> Async<Result<list<Book>, LoginError>> 
-  
+        LoginResult: string
+        Usr: string
+        Psw: string
     }
+
+type GetSecurityToken =
+    {
+        SecurityToken: string
+    }
+
+type DeleteSecurityTokenFile = { DeleteSecurityTokenFile: bool } 
+
+type GetCenikValues =
+    {
+        V001: string; V002: string; V003: string;
+        V004: string; V005: string; V006: string;
+        V007: string; V008: string; V009: string
+    }
+
+type GetKontaktValues =
+    {
+        V001: string; V002: string; V003: string;
+        V004: string; V005: string; V006: string;
+        V007: string
+    }
+
+type GetLinkAndLinkNameValues =
+    {
+        V001: string; V002: string; V003: string;
+        V004: string; V005: string; V006: string;
+        V001n: string; V002n: string; V003n: string;
+        V004n: string; V005n: string; V006n: string
+    }
+
+type IGetApi =
+    {
+      getCredentials: GetCredentials -> Async<GetCredentials>
+      deleteSecurityTokenFile: DeleteSecurityTokenFile -> Async<DeleteSecurityTokenFile>
+      sendSecurityToken: GetSecurityToken -> Async<GetSecurityToken>
+      getCenikValues: GetCenikValues -> Async<GetCenikValues>
+      sendOldCenikValues: GetCenikValues -> Async<GetCenikValues>
+      sendDeserialisedCenikValues: GetCenikValues -> Async<GetCenikValues>
+      getKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
+      sendOldKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
+      sendDeserialisedKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
+      getLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
+      sendOldLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
+      sendDeserialisedLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
+    }
+
 

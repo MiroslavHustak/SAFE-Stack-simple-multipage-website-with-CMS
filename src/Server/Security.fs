@@ -6,26 +6,9 @@ open System.IO
 open System.Text
 open Newtonsoft.Json
 open System.Security.Cryptography
-open Shared
+open SharedSecurityTypes
+open SharedTypes
 open PasswordGenerator
-
-
-type AuthToken = SecurityToken of string
-
-type SecureRequest<'t> = {
-    Token : string
-    Body : 't
-}
-
-type AuthError = 
-    | TokenInvalid
-    | UserUnauthorized 
-
-type SecureResponse<'t> = Async<Result<'t, AuthError>> 
-
-type UserInfo =
-    { Username : string
-      Claims : string [] }
 
 //  Learn about JWT https://jwt.io/introduction/
 //  This module uses the JOSE-JWT library https://github.com/dvsekhvalnov/jose-jwt
@@ -60,12 +43,21 @@ let encodeJwt token = JsonConvert.SerializeObject token |> encodeString //******
 let private decodeJwt<'a> (jwt : string) : 'a = decodeString jwt |> JsonConvert.DeserializeObject<'a>
 
 /// Returns true if the JSON Web Token is successfully decoded and the signature is verified.
-let private validateJwt (jwt : string) : UserInfo option =
+let private validateJwt (jwt : string) : GetCredentials option =
     try 
         let token = decodeJwt jwt
         Some token
     with _ -> None
 
+let authorizeAny (f : GetCredentials -> 't) : AuthToken -> SecureResponse<'t> =
+    fun (SecurityToken(token)) -> 
+        match validateJwt token with
+        | None -> async { return Result.Error AuthError.TokenInvalid }
+        | Some value -> 
+            async {
+                    let output = f value
+                    return Result.Ok output               
+            }
 
 
 

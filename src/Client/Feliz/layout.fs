@@ -5,7 +5,7 @@ open Feliz
 
 open Router
 open Records
-open SharedTypesAndRecords
+open SharedTypes
 
 let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameValues) =
 

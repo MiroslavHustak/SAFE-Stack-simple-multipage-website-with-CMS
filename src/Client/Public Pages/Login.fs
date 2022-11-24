@@ -15,7 +15,7 @@ open Browser
 
 open Router
 
-open SharedTypesAndRecords
+open SharedTypes
 
 type Model =
     {
@@ -142,12 +142,13 @@ let view (model: Model) (dispatch: Msg -> unit) securityToken =
                    prop.children [
                        Html.input [
                            prop.type' "submit"
-                           prop.value "Log-off"
+                           prop.value "Log-off a návrat na webové stránky"
                            prop.id "Button2"
                            prop.onClick (fun _ -> dispatch askServerForDeletingSecurityTokenFile)
                            prop.style
                                [
-                                 style.width(200)
+                                 style.width(300)
+                                 style.height(30)
                                  style.fontWeight.bold
                                  style.fontSize(16) //font-size: large
                                  style.color.blue

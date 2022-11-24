@@ -5,7 +5,7 @@ open Fable.Remoting.Giraffe
 open Saturn
 
 open Shared
-open SharedTypesAndRecords
+open SharedTypes
 
 open System
 
@@ -21,6 +21,12 @@ let securityTokenFile = Path.GetFullPath("securityToken.txt")
 let securityToken = "securityToken"//prozatim, bude to generovane, tra posilat
 
 let private verifyCredentials (credentials: GetCredentials) =
+
+        let neco1  =
+            Security.authorizeAny <| fun user -> credentials
+                
+                         
+
         match SharedCredentialValues.isValid credentials.Usr credentials.Psw with
         | true  ->                 
                    let loginResult = 
@@ -28,7 +34,7 @@ let private verifyCredentials (credentials: GetCredentials) =
                        | "Hanka", "qwe" -> //trywith
                                                      
                                                      use sw1 = new StreamWriter(Path.GetFullPath(securityTokenFile))
-                                                               //|> Option.ofObj  
+                                                               //|> Option.ofObj  //TODO nevim, cemu tu to nefunguje...
                                                                //|> optionToGenerics2 "při zápisu pomocí StreamWriter()" (new StreamWriter(String.Empty)) //whatever of the particular type  
                                                      do sw1.WriteLine("Perhaps this string will come in handy") 
                                                      "CMSRozcestnik"                       

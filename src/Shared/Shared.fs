@@ -1,7 +1,7 @@
 namespace Shared
 
 open System
-open SharedTypesAndRecords
+open SharedTypes
 open System.IO
 
 module SharedCredentialValues =
