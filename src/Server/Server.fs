@@ -5,7 +5,7 @@ open Fable.Remoting.Giraffe
 open Saturn
 
 open Shared
-open SharedRecords
+open SharedTypesAndRecords
 
 open System
 
@@ -14,14 +14,26 @@ open Helpers.CopyingFiles
 open Helpers.Serialisation
 open Helpers.Deserialisation
 
-let private verifyCredentials (credentials: GetRouteUsrPsw) =
-        match SharedValues.isValid credentials.Usr credentials.Psw with
+open ROP_Functions
+open System.IO
+
+let securityTokenFile = Path.GetFullPath("securityToken.txt")
+let securityToken = "securityToken"//prozatim, bude to generovane, tra posilat
+
+let private verifyCredentials (credentials: GetCredentials) =
+        match SharedCredentialValues.isValid credentials.Usr credentials.Psw with
         | true  ->                 
-                   let route = 
+                   let loginResult = 
                        match credentials.Usr, credentials.Psw with
-                       | "", ""                   -> "CMSRozcestnik"                       
+                       | "Hanka", "qwe" -> //trywith
+                                                     
+                                                     use sw1 = new StreamWriter(Path.GetFullPath(securityTokenFile))
+                                                               //|> Option.ofObj  
+                                                               //|> optionToGenerics2 "při zápisu pomocí StreamWriter()" (new StreamWriter(String.Empty)) //whatever of the particular type  
+                                                     do sw1.WriteLine("Perhaps this string will come in handy") 
+                                                     "CMSRozcestnik"                       
                        | _                        -> "Invalid"
-                   Ok(), route
+                   Ok(), loginResult
         | false -> Error "", "Invalid"                  
 
  //TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem
@@ -50,11 +62,40 @@ let IGetApi =
                   {
                      let result = 
                         match verifyCredentials getCredentials with                
-                        | Ok (), route -> { Route = route; Usr = getCredentials.Usr; Psw = getCredentials.Psw }
-                        // e by se dalo vyuzit pro chybovu hlasku - viz errorMsg, ale tahat to do Loginu je pracne.... proto vyuzivam hodnotu v route
-                        | (Error e), route -> { Route = route; Usr = String.Empty; Psw = String.Empty }
+                        | Ok (), loginResult     -> { LoginResult = loginResult; Usr = getCredentials.Usr; Psw = getCredentials.Psw }
+                        // e by se dalo vyuzit pro chybovu hlasku - viz errorMsg, ale tahat to do Loginu je pracne.... proto vyuzivam hodnotu v LoginResult
+                        | (Error e), loginResult -> { LoginResult = loginResult; Usr = String.Empty; Psw = String.Empty }
                      return result
                   }
+
+      deleteSecurityTokenFile =
+          fun deleteSecurityTokenFile ->
+              async
+                  {
+                      File.Delete(Path.GetFullPath("securityToken.txt"))
+                      return { DeleteSecurityTokenFile = File.Exists(Path.GetFullPath("securityToken.txt")) }
+                  }
+
+      sendSecurityToken =
+          fun _ ->
+            async
+                {
+                   let cond = File.Exists(Path.GetFullPath(securityTokenFile)) 
+                   let securityToken =
+                      
+                       //zakoduj obsah souboru, tj. token
+                       //posli na klienta pro rozkodovani
+                       //odtud pouzij rozkodovaci funkci umistenu na shared                
+                       
+                       match cond with
+                       | true ->  //use sr = new StreamReader(securityTokenFile)
+                                  //sr.ReadLine()
+                                  securityToken
+                       | false -> String.Empty
+                    
+                   return { SecurityToken = securityToken }
+                }
+     
 
       getCenikValues =
           fun getCenikValues ->

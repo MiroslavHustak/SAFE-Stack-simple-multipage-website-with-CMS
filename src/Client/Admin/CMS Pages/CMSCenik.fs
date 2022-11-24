@@ -5,13 +5,15 @@ open Feliz
 open Fable.Remoting.Client
 
 open Shared
-open SharedRecords
+open SharedTypesAndRecords
 
 open System
 
 open Layout
 open Router
 open ContentCMSCenik
+open ContentHome
+open ContentCMSForbidden
 
 type Model =
     {
@@ -44,7 +46,7 @@ type Msg =
     | SendOldCenikValuesToServer
     | GetCenikValues of GetCenikValues
     | GetOldCenikValues of GetCenikValues
-    
+        
 let getCenikValuesApi =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
@@ -64,6 +66,7 @@ let init id : Model * Cmd<Msg> =
                 V004 = ""; V005 = ""; V006 = "";
                 V007 = ""; V008 = ""; V009 = ""
             }
+       
         V001Input = ""
         V002Input = ""
         V003Input = ""
@@ -102,7 +105,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                                               <| model.V004Input <| model.V005Input <| model.V006Input
                                               <| model.V007Input <| model.V008Input <| model.V009Input   
         let cmd = Cmd.OfAsync.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues
-        model, cmd
+        model, cmd   
 
     | GetCenikValues valueNew ->
         {
@@ -126,9 +129,9 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                           }
         },  Cmd.none  
    
-let view (model: Model) (dispatch: Msg -> unit) =
+let view (model: Model) (dispatch: Msg -> unit) (securityToken: GetSecurityToken) =
 
-    let completeContent = 
+    let completeContent() = 
         Html.html [
             prop.xmlns "http://www.w3.org/1999/xhtml"
             prop.children [
@@ -633,6 +636,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                     ]
                 ]
             ]
-        ]
+        ]    
 
-    completeContent 
+    match securityToken.SecurityToken = "securityToken" with //model.GetCredentials.SecurityTokenFile with credentials.SecurityTokenFile
+    | true -> completeContent()
+    | false -> contentCMSForbidden()

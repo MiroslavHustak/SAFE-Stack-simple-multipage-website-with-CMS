@@ -1,121 +1,149 @@
-module CMSKontakt
+module CMSLink
 
 open Elmish
 open Feliz
 open Fable.Remoting.Client
 
 open Shared
-open SharedRecords
+open SharedTypesAndRecords
 
 open System
 
 open Layout
 open Router
 open ContentCMSKontakt
+open ContentCMSForbidden
 
 type Model =
     {
-      KontaktValues: GetKontaktValues
-      OldKontaktValues: GetKontaktValues
-      V001Input: string
-      V002Input: string
-      V003Input: string
-      V004Input: string
-      V005Input: string
-      V006Input: string
-      V007Input: string       
+      LinkAndLinkNameValues: GetLinkAndLinkNameValues
+      OldLinkAndLinkNameValues: GetLinkAndLinkNameValues
+      V001LinkInput: string
+      V002LinkInput: string
+      V003LinkInput: string
+      V004LinkInput: string
+      V005LinkInput: string
+      V006LinkInput: string
+      V001LinkNameInput: string
+      V002LinkNameInput: string
+      V003LinkNameInput: string
+      V004LinkNameInput: string
+      V005LinkNameInput: string
+      V006LinkNameInput: string
       Id: int
     }
 
-type Msg =    
-    | SetV001Input of string
-    | SetV002Input of string
-    | SetV003Input of string
-    | SetV004Input of string
-    | SetV005Input of string
-    | SetV006Input of string
-    | SetV007Input of string   
-    | SendKontaktValuesToServer
-    | SendOldKontaktValuesToServer
-    | GetKontaktValues of GetKontaktValues
-    | GetOldKontaktValues of GetKontaktValues
-    
-let getKontaktValuesApi =
+type Msg =
+    | SetV001LinkInput of string
+    | SetV002LinkInput of string
+    | SetV003LinkInput of string
+    | SetV004LinkInput of string
+    | SetV005LinkInput of string
+    | SetV006LinkInput of string
+    | SetV001LinkNameInput of string
+    | SetV002LinkNameInput of string
+    | SetV003LinkNameInput of string
+    | SetV004LinkNameInput of string
+    | SetV005LinkNameInput of string
+    | SetV006LinkNameInput of string
+    | SendLinkAndLinkNameValuesToServer
+    | SendOldLinkAndLinkNameValuesToServer
+    | GetLinkAndLinkNameValues of GetLinkAndLinkNameValues
+    | GetOldLinkAndLinkNameValues of GetLinkAndLinkNameValues
+
+let getLinkAndLinkNameValuesApi =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
     |> Remoting.buildProxy<IGetApi>
 
 let init id : Model * Cmd<Msg> =
     let model = {
-        KontaktValues =
+        LinkAndLinkNameValues =
             {
                 V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = ""; V006 = "";
-                V007 = ""
+                V004 = ""; V005 = ""; V006 = ""
+                V001n = ""; V002n = ""; V003n = "";
+                V004n = ""; V005n = ""; V006n = "Facebook"
             }
-        OldKontaktValues =
+        OldLinkAndLinkNameValues =
             {
                 V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = ""; V006 = "";
-                V007 = "" 
-            }
-        V001Input = ""
-        V002Input = ""
-        V003Input = ""
-        V004Input = ""
-        V005Input = ""
-        V006Input = ""
-        V007Input = ""       
+                V004 = ""; V005 = ""; V006 = ""
+                V001n = ""; V002n = ""; V003n = "";
+                V004n = ""; V005n = ""; V006n = "Facebook"
+            }      
+        V001LinkInput = ""
+        V002LinkInput = ""
+        V003LinkInput = ""
+        V004LinkInput = ""
+        V005LinkInput = ""
+        V006LinkInput = ""       
+        V001LinkNameInput = ""
+        V002LinkNameInput = ""
+        V003LinkNameInput = ""
+        V004LinkNameInput = ""
+        V005LinkNameInput = ""
+        V006LinkNameInput = "Facebook"           
         Id = id
       }
-    model, Cmd.ofMsg SendOldKontaktValuesToServer
+    model, Cmd.ofMsg SendOldLinkAndLinkNameValuesToServer
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with
-    | SetV001Input value -> { model with V001Input = value }, Cmd.none
-    | SetV002Input value -> { model with V002Input = value }, Cmd.none
-    | SetV003Input value -> { model with V003Input = value }, Cmd.none
-    | SetV004Input value -> { model with V004Input = value }, Cmd.none
-    | SetV005Input value -> { model with V005Input = value }, Cmd.none
-    | SetV006Input value -> { model with V006Input = value }, Cmd.none
-    | SetV007Input value -> { model with V007Input = value }, Cmd.none    
+    | SetV001LinkInput value -> { model with V001LinkInput = value }, Cmd.none
+    | SetV002LinkInput value -> { model with V002LinkInput = value }, Cmd.none
+    | SetV003LinkInput value -> { model with V003LinkInput = value }, Cmd.none
+    | SetV004LinkInput value -> { model with V004LinkInput = value }, Cmd.none
+    | SetV005LinkInput value -> { model with V005LinkInput = value }, Cmd.none
+    | SetV006LinkInput value -> { model with V006LinkInput = value }, Cmd.none
+    | SetV001LinkNameInput value -> { model with V001LinkNameInput = value }, Cmd.none
+    | SetV002LinkNameInput value -> { model with V002LinkNameInput = value }, Cmd.none
+    | SetV003LinkNameInput value -> { model with V003LinkNameInput = value }, Cmd.none
+    | SetV004LinkNameInput value -> { model with V004LinkNameInput = value }, Cmd.none
+    | SetV005LinkNameInput value -> { model with V005LinkNameInput = value }, Cmd.none
+    | SetV006LinkNameInput value -> { model with V006LinkNameInput = value }, Cmd.none
 
-    | SendOldKontaktValuesToServer ->
-        let loadEvent = SharedDeserialisedKontaktValues.create model.OldKontaktValues
-        let cmd = Cmd.OfAsync.perform getKontaktValuesApi.sendOldKontaktValues loadEvent GetOldKontaktValues
+    | SendOldLinkAndLinkNameValuesToServer ->
+        let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.OldLinkAndLinkNameValues
+        let cmd = Cmd.OfAsync.perform getLinkAndLinkNameValuesApi.sendOldLinkAndLinkNameValues loadEvent GetOldLinkAndLinkNameValues
         model, cmd
 
-    | SendKontaktValuesToServer ->
-        let buttonClickEvent:GetKontaktValues = SharedKontaktValues.create
-                                              <| model.V001Input <| model.V002Input <| model.V003Input 
-                                              <| model.V004Input <| model.V005Input <| model.V006Input
-                                              <| model.V007Input   
-        let cmd = Cmd.OfAsync.perform getKontaktValuesApi.getKontaktValues buttonClickEvent GetKontaktValues
+    | SendLinkAndLinkNameValuesToServer ->
+        let buttonClickEvent:GetLinkAndLinkNameValues =                                        
+            SharedLinkAndLinkNameValues.create
+            <| model.V001LinkInput <| model.V002LinkInput <| model.V003LinkInput 
+            <| model.V004LinkInput <| model.V005LinkInput <| model.V006LinkInput
+            <| model.V001LinkNameInput <| model.V002LinkNameInput <| model.V003LinkNameInput 
+            <| model.V004LinkNameInput <| model.V005LinkNameInput <| model.V006LinkNameInput
+
+        let cmd = Cmd.OfAsync.perform getLinkAndLinkNameValuesApi.getLinkAndLinkNameValues buttonClickEvent GetLinkAndLinkNameValues
         model, cmd
 
-    | GetKontaktValues valueNew ->
+    | GetLinkAndLinkNameValues valueNew ->
         {
             model with
-                       KontaktValues =
+                       LinkAndLinkNameValues =
                           {
-                              V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
-                              V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
-                              V007 = valueNew.V007
+                            V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
+                            V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
+                            V001n = valueNew.V001n; V002n = valueNew.V002n; V003n = valueNew.V003n;
+                            V004n = valueNew.V004n; V005n = valueNew.V005n; V006n = "Facebook"
                           }
         },  Cmd.none
 
-    | GetOldKontaktValues valueOld ->
+    | GetOldLinkAndLinkNameValues valueOld ->
         {
             model with
-                       OldKontaktValues =
-                          {
+                        OldLinkAndLinkNameValues =
+                            {
                               V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
                               V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
-                              V007 = valueOld.V007
-                          }
-        },  Cmd.none  
+                              V001n = valueOld.V001n; V002n = valueOld.V002n; V003n = valueOld.V003n;
+                              V004n = valueOld.V004n; V005n = valueOld.V005n; V006n = "Facebook"
+                            }
+        },  Cmd.none
    
-let view (model: Model) (dispatch: Msg -> unit) =
+let view (model: Model) (dispatch: Msg -> unit) securityToken = 
 
     let completeContent = 
         Html.html [
@@ -187,7 +215,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                             Html.tr [
                                                 Html.td [
                                                     Html.div [
-                                                        Html.h1 "Editace kontaktních hodnot"
+                                                        Html.h1 "Editace odkazů a jejich názvů"
                                                         //Html.h3 ""
                                                     ]
                                                 ]
@@ -197,7 +225,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                     Html.td []
                                                     Html.td []
                                                     Html.td []                                  
-                                                   
+                                               
                                                     (*
                                                     //zkusebni kod
                                                     //let myList = [ Html.td []; Html.td []; Html.td []; Html.td []; Html.td [] ]
@@ -216,40 +244,38 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         style.fontWeight.bold
                                                     ] 
                                                 prop.children [
-                                                    Html.td "Číslo řádku"     
-                                                    Html.td "Současnost"
-                                                    Html.td []  
-                                                    Html.td "Nový údaj"
+                                                    Html.td "Současný název odkazu"     
+                                                    Html.td "Nový název"
+                                                    Html.td "Nový odkaz (link)"
                                                 ]
                                             ]
                                             Html.tr [                                                
                                                 prop.children [
-                                                    Html.td "Kontaktní údaj 1"   
-                                                    Html.td
-                                                        [
-                                                        prop.style
-                                                            [
-                                                                style.fontWeight.bold
-                                                                style.color.blue
-                                                            ]
-                                                        prop.children
-                                                            [                                                            
-                                                                 Html.text model.OldKontaktValues.V001 
-                                                            ]   
-                                                        ]
-                                                    Html.td []    
+                                                    Html.td model.OldLinkAndLinkNameValues.V001n   
                                                     Html.td
                                                         [
                                                             Html.input [
-                                                                
+                                                            
                                                                 prop.id "content"
                                                                 prop.type' "text"
-                                                                prop.id "001"
+                                                                prop.id "001a"
                                                                 prop.name ""
-                                                                prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch)                                                       
+                                                                prop.onChange (fun (ev: string) -> SetV001LinkNameInput ev |> dispatch)                                                       
                                                                 prop.autoFocus true
                                                             ]    
-                                                        ]                                             
+                                                        ]
+                                                    Html.td
+                                                        [
+                                                            Html.input [
+                                                            
+                                                                prop.id "content"
+                                                                prop.type' "text"
+                                                                prop.id "001b"
+                                                                prop.name ""
+                                                                prop.onChange (fun (ev: string) -> SetV001LinkInput ev |> dispatch)                                                       
+                                                                prop.autoFocus true
+                                                            ]    
+                                                        ]        
                                                 ]
                                             ]
                                             Html.tr [
@@ -258,59 +284,25 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         //style.fontWeight.bold                                                        
                                                     ] 
                                                 prop.children [
-                                                    Html.td "Kontaktní údaj 2"  
-                                                    Html.td
-                                                        [
-                                                        prop.style
-                                                            [
-                                                                style.fontWeight.bold
-                                                                style.color.blue
-                                                            ]
-                                                        prop.children
-                                                            [                                                            
-                                                                 Html.text model.OldKontaktValues.V002 
-                                                            ]   
-                                                        ]
-                                                    Html.td []    
+                                                    Html.td model.OldLinkAndLinkNameValues.V002n  
+                                                   
                                                     Html.td
                                                         [
                                                             Html.input [
                                                                 prop.type' "text"
-                                                                prop.id "002"
+                                                                prop.id "002a"
                                                                 prop.name ""
-                                                                prop.onChange (fun (ev: string) -> SetV002Input ev |> dispatch)
+                                                                prop.onChange (fun (ev: string) -> SetV002LinkNameInput ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
-                                                        ]      
-                                                ]
-                                            ]
-                                            Html.tr [
-                                                prop.style
-                                                    [
-                                                        //style.fontWeight.bold                                                        
-                                                    ] 
-                                                prop.children [
-                                                    Html.td "Kontaktní údaj 3" 
-                                                    Html.td
-                                                        [
-                                                        prop.style
-                                                            [
-                                                                style.fontWeight.bold
-                                                                style.color.blue
-                                                            ]
-                                                        prop.children
-                                                            [                                                            
-                                                                 Html.text model.OldKontaktValues.V003 
-                                                            ]   
                                                         ]
-                                                    Html.td []    
                                                     Html.td
                                                         [
                                                             Html.input [
                                                                 prop.type' "text"
-                                                                prop.id "003"
+                                                                prop.id "002b"
                                                                 prop.name ""
-                                                                prop.onChange (fun (ev: string) -> SetV003Input ev |> dispatch)
+                                                                prop.onChange (fun (ev: string) -> SetV002LinkInput ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
                                                         ]      
@@ -322,27 +314,24 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         //style.fontWeight.bold                                                        
                                                     ] 
                                                 prop.children [
-                                                    Html.td "Kontaktní údaj 4" 
-                                                    Html.td
-                                                        [
-                                                        prop.style
-                                                            [
-                                                                style.fontWeight.bold
-                                                                style.color.blue
-                                                            ]
-                                                        prop.children
-                                                            [                                                            
-                                                                Html.text model.OldKontaktValues.V004 
-                                                            ]   
-                                                        ]
-                                                    Html.td []        
+                                                    Html.td model.OldLinkAndLinkNameValues.V003n 
                                                     Html.td
                                                         [
                                                             Html.input [
                                                                 prop.type' "text"
-                                                                prop.id "004"
+                                                                prop.id "003a"
                                                                 prop.name ""
-                                                                prop.onChange (fun (ev: string) -> SetV004Input ev |> dispatch)
+                                                                prop.onChange (fun (ev: string) -> SetV003LinkNameInput ev |> dispatch)
+                                                                prop.autoFocus true
+                                                            ]    
+                                                        ]
+                                                    Html.td
+                                                        [
+                                                            Html.input [
+                                                                prop.type' "text"
+                                                                prop.id "003b"
+                                                                prop.name ""
+                                                                prop.onChange (fun (ev: string) -> SetV003LinkInput ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
                                                         ]      
@@ -354,27 +343,53 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         //style.fontWeight.bold                                                        
                                                     ] 
                                                 prop.children [
-                                                    Html.td "Kontaktní údaj 5" 
-                                                    Html.td
-                                                        [
-                                                        prop.style
-                                                            [
-                                                                style.fontWeight.bold
-                                                                style.color.blue
-                                                            ]
-                                                        prop.children
-                                                            [                                                            
-                                                                Html.text model.OldKontaktValues.V005 
-                                                            ]   
-                                                        ]
-                                                    Html.td []    
+                                                    Html.td model.OldLinkAndLinkNameValues.V004n 
                                                     Html.td
                                                         [
                                                             Html.input [
                                                                 prop.type' "text"
-                                                                prop.id "005"
+                                                                prop.id "004a"
+                                                                prop.name ""
+                                                                prop.onChange (fun (ev: string) -> SetV004LinkNameInput ev |> dispatch)
+                                                                prop.autoFocus true
+                                                            ]    
+                                                        ]           
+                                                    Html.td
+                                                        [
+                                                            Html.input [
+                                                                prop.type' "text"
+                                                                prop.id "004b"
+                                                                prop.name ""
+                                                                prop.onChange (fun (ev: string) -> SetV004LinkInput ev |> dispatch)
+                                                                prop.autoFocus true
+                                                            ]    
+                                                        ]      
+                                                ]
+                                            ]
+                                            Html.tr [
+                                                prop.style
+                                                    [
+                                                        //style.fontWeight.bold                                                        
+                                                    ] 
+                                                prop.children [
+                                                    Html.td model.OldLinkAndLinkNameValues.V005n  
+                                                    Html.td
+                                                        [
+                                                            Html.input [
+                                                                prop.type' "text"
+                                                                prop.id "005a"
                                                                 prop.name ""                                                           
-                                                                prop.onChange (fun (ev: string) -> SetV005Input ev |> dispatch)                                                                                                                   
+                                                                prop.onChange (fun (ev: string) -> SetV005LinkNameInput ev |> dispatch)                                                                                                                   
+                                                                prop.autoFocus true
+                                                            ]    
+                                                        ]      
+                                                    Html.td
+                                                        [
+                                                            Html.input [
+                                                                prop.type' "text"
+                                                                prop.id "005b"
+                                                                prop.name ""                                                           
+                                                                prop.onChange (fun (ev: string) -> SetV005LinkInput ev |> dispatch)                                                                                                                   
                                                                 prop.autoFocus true
                                                             ]    
                                                         ]      
@@ -386,64 +401,20 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         //style.fontWeight.bold                                                        
                                                     ] 
                                                 prop.children [
-                                                    Html.td "Kontaktní údaj 6" 
-                                                    Html.td
-                                                        [
-                                                        prop.style
-                                                            [
-                                                                style.fontWeight.bold
-                                                                style.color.blue
-                                                            ]
-                                                        prop.children
-                                                            [                                                            
-                                                                 Html.text model.OldKontaktValues.V006 
-                                                            ]   
-                                                        ]                                                   
-                                                    Html.td []    
+                                                    Html.td model.OldLinkAndLinkNameValues.V006n  
+                                                    Html.td model.OldLinkAndLinkNameValues.V006n 
                                                     Html.td
                                                         [
                                                             Html.input [
                                                                 prop.type' "text"
                                                                 prop.id "006"
                                                                 prop.name ""                                                            
-                                                                prop.onChange (fun (ev: string) -> SetV006Input ev |> dispatch)                                                                                                                
+                                                                prop.onChange (fun (ev: string) -> SetV006LinkNameInput ev |> dispatch)                                                                                                                
                                                                 prop.autoFocus true
                                                             ]    
                                                         ]      
                                                 ]
-                                            ]
-                                            Html.tr [
-                                                prop.style
-                                                    [
-                                                        //style.fontWeight.bold                                                        
-                                                    ] 
-                                                prop.children [
-                                                    Html.td "Kontaktní údaj 7"
-                                                    Html.td
-                                                        [
-                                                        prop.style
-                                                            [
-                                                                style.fontWeight.bold
-                                                                style.color.blue
-                                                            ]
-                                                        prop.children
-                                                            [                                                            
-                                                                 Html.text model.OldKontaktValues.V007 
-                                                            ]   
-                                                        ]
-                                                    Html.td []    
-                                                    Html.td
-                                                        [
-                                                            Html.input [
-                                                                prop.type' "text"
-                                                                prop.id "007"
-                                                                prop.name ""
-                                                                prop.onChange (fun (ev: string) -> SetV007Input ev |> dispatch)
-                                                                prop.autoFocus true
-                                                            ]    
-                                                        ]      
-                                                ]
-                                            ]                                                                             
+                                            ]                                                                                                      
                                             Html.tr [
                                                 prop.style
                                                     [
@@ -454,7 +425,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                     Html.td []    
                                                     Html.td []
                                                     Html.td []
-                                                    Html.td []                                                   
+                                                                                             
                                                 ]
                                             ]                                      
                                             Html.tr [
@@ -463,7 +434,6 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         //style.marginLeft(0)                                                       
                                                     ] 
                                                 prop.children [    
-                                                    Html.td []    
                                                     Html.td [
                                                         Html.a [
                                                             prop.style
@@ -494,7 +464,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             prop.value "Uložit nové údaje"
                                                             prop.id "Button1"
                                                             prop.onClick (fun e -> e.preventDefault()
-                                                                                   dispatch SendKontaktValuesToServer
+                                                                                   dispatch SendLinkAndLinkNameValuesToServer
                                                                          )
                                                             prop.style
                                                                 [
@@ -518,5 +488,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
             ]
         ]
 
-    completeContent 
+    match securityToken.SecurityToken = "securityToken" with //model.GetCredentials.SecurityTokenFile with credentials.SecurityTokenFile
+    | true -> completeContent
+    | false -> contentCMSForbidden()
 
+   

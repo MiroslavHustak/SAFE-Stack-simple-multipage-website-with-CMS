@@ -6,11 +6,12 @@ open Feliz
 open Fable.Remoting.Client
 
 open Shared
-open SharedRecords
+open SharedTypesAndRecords
 
 open Layout
 open Records
 open ContentCenik
+open ContentMaintenance
 
 open Feliz
 
@@ -22,7 +23,7 @@ type Model =
     }
 
 type Msg =   
-    | SendCenikValuesToServer 
+    | AskServerForCenikValues 
     | GetCenikValues of GetCenikValues    
 
 let sendDeserialisedCenikValues =
@@ -47,12 +48,12 @@ let init id : Model * Cmd<Msg> =
             }      
         Id = id
       }
-    model, Cmd.ofMsg SendCenikValuesToServer
+    model, Cmd.ofMsg AskServerForCenikValues
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         
     match msg with       
-        | SendCenikValuesToServer ->
+        | AskServerForCenikValues -> 
              let loadEvent = SharedDeserialisedCenikValues.create model.CenikInputValues
              let cmd = Cmd.OfAsync.perform sendDeserialisedCenikValues.sendDeserialisedCenikValues loadEvent GetCenikValues
              model, cmd            
@@ -64,7 +65,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                                                   }
                                   }, Cmd.none    
  
-let view (model: Model) (dispatch: Msg -> unit) links =
+let view (model: Model) (dispatch: Msg -> unit) links securityToken =
     
     let cenikRecord =
        {
@@ -205,4 +206,7 @@ let view (model: Model) (dispatch: Msg -> unit) links =
         ]
 
     //layout <| (contentCenik()) <| cenikRecord
-    layout <| cenikHtml <| cenikRecord <| links
+    
+    match securityToken with
+       | "securityToken" -> layout <| cenikHtml <| cenikRecord <| links //contentMaintenance()
+       | _ -> layout <| cenikHtml <| cenikRecord <| links

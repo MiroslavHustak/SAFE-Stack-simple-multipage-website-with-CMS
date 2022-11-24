@@ -1,10 +1,10 @@
-module ContentCMSRozcestnik
+module ContentCMSForbidden
 
 open Feliz
 open Router
 
 //kompletni konvertovany html kod, zde se nepouziva layout
-let contentCMSRozcestnik deleteSecurityTokenFile = 
+let contentCMSForbidden() = 
 
     Html.html [
         prop.xmlns "http://www.w3.org/1999/xhtml"
@@ -102,7 +102,7 @@ let contentCMSRozcestnik deleteSecurityTokenFile =
                                                                     Html.h1 [                                                                        
                                                                         prop.id 1
                                                                         prop.children [
-                                                                            Html.text "Rozcestník"                                                        
+                                                                            Html.text "K této stránce lze přistupovat pouze po přihlášení."                                                        
                                                                         ]
                                                                     ]
                                                                 ]                                                       
@@ -115,73 +115,21 @@ let contentCMSRozcestnik deleteSecurityTokenFile =
                                                                       style.height(80)                                                                 
                                                                     ]
                                                                 prop.children [
-                                                                    Html.div [                                                                        
-                                                                        Html.div [
-                                                                            Html.a [
-                                                                                prop.style
-                                                                                    [                                                                                      
-                                                                                      style.fontFamily "sans-serif"
-                                                                                      style.fontWeight.bold
-                                                                                      style.color.blue
-                                                                                    ]
-                                                                                prop.href (toHash (Router.CMSCenik 7))
-                                                                                prop.children [
-                                                                                    Html.text "Editace ceníku"
-                                                                                ]
-                                                                            ]    
-                                                                        ]
-                                                                        Html.div [
-                                                                            Html.a [
-                                                                                prop.style
-                                                                                    [                                                                                      
-                                                                                      style.fontFamily "sans-serif"
-                                                                                      style.fontWeight.bold
-                                                                                      style.color.blue
-                                                                                    ]
-                                                                                prop.href (toHash (Router.CMSKontakt 8))
-                                                                                prop.children [
-                                                                                    Html.text "Editace kontaktních údajů"
-                                                                                ]
-                                                                            ]    
-                                                                        ]
-                                                                        Html.div [
-                                                                            Html.a [
-                                                                                prop.style
-                                                                                    [                                                                                      
-                                                                                        style.fontFamily "sans-serif"
-                                                                                        style.fontWeight.bold
-                                                                                        style.color.blue
-                                                                                    ]
-                                                                                prop.href (toHash (Router.CMSLink 9))
-                                                                                prop.children [
-                                                                                    Html.text "Editace odkazů na webové stránky"
-                                                                                ]
-                                                                            ]    
-                                                                        ]                                                                        
+                                                                    Html.div [                                                                 
                                                                         Html.br []
-                                                                        Html.br []
-                                                                        deleteSecurityTokenFile
-                                                                        (*
-                                                                        Html.div [                                                                            
-                                                                            
-                                                                            
-                                                                            Html.button [                                                                           
-                                                                                prop.text "Log-off"
-                                                                                prop.id "Button2"                                                                           
-                                                                                proponClick
+                                                                        Html.div [                                                                                                                                          
+                                                                            Html.a [
                                                                                 prop.style
-                                                                                    [
-                                                                                      style.height(50)
-                                                                                      style.width(200)
-                                                                                      style.fontWeight.bold
-                                                                                      style.fontSize(16) //font-size: large
-                                                                                      style.color.blue
+                                                                                    [                                                                                      
                                                                                       style.fontFamily "sans-serif"
+                                                                                      style.fontWeight.bold
                                                                                     ]
+                                                                                prop.href "/"
+                                                                                prop.children [
+                                                                                    Html.text "Návrat na hlavní stránku" //TODO zrobit skutecny log-off
+                                                                                ]
                                                                             ]
-                                                                            
                                                                         ]
-                                                                        *)
                                                                     ]
                                                                 ]
                                                             ]

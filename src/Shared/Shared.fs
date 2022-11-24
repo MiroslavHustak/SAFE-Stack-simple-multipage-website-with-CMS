@@ -1,19 +1,34 @@
 namespace Shared
 
 open System
-open SharedRecords
+open SharedTypesAndRecords
+open System.IO
 
-module SharedValues =
+module SharedCredentialValues =
 
     let isValid inputUsrString inputPswString =
         not (String.IsNullOrWhiteSpace inputUsrString || String.IsNullOrWhiteSpace inputPswString)
 
-    let create route usr psw = 
+    let create loginResult usr psw = 
         {
-          Route = route
-          Usr = usr
-          Psw = psw
+            LoginResult = loginResult
+            Usr = usr
+            Psw = psw
         }
+
+module SharedSecurityToken =
+
+    let create securityToken = 
+        {
+            SecurityToken = securityToken
+        }
+  
+module DeleteSecurityTokenFile =
+        
+    let create deleteSecurityTokenFile =
+        {
+            DeleteSecurityTokenFile = deleteSecurityTokenFile
+        }       
 
 module SharedCenikValues =
         
@@ -123,16 +138,3 @@ module Route =
     let builder typeName methodName =
         sprintf "/api/%s/%s" typeName methodName
 
-type IGetApi =
-    {
-      getCredentials: GetRouteUsrPsw -> Async<GetRouteUsrPsw>
-      getCenikValues: GetCenikValues -> Async<GetCenikValues>
-      sendOldCenikValues: GetCenikValues -> Async<GetCenikValues>
-      sendDeserialisedCenikValues: GetCenikValues -> Async<GetCenikValues>
-      getKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
-      sendOldKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
-      sendDeserialisedKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
-      getLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
-      sendOldLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
-      sendDeserialisedLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
-    }

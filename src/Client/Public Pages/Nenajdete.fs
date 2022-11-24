@@ -9,6 +9,7 @@ open Shared
 open Layout
 open Records
 open ContentNenajdete
+open ContentMaintenance
 
 type Model =
     {      
@@ -18,18 +19,13 @@ type Model =
 type Msg =
     | DummyMsg
 
-let todosApi =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IGetApi>
-
 let init id : Model * Cmd<Msg> =
     let model = { Id = id }
     model, Cmd.none
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =  model, Cmd.none
 
-let view (model: Model) (dispatch: Msg -> unit) links =
+let view (model: Model) (dispatch: Msg -> unit) links securityToken =
 
     let nenajdeteRecord =
        {
@@ -39,8 +35,10 @@ let view (model: Model) (dispatch: Msg -> unit) links =
          Nenajdete = prop.className "current"
          Kontakt = prop.className "normal"
        }
-
-    layout <| contentNenajdete() <| nenajdeteRecord <| links
+           
+    match securityToken with
+    | "securityToken" -> layout <| contentNenajdete() <| nenajdeteRecord <| links //contentMaintenance()
+    | _ -> layout <| contentNenajdete() <| nenajdeteRecord <| links
 
 
 

@@ -8,17 +8,20 @@ open Shared
 
 open ContentLogin
 open ContentCMSRozcestnik
+open ContentMaintenance
 
 open System
 open Browser
 
 open Router
 
-open SharedRecords
+open SharedTypesAndRecords
 
 type Model =
     {
-      Route: string
+      SecurityTokenFile: string
+      SecurityToken: string
+      LoginResult: string
       InputUsr: string
       InputPsw: string
       Id: int
@@ -28,16 +31,25 @@ type Msg =
     | SetUsrInput of string
     | SetPswInput of string
     | SendUsrPswToServer
-    | GetRouteUsrPsw of GetRouteUsrPsw    
+    | GetCredentials of GetCredentials
+    | AskServerForDeletingSecurityTokenFile
+    | Dummy of DeleteSecurityTokenFile
     
 let getCredentialsApi =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
     |> Remoting.buildProxy<IGetApi>
 
+let deleteSecurityTokenFileApi =
+    Remoting.createApi ()
+    |> Remoting.withRouteBuilder Route.builder
+    |> Remoting.buildProxy<IGetApi>
+
 let init id : Model * Cmd<Msg> =
     let model = {
-                  Route = String.Empty
+                  SecurityTokenFile = String.Empty
+                  SecurityToken = String.Empty
+                  LoginResult = String.Empty
                   InputUsr = String.Empty
                   InputPsw = String.Empty
                   Id = id
@@ -50,13 +62,22 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | SetPswInput value -> { model with InputPsw = value }, Cmd.none
 
     | SendUsrPswToServer ->
-        let buttonClickEvent = SharedValues.create model.Route model.InputUsr model.InputPsw
-        let cmd = Cmd.OfAsync.perform getCredentialsApi.getCredentials buttonClickEvent GetRouteUsrPsw
+        let buttonClickEvent = SharedCredentialValues.create model.LoginResult model.InputUsr model.InputPsw
+        let cmd = Cmd.OfAsync.perform getCredentialsApi.getCredentials buttonClickEvent GetCredentials
         model, cmd
 
-    | GetRouteUsrPsw value -> { model with Route = value.Route; InputUsr = value.Usr; InputPsw = value.Psw }, Cmd.none 
+    | GetCredentials value -> {
+                                 model with LoginResult = value.LoginResult; InputUsr = value.Usr; InputPsw = value.Psw
+                              }, Cmd.none
 
-let view (model: Model) (dispatch: Msg -> unit) = 
+    | AskServerForDeletingSecurityTokenFile ->
+        let sendEvent = DeleteSecurityTokenFile.create true 
+        let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent Dummy
+        model, cmd
+
+    | Dummy _ -> model, Cmd.none
+
+let view (model: Model) (dispatch: Msg -> unit) securityToken = 
 
     let errorMsg1 = "Buď uživatelské jméno anebo heslo je neplatné."
     let errorMsg2 = "Prosím zadej údaje znovu."
@@ -82,14 +103,14 @@ let view (model: Model) (dispatch: Msg -> unit) =
                 ]
         ]                      
 
-    let inputElementUsr proponChange =
+    let inputElementUsr =
         Html.input [          
             prop.type' "text"
             prop.id "userNameID"
             prop.name "userName"            
             prop.placeholder "Uživatelské jméno"
             prop.value model.InputUsr
-            proponChange
+            prop.onChange (fun (ev: string) -> SetUsrInput ev |> dispatch)
             prop.style
                 [
                   style.width(200)
@@ -98,35 +119,83 @@ let view (model: Model) (dispatch: Msg -> unit) =
             prop.autoFocus true
         ]
         
-    let inputElementPsw proponChange =
+    let inputElementPsw =
         Html.input [            
              prop.type' "password"
              prop.id "passWID"
              prop.name "passW"
              prop.placeholder "Heslo"
              prop.value model.InputPsw
-             proponChange 
+             prop.onChange (fun (ev: string) -> SetPswInput ev |> dispatch)  
              prop.style
                  [
                    style.width(200)
                    style.fontFamily "sans-serif"
                  ]                   ]   
 
-    match model.Route with
-    | "CMSRozcestnik" -> contentCMSRozcestnik()
-    | "Invalid"       -> 
-                         contentLogin
-                         <| submitInput
-                         <| inputElementUsr (prop.onChange (fun (ev: string) -> SetUsrInput ev |> dispatch)) 
-                         <| inputElementPsw (prop.onChange (fun (ev: string) -> SetPswInput ev |> dispatch))       
-                         <| (errorMsg1, errorMsg2)
-                         <| false
-                         <| (dispatch: Msg -> unit)                         
-    | _               ->
-                        contentLogin
-                        <| submitInput                        
-                        <| inputElementUsr (prop.onChange (fun (ev: string) -> SetUsrInput ev |> dispatch)) 
-                        <| inputElementPsw (prop.onChange (fun (ev: string) -> SetPswInput ev |> dispatch))                       
-                        <| (String.Empty, String.Empty)
-                        <| true
-                        <| (dispatch: Msg -> unit)
+    let myLogin() =
+
+        let deleteSecurityTokenFile askServerForDeletingSecurityTokenFile =
+            Html.div [
+               Html.form [
+                   prop.action (toHash (Router.Home))
+                   prop.children [
+                       Html.input [
+                           prop.type' "submit"
+                           prop.value "Log-off"
+                           prop.id "Button2"
+                           prop.onClick (fun _ -> dispatch askServerForDeletingSecurityTokenFile)
+                           prop.style
+                               [
+                                 style.width(200)
+                                 style.fontWeight.bold
+                                 style.fontSize(16) //font-size: large
+                                 style.color.blue
+                                 style.fontFamily "sans-serif"
+                               ]
+                       ]
+                   ]                   
+               ]
+
+
+               (*
+               Html.button [
+                   prop.type' "button"
+                   prop.text "Log-off"
+                   prop.id "Button2"                                                                           
+                   prop.onClick (fun _ -> dispatch askServerForDeletingSecurityTokenFile)
+                   prop.style
+                       [
+                         style.height(50)
+                         style.width(200)
+                         style.fontWeight.bold
+                         style.fontSize(16) //font-size: large
+                         style.color.blue
+                         style.fontFamily "sans-serif"
+                       ]
+               ]
+               *)
+            ]
+            
+        match model.LoginResult with
+        | "CMSRozcestnik" -> contentCMSRozcestnik (deleteSecurityTokenFile AskServerForDeletingSecurityTokenFile)
+        | "Invalid"       ->
+                             contentLogin
+                             <| submitInput
+                             <| inputElementUsr 
+                             <| inputElementPsw       
+                             <| (errorMsg1, errorMsg2)
+                             <| false
+                             <| (dispatch: Msg -> unit)                         
+        | _               ->
+                            contentLogin
+                            <| submitInput                        
+                            <| inputElementUsr 
+                            <| inputElementPsw                    
+                            <| (String.Empty, String.Empty)
+                            <| true
+                            <| (dispatch: Msg -> unit)
+
+    match securityToken with
+    | "securityToken" -> contentMaintenance()
+    | _               -> myLogin() 

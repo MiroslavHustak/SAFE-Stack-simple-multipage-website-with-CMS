@@ -4,7 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="SharedRecords.fs" />
+    <Compile Include="SharedTypes.fs" />
+    <Compile Include="SharedTypesAndRecords.fs" />
     <Compile Include="Shared.fs" />
   </ItemGroup>
   <ItemGroup />

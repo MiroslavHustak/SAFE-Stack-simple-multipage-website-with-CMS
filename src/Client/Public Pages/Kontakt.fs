@@ -6,11 +6,12 @@ open Feliz
 open Fable.Remoting.Client
 
 open Shared
-open SharedRecords
+open SharedTypesAndRecords
 
 open Layout
 open Records
 open ContentKontakt
+open ContentMaintenance
 
 open Feliz
 
@@ -22,7 +23,7 @@ type Model =
     }
 
 type Msg =   
-    | SendKontaktValuesToServer 
+    | AskServerForKontaktValues 
     | GetKontaktValues of GetKontaktValues    
 
 let sendDeserialisedKontaktValues =
@@ -47,12 +48,12 @@ let init id : Model * Cmd<Msg> =
             }      
         Id = id
       }
-    model, Cmd.ofMsg SendKontaktValuesToServer
+    model, Cmd.ofMsg AskServerForKontaktValues
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         
     match msg with       
-        | SendKontaktValuesToServer ->
+        | AskServerForKontaktValues ->
              let loadEvent = SharedDeserialisedKontaktValues.create model.KontaktInputValues
              let cmd = Cmd.OfAsync.perform sendDeserialisedKontaktValues.sendDeserialisedKontaktValues loadEvent GetKontaktValues
              model, cmd            
@@ -64,7 +65,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                                                   }
                                     }, Cmd.none    
  
-let view (model: Model) (dispatch: Msg -> unit) links =
+let view (model: Model) (dispatch: Msg -> unit) links securityToken =
     
     let kontaktRecord =
        {
@@ -74,8 +75,6 @@ let view (model: Model) (dispatch: Msg -> unit) links =
          Nenajdete = prop.className "normal"
          Kontakt = prop.className "current"
        }
-
-    
 
     let kontaktHtml =
     
@@ -238,7 +237,10 @@ let view (model: Model) (dispatch: Msg -> unit) links =
             ]
         ]      
 
-    layout <| kontaktHtml <| kontaktRecord <| links
+    
+    match securityToken with
+    | "securityToken" -> layout <| kontaktHtml <| kontaktRecord <| links //contentMaintenance()
+    | _ -> layout <| kontaktHtml <| kontaktRecord <| links
 
 
 

@@ -13,7 +13,8 @@ type Route =
     | Cenik of int
     | Nenajdete of int
     | Kontakt of int
-    | Login of int  
+    | Login of int
+    | Maintenance 
     | CMSRozcestnik of int
     | CMSCenik of int
     | CMSKontakt of int
@@ -26,7 +27,8 @@ let toHash (route : Route) =
     | Cenik id -> "#cenik" </> id
     | Nenajdete id -> "#nenajdete" </> id
     | Kontakt id -> "#kontakt" </> id
-    | Login id -> "#login" </> id   
+    | Login id -> "#login" </> id
+    | Maintenance -> "#maintenance"   
     | CMSRozcestnik id -> "#cmsRozcestnik" </> id
     | CMSCenik id -> "#cmsCenik" </> id
     | CMSKontakt id -> "#cmsKontakt" </> id
@@ -42,7 +44,8 @@ let routeParser : Parser<Route -> Route, Route> =
             map (fun domainId -> Route.Sluzby domainId) (s "sluzby" </> i32)
             map (fun domainId -> Route.Nenajdete domainId) (s "nenajdete" </> i32)
             map (fun domainId -> Route.Kontakt domainId) (s "kontakt" </> i32)
-            map (fun domainId -> Route.Login domainId) (s "login" </> i32)            
+            map (fun domainId -> Route.Login domainId) (s "login" </> i32)
+            map Route.Maintenance (s "maintenance")
             map (fun domainId -> Route.CMSRozcestnik domainId) (s "cmsRozcestnik" </> i32)
             map (fun domainId -> Route.CMSCenik domainId) (s "cmsCenik" </> i32)
             map (fun domainId -> Route.CMSKontakt domainId) (s "cmsKontakt" </> i32)

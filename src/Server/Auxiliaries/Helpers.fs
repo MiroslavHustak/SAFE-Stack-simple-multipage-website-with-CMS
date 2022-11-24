@@ -29,7 +29,7 @@ open ROP_Functions
              | TryParserInt.Int i -> f Some i
              | _                  -> None     
 
-                       
+    //Vsechny serializace dat povinne do trywith bloku (a jeste overit Option.ofObj, kdyby nahodou tam byl nullable typ) 
     module Serialisation = 
 
          let serialize record xmlFile = 
@@ -44,6 +44,7 @@ open ROP_Functions
              use stream = File.Create(filepath)   
              xmlSerializer.WriteObject(stream, JsonConvert.SerializeObject(record))            
 
+    //Vsechny deserializace dat povinne do trywith bloku (a jeste overit Option.ofObj, kdyby nahodou tam byl nullable typ)  
     module Deserialisation =       
               
        let deserialize xmlFile = 

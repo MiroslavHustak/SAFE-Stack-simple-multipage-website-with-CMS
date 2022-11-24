@@ -9,6 +9,7 @@ open Shared
 open Layout
 open Records
 open ContentSluzby
+open ContentMaintenance
 
 type Model =
     {      
@@ -18,11 +19,6 @@ type Model =
 type Msg =
     | DummyMsg
 
-let todosApi =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IGetApi>
-
 let init id : Model * Cmd<Msg> =
     let model = { Id = id }
     model, Cmd.none
@@ -30,7 +26,7 @@ let init id : Model * Cmd<Msg> =
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =  model, Cmd.none
    
 
-let view (model: Model) (dispatch: Msg -> unit) links =
+let view (model: Model) (dispatch: Msg -> unit) links securityToken =
 
     let sluzbyRecord =
        {
@@ -41,4 +37,7 @@ let view (model: Model) (dispatch: Msg -> unit) links =
          Kontakt = prop.className "normal"
        }
 
-    layout <| contentSluzby() <| sluzbyRecord <| links
+    match securityToken with
+    | "securityToken" -> layout <| contentSluzby() <| sluzbyRecord <| links //contentMaintenance()
+    | _ -> layout <| contentSluzby() <| sluzbyRecord <| links
+    

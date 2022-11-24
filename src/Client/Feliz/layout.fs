@@ -5,7 +5,7 @@ open Feliz
 
 open Router
 open Records
-open SharedRecords
+open SharedTypesAndRecords
 
 let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameValues) =
 
@@ -302,10 +302,7 @@ let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameVal
                     ]
                 ]
             ]
-        ]        
-        Html.div [
-            Html.br []
-        ] 
+        ]     
     ]
 
 let layout render (pageRecord: MyCssClass) links =
