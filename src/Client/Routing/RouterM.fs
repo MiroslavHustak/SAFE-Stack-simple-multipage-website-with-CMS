@@ -3,7 +3,8 @@
 //Created by Maxime Mangel:
 //https://stackoverflow.com/users/2911775/maxime-mangel
 
-module Router
+[<RequireQualifiedAccess>]
+module RouterM
 
 let inline (</>) a b = a + "/" + string b
 
@@ -14,7 +15,8 @@ type Route =
     | Nenajdete of int
     | Kontakt of int
     | Login of int
-    | Maintenance 
+    | Logout //zatim nevyuzivano
+    | Maintenance  //zatim nevyuzivano
     | CMSRozcestnik of int
     | CMSCenik of int
     | CMSKontakt of int
@@ -28,7 +30,8 @@ let toHash (route : Route) =
     | Nenajdete id -> "#nenajdete" </> id
     | Kontakt id -> "#kontakt" </> id
     | Login id -> "#login" </> id
-    | Maintenance -> "#maintenance"   
+    | Logout -> "#home" //zatim nevyuzivano
+    | Maintenance -> "#maintenance"   //zatim nevyuzivano
     | CMSRozcestnik id -> "#cmsRozcestnik" </> id
     | CMSCenik id -> "#cmsCenik" </> id
     | CMSKontakt id -> "#cmsKontakt" </> id
@@ -45,7 +48,8 @@ let routeParser : Parser<Route -> Route, Route> =
             map (fun domainId -> Route.Nenajdete domainId) (s "nenajdete" </> i32)
             map (fun domainId -> Route.Kontakt domainId) (s "kontakt" </> i32)
             map (fun domainId -> Route.Login domainId) (s "login" </> i32)
-            map Route.Maintenance (s "maintenance")
+            map Route.Logout (s "home") //zatim nevyuzivano
+            map Route.Maintenance (s "maintenance") //zatim nevyuzivano
             map (fun domainId -> Route.CMSRozcestnik domainId) (s "cmsRozcestnik" </> i32)
             map (fun domainId -> Route.CMSCenik domainId) (s "cmsCenik" </> i32)
             map (fun domainId -> Route.CMSKontakt domainId) (s "cmsKontakt" </> i32)

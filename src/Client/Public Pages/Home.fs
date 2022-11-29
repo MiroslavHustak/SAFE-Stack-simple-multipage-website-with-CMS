@@ -1,17 +1,13 @@
 module Home
 
-open Elmish
 open Feliz
+open Elmish
 open Fable.Remoting.Client
 
-open Shared
-
 open Records
-open Layout
-open Router
 
+open Layout
 open ContentHome
-open ContentMaintenance
 
 type Model =
     {        
@@ -27,7 +23,7 @@ let init () : Model * Cmd<Msg> =
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none
 
-let view (model: Model) (dispatch: Msg -> unit) links securityToken =
+let view (model: Model) (dispatch: Msg -> unit) links =
 
    let homeRecord =
       {
@@ -37,8 +33,6 @@ let view (model: Model) (dispatch: Msg -> unit) links securityToken =
         Nenajdete = prop.className "normal"
         Kontakt = prop.className "normal"
       }
-      //nahradit asi bool hodnotou ofledne securityTokenFile  nebo oboji 
-   match securityToken with
-   | "securityToken" -> layout <| contentHome() <| homeRecord <| links //contentMaintenance()
-   | _ -> layout <| contentHome() <| homeRecord <| links
+
+   layout <| contentHome() <| homeRecord <| links
    

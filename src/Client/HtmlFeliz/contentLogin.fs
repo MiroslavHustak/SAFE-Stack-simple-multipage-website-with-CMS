@@ -1,10 +1,9 @@
 module ContentLogin
 
 open Feliz
-open Router
 
 //kompletni konvertovany html kod, zde se nepouziva layout
-let contentLogin submitInput inputElementUsr inputElementPsw (errorMsg:string*string) hiddenValue dispatch = 
+let contentLogin submitInput inputElementUsr inputElementPsw (errorMsg: string*string) hiddenValue dispatch = 
 
     Html.html [
         prop.xmlns "http://www.w3.org/1999/xhtml"

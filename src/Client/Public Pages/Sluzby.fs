@@ -1,7 +1,7 @@
 module Sluzby
 
-open Elmish
 open Feliz
+open Elmish
 open Fable.Remoting.Client
 
 open Shared
@@ -23,10 +23,9 @@ let init id : Model * Cmd<Msg> =
     let model = { Id = id }
     model, Cmd.none
 
-let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =  model, Cmd.none
-   
+let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =  model, Cmd.none   
 
-let view (model: Model) (dispatch: Msg -> unit) links securityToken =
+let view (model: Model) (dispatch: Msg -> unit) links =
 
     let sluzbyRecord =
        {
@@ -37,7 +36,5 @@ let view (model: Model) (dispatch: Msg -> unit) links securityToken =
          Kontakt = prop.className "normal"
        }
 
-    match securityToken with
-    | "securityToken" -> layout <| contentSluzby() <| sluzbyRecord <| links //contentMaintenance()
-    | _ -> layout <| contentSluzby() <| sluzbyRecord <| links
+    layout <| contentSluzby() <| sluzbyRecord <| links
     

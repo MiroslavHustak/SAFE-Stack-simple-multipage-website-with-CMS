@@ -1,18 +1,10 @@
 namespace SharedTypes
 
-type GetCredentials =
-    {
-        LoginResult: string
-        Usr: string
-        Psw: string
-    }
+type LoginInfo = { Username: string; Password: string }
 
-type GetSecurityToken =
-    {
-        SecurityToken: string
-    }
+type GetSecurityTokenFile = { GetSecurityTokenFile: bool } 
 
-type DeleteSecurityTokenFile = { DeleteSecurityTokenFile: bool } 
+type DeleteSecurityTokenFile = { DeleteSecurityTokenFile: bool }
 
 type GetCenikValues =
     {
@@ -38,18 +30,18 @@ type GetLinkAndLinkNameValues =
 
 type IGetApi =
     {
-      getCredentials: GetCredentials -> Async<GetCredentials>
-      deleteSecurityTokenFile: DeleteSecurityTokenFile -> Async<DeleteSecurityTokenFile>
-      sendSecurityToken: GetSecurityToken -> Async<GetSecurityToken>
-      getCenikValues: GetCenikValues -> Async<GetCenikValues>
-      sendOldCenikValues: GetCenikValues -> Async<GetCenikValues>
-      sendDeserialisedCenikValues: GetCenikValues -> Async<GetCenikValues>
-      getKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
-      sendOldKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
-      sendDeserialisedKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
-      getLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
-      sendOldLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
-      sendDeserialisedLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
+        login : LoginInfo -> Async<SharedApi.LoginResult> 
+        getSecurityTokenFile: GetSecurityTokenFile -> Async<GetSecurityTokenFile>
+        deleteSecurityTokenFile: DeleteSecurityTokenFile -> Async<DeleteSecurityTokenFile>
+        getCenikValues: GetCenikValues -> Async<GetCenikValues>
+        sendOldCenikValues: GetCenikValues -> Async<GetCenikValues>
+        sendDeserialisedCenikValues: GetCenikValues -> Async<GetCenikValues>
+        getKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
+        sendOldKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
+        sendDeserialisedKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
+        getLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
+        sendOldLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
+        sendDeserialisedLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
     }
 
 

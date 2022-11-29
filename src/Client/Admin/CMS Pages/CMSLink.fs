@@ -10,7 +10,6 @@ open SharedTypes
 open System
 
 open Layout
-open Router
 open ContentCMSKontakt
 open ContentCMSForbidden
 
@@ -143,7 +142,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                             }
         },  Cmd.none
    
-let view (model: Model) (dispatch: Msg -> unit) securityToken = 
+let view (model: Model) (dispatch: Msg -> unit) = 
 
     let completeContent = 
         Html.html [
@@ -180,7 +179,7 @@ let view (model: Model) (dispatch: Msg -> unit) securityToken =
                 Html.body [
                     Html.form [                    
                         prop.method "get"
-                        prop.action (toHash (Router.CMSKontakt 8)) 
+                        prop.action (RouterM.toHash (RouterM.CMSLink 9)) 
                         prop.children [                        
                             Html.br []
                             Html.br []
@@ -442,7 +441,7 @@ let view (model: Model) (dispatch: Msg -> unit) securityToken =
                                                                     style.fontFamily "sans-serif"
                                                                     style.fontWeight.bold
                                                                 ]
-                                                            prop.href "#cmsRozcestnik/6"
+                                                            prop.href (RouterM.toHash (RouterM.CMSRozcestnik 6))
                                                             prop.children [
                                                                 Html.text "Návrat na rozcestník"
                                                             ]
@@ -488,7 +487,7 @@ let view (model: Model) (dispatch: Msg -> unit) securityToken =
             ]
         ]
 
-    match securityToken.SecurityToken = "securityToken" with //model.GetCredentials.SecurityTokenFile with credentials.SecurityTokenFile
+    match true with //model.GetCredentials.SecurityTokenFile with credentials.SecurityTokenFile
     | true -> completeContent
     | false -> contentCMSForbidden()
 

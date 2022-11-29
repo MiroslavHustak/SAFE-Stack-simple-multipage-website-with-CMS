@@ -11,7 +11,7 @@ open Layout
 open Records
 open ContentCMSRozcestnik
 open ContentCMSForbidden
-open Router
+open Login
 
 type Model =
     {        
@@ -21,7 +21,12 @@ type Model =
 
 type Msg =
     | AskServerForDeletingSecurityTokenFile
-    | Dummy of DeleteSecurityTokenFile
+    | Dummy of DeleteSecurityTokenFile    
+
+let getVerifiedSecurityToken =
+    Remoting.createApi ()
+    |> Remoting.withRouteBuilder Route.builder
+    |> Remoting.buildProxy<IGetApi>
 
 let deleteSecurityTokenFileApi =
     Remoting.createApi ()
@@ -29,7 +34,10 @@ let deleteSecurityTokenFileApi =
     |> Remoting.buildProxy<IGetApi>
 
 let init id : Model * Cmd<Msg> =
-    let model = { Id = id }
+    let model = {
+                    Id = id
+                }
+
     //let model = { Dummy = () } 
     model, Cmd.none
 
@@ -39,14 +47,15 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         let sendEvent = DeleteSecurityTokenFile.create true 
         let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent Dummy
         model, cmd
+                               
     | Dummy _ -> model, Cmd.none
 
-let view (model: Model) (dispatch: Msg -> unit) (securityToken: GetSecurityToken) =
+let view (model: Model) (dispatch: Msg -> unit) =
 
     let deleteSecurityTokenFile askServerForDeletingSecurityTokenFile =
          Html.div [
             Html.form [
-                prop.action (toHash (Router.Home))
+                prop.action (RouterM.toHash (RouterM.Home))
                 prop.children [
                     Html.input [
                         prop.type' "submit"
@@ -66,7 +75,6 @@ let view (model: Model) (dispatch: Msg -> unit) (securityToken: GetSecurityToken
                 ]                   
             ]
 
-
             (*
             Html.button [
                 prop.type' "button"
@@ -84,11 +92,15 @@ let view (model: Model) (dispatch: Msg -> unit) (securityToken: GetSecurityToken
                     ]
             ]
             *)
-         ]
+         ]      
 
+    contentCMSRozcestnik (deleteSecurityTokenFile AskServerForDeletingSecurityTokenFile) 
+         (*
+    //match securityToken1 = ziskana hodnota z Serveru with
+    match model.SecurityToken with 
+    | NoError ->  //dispatch AskServerForDeletingSecurityTokenFile 
+                             contentCMSRozcestnik (deleteSecurityTokenFile AskServerForDeletingSecurityTokenFile) model.SecurityToken1
+    | AuthenticationError -> contentCMSForbidden()
+    *)
 
-    match securityToken.SecurityToken = "securityToken" with 
-    | true ->  //dispatch AskServerForDeletingSecurityTokenFile 
-               contentCMSRozcestnik (deleteSecurityTokenFile AskServerForDeletingSecurityTokenFile)
-    | false -> contentCMSForbidden()
-
+   

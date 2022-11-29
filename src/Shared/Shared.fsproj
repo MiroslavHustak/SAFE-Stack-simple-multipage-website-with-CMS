@@ -4,15 +4,15 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="SharedSecurityTypes.fs" />
+    <Compile Include="SharedApi.fs" />
     <Compile Include="SharedTypes.fs" />
     <Compile Include="Shared.fs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <PackageReference Include="Fable.Form.Simple" Version="3.1.0" />
     <PackageReference Include="Fable.Form.Simple.Bulma" Version="3.0.0" />
     <PackageReference Include="Fable.React" Version="7.4.3" />
+    <PackageReference Include="Feliz.Router" Version="3.8.0" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -158,22 +158,19 @@
         <Content Include="public\Content\images\under-maintenance.jpg" />
         <Content Include="public\Content\images\Uvodni foto.png" />
         <Compile Include="Types\Records.fs" />
-        <Compile Include="Types\Address.fs" />
-        <Compile Include="Types\EmailAddress.fs" />
-        <Compile Include="Types\User.fs" />
-        <Compile Include="Routing\Router.fs" />       
-        <Compile Include="Feliz\layout.fs" />       
-        <Compile Include="Feliz\contentMaintenance.fs" />       
-        <Compile Include="Feliz\contentCMSForbidden.fs" />       
-        <Compile Include="Feliz\contentCMSKontakt.fs" />       
-        <Compile Include="Feliz\contentCMSCenik.fs" />       
-        <Compile Include="Feliz\contentCMSRozcestnik.fs" />       
-        <Compile Include="Feliz\contentLogin.fs" />       
-        <Compile Include="Feliz\contentKontakt.fs" />       
-        <Compile Include="Feliz\contentNenajdete.fs" />       
-        <Compile Include="Feliz\contentCenik.fs" />       
-        <Compile Include="Feliz\contentSluzby.fs" />       
-        <Compile Include="Feliz\contentHome.fs" />       
+        <Compile Include="Routing\RouterM.fs" />       
+        <Compile Include="HtmlFeliz\layout.fs" />       
+        <Compile Include="HtmlFeliz\contentMaintenance.fs" />       
+        <Compile Include="HtmlFeliz\contentCMSForbidden.fs" />       
+        <Compile Include="HtmlFeliz\contentCMSKontakt.fs" />       
+        <Compile Include="HtmlFeliz\contentCMSCenik.fs" />       
+        <Compile Include="HtmlFeliz\contentCMSRozcestnik.fs" />       
+        <Compile Include="HtmlFeliz\contentLogin.fs" />       
+        <Compile Include="HtmlFeliz\contentKontakt.fs" />       
+        <Compile Include="HtmlFeliz\contentNenajdete.fs" />       
+        <Compile Include="HtmlFeliz\contentCenik.fs" />       
+        <Compile Include="HtmlFeliz\contentSluzby.fs" />       
+        <Compile Include="HtmlFeliz\contentHome.fs" />       
         <Compile Include="Public Pages\Maintenance.fs" />       
         <Compile Include="Public Pages\Login.fs" />       
         <Compile Include="Public Pages\Kontakt.fs" />       
@@ -191,7 +188,8 @@
     <ItemGroup>     
       <PackageReference Include="Fable.Form.Simple" Version="3.1.0" />     
       <PackageReference Include="Fable.Form.Simple.Bulma" Version="3.0.0" />     
-      <PackageReference Include="Fable.Reactstrap" Version="0.5.1" />
+      <PackageReference Include="Fable.Reactstrap" Version="0.5.1" />     
+      <PackageReference Include="Feliz.Router" Version="3.8.0" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Shared\Shared.fsproj" />

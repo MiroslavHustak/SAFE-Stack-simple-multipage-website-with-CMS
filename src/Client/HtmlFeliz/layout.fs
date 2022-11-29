@@ -3,7 +3,6 @@ module Layout
 open Elmish
 open Feliz
 
-open Router
 open Records
 open SharedTypes
 
@@ -21,7 +20,7 @@ let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameVal
                             prop.children [
                                 Html.h1 [
                                     Html.a [
-                                        prop.href (toHash Router.Home)
+                                        prop.href (RouterM.toHash RouterM.Home)
                                         prop.children [
                                             Html.img [
                                                 prop.src "/Content/images/templatemo_logo.png"
@@ -53,42 +52,42 @@ let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameVal
                                 Html.li [
                                     Html.a [
                                         pageRecord.Home                           
-                                        prop.href (toHash Router.Home)
+                                        prop.href (RouterM.toHash RouterM.Home)
                                         prop.text "O mně"
                                     ]
                                 ]
                                 Html.li [
                                     Html.a [
                                         pageRecord.Sluzby 
-                                        prop.href (toHash (Router.Sluzby 1))                             
+                                        prop.href (RouterM.toHash (RouterM.Sluzby 1))                             
                                         prop.text "Služby"
                                     ]
                                 ]
                                 Html.li [
                                     Html.a [
                                         pageRecord.Cenik 
-                                        prop.href (toHash (Router.Cenik 2))   
+                                        prop.href (RouterM.toHash (RouterM.Cenik 2))   
                                         prop.text "Ceník"                                    
                                     ]
                                 ]
                                 Html.li [
                                     Html.a [
                                         pageRecord.Nenajdete
-                                        prop.href (toHash (Router.Nenajdete 3))  
+                                        prop.href (RouterM.toHash (RouterM.Nenajdete 3))  
                                         prop.text "Co u mě nenajdete"
                                     ]
                                 ]
                                 Html.li [
                                     Html.a [
                                         pageRecord.Kontakt
-                                        prop.href (toHash (Router.Kontakt 4))  
+                                        prop.href (RouterM.toHash (RouterM.Kontakt 4))  
                                         prop.text "Kontakt"
                                     ]
                                 ]
                                 Html.li [
                                     Html.a [
                                         prop.className "last"
-                                        prop.href (toHash (Router.Login 5))                                       
+                                        prop.href (RouterM.toHash (RouterM.Login 5))                                       
                                         prop.text "Login"
                                     ]
                                 ]
@@ -254,7 +253,13 @@ let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameVal
                             prop.target "_blank"
                             prop.text "SAFE Stack"
                         ]
-                        Html.text " and F#."
+                        Html.text ", " 
+                        Html.a [
+                            prop.href "https://zaid-ajaj.github.io/the-elmish-book/#/"
+                            prop.target "_blank"
+                            prop.text "Elmish"
+                               ]
+                        Html.text " and F#." 
                     ]
                 ]
                 Html.div [

@@ -1,7 +1,7 @@
 module Maintenance
 
-open Elmish
 open Feliz
+open Elmish
 open Fable.Remoting.Client
 
 open Shared

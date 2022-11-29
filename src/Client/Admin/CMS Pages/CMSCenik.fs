@@ -10,7 +10,6 @@ open SharedTypes
 open System
 
 open Layout
-open Router
 open ContentCMSCenik
 open ContentHome
 open ContentCMSForbidden
@@ -46,7 +45,12 @@ type Msg =
     | SendOldCenikValuesToServer
     | GetCenikValues of GetCenikValues
     | GetOldCenikValues of GetCenikValues
-        
+
+let getVerifiedSecurityToken =
+    Remoting.createApi ()
+    |> Remoting.withRouteBuilder Route.builder
+    |> Remoting.buildProxy<IGetApi>
+    
 let getCenikValuesApi =
     Remoting.createApi ()
     |> Remoting.withRouteBuilder Route.builder
@@ -66,7 +70,7 @@ let init id : Model * Cmd<Msg> =
                 V004 = ""; V005 = ""; V006 = "";
                 V007 = ""; V008 = ""; V009 = ""
             }
-       
+
         V001Input = ""
         V002Input = ""
         V003Input = ""
@@ -105,7 +109,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                                               <| model.V004Input <| model.V005Input <| model.V006Input
                                               <| model.V007Input <| model.V008Input <| model.V009Input   
         let cmd = Cmd.OfAsync.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues
-        model, cmd   
+        model, cmd
 
     | GetCenikValues valueNew ->
         {
@@ -129,7 +133,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                           }
         },  Cmd.none  
    
-let view (model: Model) (dispatch: Msg -> unit) (securityToken: GetSecurityToken) =
+let view (model: Model) (dispatch: Msg -> unit) =
 
     let completeContent() = 
         Html.html [
@@ -166,7 +170,7 @@ let view (model: Model) (dispatch: Msg -> unit) (securityToken: GetSecurityToken
                 Html.body [
                     Html.form [                    
                         prop.method "get"
-                        prop.action (toHash (Router.CMSCenik 7)) 
+                        prop.action (RouterM.toHash (RouterM.CMSCenik 7)) 
                         prop.children [                        
                             Html.br []
                             Html.br []
@@ -589,7 +593,7 @@ let view (model: Model) (dispatch: Msg -> unit) (securityToken: GetSecurityToken
                                                                     style.fontFamily "sans-serif"
                                                                     style.fontWeight.bold
                                                                 ]
-                                                            prop.href "#cmsRozcestnik/6"
+                                                            prop.href (RouterM.toHash (RouterM.CMSRozcestnik 6)) //"#cmsRozcestnik/6"
                                                             prop.children [
                                                                 Html.text "Návrat na rozcestník"
                                                             ]
@@ -638,6 +642,13 @@ let view (model: Model) (dispatch: Msg -> unit) (securityToken: GetSecurityToken
             ]
         ]    
 
-    match securityToken.SecurityToken = "securityToken" with //model.GetCredentials.SecurityTokenFile with credentials.SecurityTokenFile
+    completeContent()
+    (*
+    match model.AuthenticationError with 
+       | NoError -> completeContent()                              
+       | AuthenticationError -> contentCMSForbidden()
+
+    match true with //model.GetCredentials.SecurityTokenFile with credentials.SecurityTokenFile
     | true -> completeContent()
     | false -> contentCMSForbidden()
+    *)

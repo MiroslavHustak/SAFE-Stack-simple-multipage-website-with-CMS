@@ -25,7 +25,7 @@ let init id : Model * Cmd<Msg> =
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =  model, Cmd.none
 
-let view (model: Model) (dispatch: Msg -> unit) links securityToken =
+let view (model: Model) (dispatch: Msg -> unit) links =
 
     let nenajdeteRecord =
        {
@@ -36,7 +36,7 @@ let view (model: Model) (dispatch: Msg -> unit) links securityToken =
          Kontakt = prop.className "normal"
        }
            
-    match securityToken with
+    match "" with
     | "securityToken" -> layout <| contentNenajdete() <| nenajdeteRecord <| links //contentMaintenance()
     | _ -> layout <| contentNenajdete() <| nenajdeteRecord <| links
 

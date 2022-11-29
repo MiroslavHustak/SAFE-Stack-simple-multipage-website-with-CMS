@@ -1,107 +1,93 @@
 module Server
 
+open System
+open System.IO
+
+open Saturn
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
-open Saturn
 
 open Shared
 open SharedTypes
 
-open System
+open Security
 
-open Router
+open Helpers
+open ROP_Functions
 open Helpers.CopyingFiles
 open Helpers.Serialisation
 open Helpers.Deserialisation
 
-open ROP_Functions
-open System.IO
+let (>>=) condition nextFunc = 
+    match condition with
+    | false -> SharedApi.UsernameOrPasswordIncorrect  
+    | true  -> nextFunc() 
 
-let securityTokenFile = Path.GetFullPath("securityToken.txt")
-let securityToken = "securityToken"//prozatim, bude to generovane, tra posilat
+type MyPatternBuilder = MyPatternBuilder with            
+    member _.Bind(condition, nextFunc) = (>>=) <| condition <| nextFunc
+    member _.Using x = x
+    member _.Return x = x
 
-let private verifyCredentials (credentials: GetCredentials) =
+let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>
 
-        let neco1  =
-            Security.authorizeAny <| fun user -> credentials
-                
-                         
-
-        match SharedCredentialValues.isValid credentials.Usr credentials.Psw with
-        | true  ->                 
-                   let loginResult = 
-                       match credentials.Usr, credentials.Psw with
-                       | "Hanka", "qwe" -> //trywith
-                                                     
-                                                     use sw1 = new StreamWriter(Path.GetFullPath(securityTokenFile))
-                                                               //|> Option.ofObj  //TODO nevim, cemu tu to nefunguje...
-                                                               //|> optionToGenerics2 "při zápisu pomocí StreamWriter()" (new StreamWriter(String.Empty)) //whatever of the particular type  
-                                                     do sw1.WriteLine("Perhaps this string will come in handy") 
-                                                     "CMSRozcestnik"                       
-                       | _                        -> "Invalid"
-                   Ok(), loginResult
-        | false -> Error "", "Invalid"                  
-
+    MyPatternBuilder    
+         {  
+            let! _ = SharedLoginValues.isValid login.Username login.Password
+            let securityTokenFile = Path.GetFullPath("securityToken.txt")
+                                    |> Option.ofObj
+                                    |> function
+                                        | Some value -> value
+                                        | None ->  //TODO vymysli nejake reseni a hod to vse do ROP a Errors
+                                                   String.Empty 
+            let! _ = login.Username = "q" && login.Password = "q"
+            let result =
+                let accessToken = System.Guid.NewGuid().ToString() //encodeJwt securityToken //TODO
+                use sw = new StreamWriter(Path.GetFullPath(securityTokenFile))
+                         |> Option.ofObj
+                         |> function
+                             | Some value -> value
+                             | None ->  //TODO vymysli nejake reseni a hod to vse do ROP a Errors
+                                        new StreamWriter(Path.GetFullPath(securityTokenFile))  
+                do sw.WriteLine(accessToken) 
+                SharedApi.LoggedIn { Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
+            return result
+         }
+    
  //TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem
 let private verifyCenikValues (cenikValues: GetCenikValues) =
     match SharedCenikValues.isValid () with
     | () -> Ok ()        
-   // | _  -> Error "" 
+    // | _  -> Error "" 
 
-//TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem
+//TODO pripadne pouziti validTokenreby klienta /Tokenltovat s klientem
 let private verifyKontaktValues (kontaktValues: GetKontaktValues) =
    match SharedCenikValues.isValid () with
    | () -> Ok ()        
-  // | _  -> Error ""
+   // | _  -> Error ""
 
 //TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem
 let private verifyLinkAndLinkNameValues (linkValues: GetLinkAndLinkNameValues) =
    match SharedLinkAndLinkNameValues.isValid () with
    | () -> Ok ()        
-  // | _  -> Error ""
+   // | _  -> Error ""
   
 let IGetApi =
     {
-      getCredentials =
-          fun getCredentials ->
-              async
-                  {
-                     let result = 
-                        match verifyCredentials getCredentials with                
-                        | Ok (), loginResult     -> { LoginResult = loginResult; Usr = getCredentials.Usr; Psw = getCredentials.Psw }
-                        // e by se dalo vyuzit pro chybovu hlasku - viz errorMsg, ale tahat to do Loginu je pracne.... proto vyuzivam hodnotu v LoginResult
-                        | (Error e), loginResult -> { LoginResult = loginResult; Usr = String.Empty; Psw = String.Empty }
-                     return result
-                  }
+      login =
+          fun login ->
+              async { return (verifyLogin login) }                 
 
+      getSecurityTokenFile =
+          fun getSecurityTokenFile ->  //TODO try with
+              async { return { GetSecurityTokenFile = File.Exists(Path.GetFullPath("securityToken.txt")) } }              
+      
       deleteSecurityTokenFile =
-          fun deleteSecurityTokenFile ->
+          fun deleteSecurityTokenFile ->  //TODO try with
               async
                   {
                       File.Delete(Path.GetFullPath("securityToken.txt"))
                       return { DeleteSecurityTokenFile = File.Exists(Path.GetFullPath("securityToken.txt")) }
-                  }
-
-      sendSecurityToken =
-          fun _ ->
-            async
-                {
-                   let cond = File.Exists(Path.GetFullPath(securityTokenFile)) 
-                   let securityToken =
-                      
-                       //zakoduj obsah souboru, tj. token
-                       //posli na klienta pro rozkodovani
-                       //odtud pouzij rozkodovaci funkci umistenu na shared                
-                       
-                       match cond with
-                       | true ->  //use sr = new StreamReader(securityTokenFile)
-                                  //sr.ReadLine()
-                                  securityToken
-                       | false -> String.Empty
-                    
-                   return { SecurityToken = securityToken }
-                }
-     
+                  }   
 
       getCenikValues =
           fun getCenikValues ->
@@ -109,7 +95,7 @@ let IGetApi =
                   {
                     let getNewCenikValues: GetCenikValues = 
                         match verifyCenikValues getCenikValues with                
-                        | Ok () -> serialize getCenikValues "jsonCenikValues.xml" 
+                        | Ok () -> serialize getCenikValues "jsonCenikValues.xml"  //TODO try with
                                    {
                                        V001 = getCenikValues.V001; V002 = getCenikValues.V002;
                                        V003 = getCenikValues.V003; V004 = getCenikValues.V004;
@@ -137,7 +123,7 @@ let IGetApi =
                      <| "jsonCenikValues.xml"
                      <| "jsonCenikValuesBackUp.xml"
 
-                     let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml"
+                     let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
                      return sendOldCenikValues
                   } 
 
@@ -146,7 +132,7 @@ let IGetApi =
              async
                  {
                     //vzpomen si na problem s records s odlisnymi fields :-)
-                    let sendCenikValues = deserialize "jsonCenikValues.xml"
+                    let sendCenikValues = deserialize "jsonCenikValues.xml" //TODO try with
                     return sendCenikValues
                  }
 
@@ -156,7 +142,7 @@ let IGetApi =
                   {
                     let getNewKontaktValues: GetKontaktValues = 
                         match verifyKontaktValues getKontaktValues with                
-                        | Ok () -> serialize getKontaktValues "jsonKontaktValues.xml" 
+                        | Ok () -> serialize getKontaktValues "jsonKontaktValues.xml"  //TODO try with
                                    {
                                        V001 = getKontaktValues.V001; V002 = getKontaktValues.V002;
                                        V003 = getKontaktValues.V003; V004 = getKontaktValues.V004;
@@ -182,7 +168,7 @@ let IGetApi =
                     <| "jsonKontaktValues.xml"
                     <| "jsonKontaktValuesBackUp.xml"
 
-                    let sendOldKontaktValues = deserialize "jsonKontaktValuesBackUp.xml"
+                    let sendOldKontaktValues = deserialize "jsonKontaktValuesBackUp.xml" //TODO try with
                     return sendOldKontaktValues
                  } 
 
@@ -190,7 +176,7 @@ let IGetApi =
           fun _ ->
              async
                 {
-                    let sendKontaktValues = deserialize "jsonKontaktValues.xml"
+                    let sendKontaktValues = deserialize "jsonKontaktValues.xml" //TODO try with
                     return sendKontaktValues
                 }
 
@@ -200,7 +186,7 @@ let IGetApi =
                   {
                     let getNewLinkAndLinkNameValues: GetLinkAndLinkNameValues = 
                         match verifyLinkAndLinkNameValues getLinkAndLinkNameValues with                
-                        | Ok () -> serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml" 
+                        | Ok () -> serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"  //TODO try with
                                    {
                                        V001 = getLinkAndLinkNameValues.V001; V002 = getLinkAndLinkNameValues.V002;
                                        V003 = getLinkAndLinkNameValues.V003; V004 = getLinkAndLinkNameValues.V004;
@@ -209,7 +195,7 @@ let IGetApi =
                                        V003n = getLinkAndLinkNameValues.V003n; V004n = getLinkAndLinkNameValues.V004n;
                                        V005n = getLinkAndLinkNameValues.V005n; V006n = "Facebook"
                                    }
-                        |_      ->
+                        | _     ->
                                    {
                                        V001 = String.Empty; V002 = String.Empty;
                                        V003 = String.Empty; V004 = String.Empty;
@@ -230,7 +216,7 @@ let IGetApi =
                     <| "jsonLinkAndLinkNameValues.xml"
                     <| "jsonLinkAndLinkNameValuesBackUp.xml"
 
-                    let sendOldLinkAndLinkNameValues = deserialize "jsonLinkAndLinkNameValuesBackUp.xml"
+                    let sendOldLinkAndLinkNameValues = deserialize "jsonLinkAndLinkNameValuesBackUp.xml" //TODO try with
                     return sendOldLinkAndLinkNameValues
                   } 
 
@@ -238,7 +224,7 @@ let IGetApi =
           fun _ ->
               async
                   {
-                    let sendLinkAndLinkNameValues = deserialize "jsonLinkandLinkNameValues.xml"
+                    let sendLinkAndLinkNameValues = deserialize "jsonLinkandLinkNameValues.xml" //TODO try with
                     return sendLinkAndLinkNameValues
                   }
     }
@@ -250,12 +236,13 @@ let webApp =
     |> Remoting.buildHttpHandler
 
 let app =
-    application {
-        use_router webApp
-        memory_cache
-        use_static "public"
-        use_gzip
-    }
+    application
+        {
+            use_router webApp
+            memory_cache
+            use_static "public"
+            use_gzip
+        }
 
 [<EntryPoint>]
 let main _ =    

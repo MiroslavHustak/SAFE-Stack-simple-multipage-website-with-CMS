@@ -1,7 +1,8 @@
 module ContentCMSForbidden
 
 open Feliz
-open Router
+
+//zatim nevyuzivano
 
 //kompletni konvertovany html kod, zde se nepouziva layout
 let contentCMSForbidden() = 

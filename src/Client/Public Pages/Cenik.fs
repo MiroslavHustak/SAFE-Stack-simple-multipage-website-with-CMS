@@ -1,8 +1,9 @@
 module Cenik
 
 open System
-open Elmish
+
 open Feliz
+open Elmish
 open Fable.Remoting.Client
 
 open Shared
@@ -10,10 +11,6 @@ open SharedTypes
 
 open Layout
 open Records
-open ContentCenik
-open ContentMaintenance
-
-open Feliz
 
 type Model =
     {
@@ -65,7 +62,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                                                   }
                                   }, Cmd.none    
  
-let view (model: Model) (dispatch: Msg -> unit) links securityToken =
+let view (model: Model) (dispatch: Msg -> unit) links =
     
     let cenikRecord =
        {
@@ -205,8 +202,4 @@ let view (model: Model) (dispatch: Msg -> unit) links securityToken =
             ]
         ]
 
-    //layout <| (contentCenik()) <| cenikRecord
-    
-    match securityToken with
-       | "securityToken" -> layout <| cenikHtml <| cenikRecord <| links //contentMaintenance()
-       | _ -> layout <| cenikHtml <| cenikRecord <| links
+    layout <| cenikHtml <| cenikRecord <| links

@@ -13,8 +13,6 @@ open Records
 open ContentKontakt
 open ContentMaintenance
 
-open Feliz
-
 type Model =
     {
         KontaktValues: GetKontaktValues
@@ -65,7 +63,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                                                   }
                                     }, Cmd.none    
  
-let view (model: Model) (dispatch: Msg -> unit) links securityToken =
+let view (model: Model) (dispatch: Msg -> unit) links =
     
     let kontaktRecord =
        {
@@ -235,14 +233,6 @@ let view (model: Model) (dispatch: Msg -> unit) links securityToken =
                     ]
                 ]
             ]
-        ]      
-
+        ]     
     
-    match securityToken with
-    | "securityToken" -> layout <| kontaktHtml <| kontaktRecord <| links //contentMaintenance()
-    | _ -> layout <| kontaktHtml <| kontaktRecord <| links
-
-
-
-
-
+    layout <| kontaktHtml <| kontaktRecord <| links

@@ -3,42 +3,48 @@
 //Created by Maxime Mangel:
 //https://stackoverflow.com/users/2911775/maxime-mangel
 
+[<RequireQualifiedAccess>]
 module App
-
-open Feliz
-open Elmish
-open Fable.React
 
 open System
 
-open Layout
-open Router
-open ContentHome
-open ContentMaintenance
-
-open SharedTypes
+open Elmish
+open Fable.React
+open Feliz.Router //zatim nevyuzito, moznost pouziti Cmd.Navigation
 open Fable.Remoting.Client
-open Shared
 
+open Shared
+open SharedTypes
+
+type ApplicationUser =
+    | FirstTimeRunAnonymous
+    | Anonymous
+    | LoggedIn of SharedApi.User
+
+[<RequireQualifiedAccess>]
 type Page =
     | Home of Home.Model
     | Sluzby of Sluzby.Model
     | Cenik of Cenik.Model
     | Nenajdete of Nenajdete.Model
     | Kontakt of Kontakt.Model
-    | Login of Login.Model
+    | Login of Login.Model 
     | Maintenance of Maintenance.Model 
     | CMSRozcestnik of CMSRozcestnik.Model
     | CMSCenik of CMSCenik.Model
     | CMSKontakt of CMSKontakt.Model
     | CMSLink of CMSLink.Model
     | NotFound
+    | Logout of Home.Model
 
 type Model =
     {
-        ActivePage : Page
-        CurrentRoute : Router.Route option
-        GetSecurityToken: GetSecurityToken
+        ActivePage: Page      
+        CurrentRoute: RouterM.Route option 
+        User: ApplicationUser 
+        user: SharedApi.User
+
+        GetSecurityTokenFile: GetSecurityTokenFile
         DeleteSecurityTokenFile: DeleteSecurityTokenFile
         LinkAndLinkNameValues: GetLinkAndLinkNameValues
         LinkAndLinkNameInputValues: GetLinkAndLinkNameValues
@@ -56,111 +62,147 @@ type Msg =
     | CMSCenikMsg of CMSCenik.Msg
     | CMSKontaktMsg of CMSKontakt.Msg
     | CMSLinkMsg of CMSLink.Msg
+
     | AskServerForLinkAndLinkNameValues 
     | GetLinkAndLinkNameValues of GetLinkAndLinkNameValues
+    | AskServerForSecurityTokenFile
     | AskServerForDeletingSecurityTokenFile
-    | AskServerForSecurityTokens
-    | GetSecurityToken of GetSecurityToken
-    | Dummy of DeleteSecurityTokenFile
+    | GetSecurityTokenFile of GetSecurityTokenFile
+    | DeleteSecurityTokenFile of DeleteSecurityTokenFile
 
-let deleteSecurityTokenFileApi =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IGetApi>
+let private api() = Remoting.createApi ()
+                    |> Remoting.withRouteBuilder Route.builder
+                    |> Remoting.buildProxy<IGetApi>
 
-let sendSavedSecurityTokenApi =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IGetApi>
+let private getSecurityTokenFileApi = api()
+let private deleteSecurityTokenFileApi = api()
+let private sendDeserialisedLinkAndLinkNameValuesApi = api()
 
-let sendDeserialisedLinkAndLinkNameValuesApi =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IGetApi>
+let private cmd1 fn cmd msg = Cmd.batch <| seq { Cmd.map fn cmd; Cmd.ofMsg msg }
+let private cmd2 fn cmd msg msg' = Cmd.batch <| seq { Cmd.map fn cmd; Cmd.ofMsg msg; Cmd.ofMsg msg' }
 
-let private setRoute (optRoute: Router.Route option) model =
+let private setRoute (optRoute: RouterM.Route option) model = 
+                                                 
+    let model =
+        let applicationUser = 
+            match model.GetSecurityTokenFile.GetSecurityTokenFile with
+            | true  -> LoggedIn model.user
+            | false -> Anonymous
 
-    let model = { model with CurrentRoute = optRoute }
+        let currentRoute =
+            match model.GetSecurityTokenFile.GetSecurityTokenFile with
+            | true  -> optRoute
+            | false -> Some RouterM.Route.Home
 
-    //pokud potrebujeme aktivovat neco uz pri spusteni stranek
-    let cmd fn cmd msg = Cmd.batch <| seq { Cmd.map fn cmd; Cmd.ofMsg msg }
-    let cmdCMS fn cmd msg = Cmd.batch <| seq { Cmd.map fn cmd; Cmd.ofMsg msg } //TODO sjednotit
-
-    let cmd1 fn cmd msg msg' = Cmd.batch <| seq { Cmd.map fn cmd; Cmd.ofMsg msg; Cmd.ofMsg msg' }
-
+        {
+            model with CurrentRoute = currentRoute
+                                      user = { Username = "q"; AccessToken = SharedApi.AccessToken ""}
+                                      User = applicationUser                                                                                                                              
+        }                          
+         
+    //let model = { model with CurrentRoute = optRoute }    
+    
     match optRoute with
     | None ->
         { model with ActivePage = Page.NotFound }, Cmd.none
 
-    | Some Router.Route.Home ->         
+    | Some RouterM.Route.Home ->    
+       let (homeModel, homeCmd) = Home.init ()       
+       { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
 
-        let result1() =  
-            let (homeModel, homeCmd) = Home.init ()       
-            { model with ActivePage = Page.Home homeModel }, cmd HomeMsg homeCmd AskServerForLinkAndLinkNameValues //AskServerForDeletingSecurityTokenFile
-        let result2() =  
-            let (maintenanceModel, maintenanceCmd) = Maintenance.init ()
-            { model with ActivePage = Page.Maintenance maintenanceModel }, Cmd.map MaintenanceMsg maintenanceCmd
-
-        match model.DeleteSecurityTokenFile.DeleteSecurityTokenFile with
-        | true -> result1()
-        | false -> result1()       
-
-    | Some (Router.Route.Sluzby sluzbyId) ->
+    | Some (RouterM.Route.Sluzby sluzbyId) ->
         let (sluzbyModel, sluzbyCmd) = Sluzby.init sluzbyId
-        { model with ActivePage = Page.Sluzby sluzbyModel }, cmd SluzbyMsg sluzbyCmd AskServerForLinkAndLinkNameValues //AskServerForDeletingSecurityTokenFile
+        { model with ActivePage = Page.Sluzby sluzbyModel }, cmd1 SluzbyMsg sluzbyCmd AskServerForLinkAndLinkNameValues 
 
-    | Some (Router.Route.Cenik cenikId) ->
+    | Some (RouterM.Route.Cenik cenikId) ->
         let (cenikModel, cenikCmd) = Cenik.init cenikId
-        { model with ActivePage = Page.Cenik cenikModel }, cmd CenikMsg cenikCmd AskServerForLinkAndLinkNameValues //AskServerForDeletingSecurityTokenFile
+        { model with ActivePage = Page.Cenik cenikModel }, cmd1 CenikMsg cenikCmd AskServerForLinkAndLinkNameValues 
 
-    | Some (Router.Route.Nenajdete nenajdeteId) ->
+    | Some (RouterM.Route.Nenajdete nenajdeteId) ->
         let (nenajdeteModel, nenajdeteCmd) = Nenajdete.init nenajdeteId
-        { model with ActivePage = Page.Nenajdete nenajdeteModel }, cmd NenajdeteMsg nenajdeteCmd AskServerForLinkAndLinkNameValues //AskServerForDeletingSecurityTokenFile
+        { model with ActivePage = Page.Nenajdete nenajdeteModel }, cmd1 NenajdeteMsg nenajdeteCmd AskServerForLinkAndLinkNameValues 
 
-    | Some (Router.Route.Kontakt kontaktId) ->
+    | Some (RouterM.Route.Kontakt kontaktId) ->
         let (kontaktModel, kontaktCmd) = Kontakt.init kontaktId
-        { model with ActivePage = Page.Kontakt kontaktModel }, cmd KontaktMsg kontaktCmd AskServerForLinkAndLinkNameValues //AskServerForDeletingSecurityTokenFile
+        { model with ActivePage = Page.Kontakt kontaktModel }, cmd1 KontaktMsg kontaktCmd AskServerForLinkAndLinkNameValues 
 
-    | Some (Router.Route.Login loginId) ->
+    | Some (RouterM.Route.Login loginId) ->
         let (loginModel, loginCmd) = Login.init loginId
         { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd
 
-    | Some (Router.Route.Maintenance ) ->
+    //zatim nevyuzito
+    | Some (RouterM.Route.Logout) ->
+        let (homeModel, homeCmd) = Home.init () //or Login.init
+        { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+
+    //zatim nevyuzito
+    | Some (RouterM.Route.Maintenance) ->
         let (maintenanceModel, maintenanceCmd) = Maintenance.init ()
         { model with ActivePage = Page.Maintenance maintenanceModel }, Cmd.map MaintenanceMsg maintenanceCmd 
 
-    | Some (Router.Route.CMSRozcestnik cmsRozcestnikId) ->
-        let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.init cmsRozcestnikId
-        { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel },cmdCMS CMSRozcestnikMsg cmsRozcestnikCmd AskServerForSecurityTokens
+    | Some (RouterM.Route.CMSRozcestnik cmsRozcestnikId) ->               
+        match model.User with
+        | Anonymous ->  
+                   let (homeModel, homeCmd) = Home.init () //or Login.init      
+                   { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+        | LoggedIn user  ->
+                   let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.init cmsRozcestnikId 
+                   { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd 
+        | _     -> let (homeModel, homeCmd) = Home.init () //or Login.init      
+                   { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile                 
+                     
+    | Some (RouterM.Route.CMSCenik cmsCenikId) ->  
+        match model.User with
+        | Anonymous ->  
+                    let (homeModel, homeCmd) = Home.init () //or Login.init      
+                    { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+        | LoggedIn user ->
+                    let (cmsCenikModel, cmsCenikCmd) = CMSCenik.init cmsCenikId
+                    { model with ActivePage = Page.CMSCenik cmsCenikModel }, Cmd.map CMSCenikMsg cmsCenikCmd 
+        | _      -> let (homeModel, homeCmd) = Home.init () //or Login.init      
+                    { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
 
-    | Some (Router.Route.CMSCenik cmsCenikId) ->
-        let (cmsCenikModel, cmsCenikCmd) = CMSCenik.init cmsCenikId
-        { model with ActivePage = Page.CMSCenik cmsCenikModel }, cmdCMS CMSCenikMsg cmsCenikCmd AskServerForSecurityTokens
+    | Some (RouterM.Route.CMSKontakt cmsKontaktId) ->
+        match model.User with
+        | Anonymous ->  
+                   let (homeModel, homeCmd) = Home.init () //or Login.init     
+                   { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+        | LoggedIn user ->
+                   let (cmsKontaktModel, cmsKontaktCmd) = CMSKontakt.init cmsKontaktId
+                   { model with ActivePage = Page.CMSKontakt cmsKontaktModel }, Cmd.map CMSKontaktMsg cmsKontaktCmd 
+        | _ ->     let (homeModel, homeCmd) = Home.init () //or Login.init      
+                   { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
 
-    | Some (Router.Route.CMSKontakt cmsKontaktId) ->
-        let (cmsKontaktModel, cmsKontaktCmd) = CMSKontakt.init cmsKontaktId
-        { model with ActivePage = Page.CMSKontakt cmsKontaktModel }, cmdCMS CMSKontaktMsg cmsKontaktCmd AskServerForSecurityTokens
+    | Some (RouterM.Route.CMSLink cmsLinkId) ->    
+        match model.User with
+        | Anonymous ->  
+                   let (homeModel, homeCmd) = Home.init () //or Login.init      
+                   { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+        | LoggedIn user ->
+                   let (cmsLinkModel, cmsLinkCmd) = CMSLink.init cmsLinkId
+                   { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
+        | _     -> let (homeModel, homeCmd) = Home.init () //or Login.init       
+                   { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues
 
-    | Some (Router.Route.CMSLink cmsLinkId) ->
-        let (cmsLinkModel, cmsLinkCmd) = CMSLink.init cmsLinkId
-        { model with ActivePage = Page.CMSLink cmsLinkModel }, cmdCMS CMSLinkMsg cmsLinkCmd AskServerForSecurityTokens
+let init (location: RouterM.Route option) =
 
-let init (location : Router.Route option) =
-   
     setRoute location
         {
-            ActivePage = Page.NotFound
+            ActivePage = Page.NotFound 
             CurrentRoute = None
-                       
-            GetSecurityToken =
-                {
-                    SecurityToken = ""
-                }
+
+            User = Anonymous
+            user = { Username = ""; AccessToken = SharedApi.AccessToken ""}
                          
+            GetSecurityTokenFile =
+                {
+                    GetSecurityTokenFile = false  //whatever initial value
+                }
+
             DeleteSecurityTokenFile =
                 {
-                    DeleteSecurityTokenFile = true  
-                }
+                    DeleteSecurityTokenFile = true //whatever initial value
+                } 
 
             LinkAndLinkNameValues =
                 {
@@ -176,11 +218,11 @@ let init (location : Router.Route option) =
                     V004 = ""; V005 = ""; V006 = ""
                     V001n = ""; V002n = ""; V003n = "";
                     V004n = ""; V005n = ""; V006n = "Facebook"
-                }    
+                }
         }    
 
-let update (msg : Msg) (model : Model) =
-
+let update (msg: Msg) (model: Model) =
+       
     match model.ActivePage, msg with
     | Page.NotFound, _ ->
         // Nothing to do here
@@ -206,48 +248,40 @@ let update (msg : Msg) (model : Model) =
         let (kontaktModel, kontaktCmd) = Kontakt.update kontaktMsg kontaktModel
         { model with ActivePage = Page.Kontakt kontaktModel }, Cmd.map KontaktMsg kontaktCmd
 
-    | Page.Login loginModel, LoginMsg loginMsg ->
-            let (loginModel, loginCmd) = Login.update loginMsg loginModel
-            { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd    
+    | Page.Login loginModel, LoginMsg loginMsg  ->
+        let (loginModel, loginCmd) = Login.update loginMsg loginModel
+        { model with ActivePage = Page.Login loginModel }, cmd1 LoginMsg loginCmd AskServerForSecurityTokenFile //musi byt zrovna tady, jinak se Cenik, Kontakt, Link nezpristupni
 
     | Page.CMSRozcestnik cmsRozcestnikModel, CMSRozcestnikMsg cmsRozcestnikMsg ->
         let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.update cmsRozcestnikMsg cmsRozcestnikModel
-        { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd
+        { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd 
 
     | Page.CMSCenik cmsCenikModel, CMSCenikMsg cmsCenikMsg ->
-        let (cmsCenikModel, cmsCenikCmd) = CMSCenik.update cmsCenikMsg cmsCenikModel
-        { model with ActivePage = Page.CMSCenik cmsCenikModel }, Cmd.map CMSCenikMsg cmsCenikCmd
+        let (cmsCenikModel, cmsCenikCmd) = CMSCenik.update cmsCenikMsg cmsCenikModel 
+        { model with ActivePage = Page.CMSCenik cmsCenikModel }, Cmd.map CMSCenikMsg cmsCenikCmd 
 
     | Page.CMSKontakt cmsKontaktModel, CMSKontaktMsg cmsKontaktMsg ->
-        let (cmsKontaktModel, cmsKontaktCmd) = CMSKontakt.update cmsKontaktMsg cmsKontaktModel
-        { model with ActivePage = Page.CMSKontakt cmsKontaktModel }, Cmd.map CMSKontaktMsg cmsKontaktCmd
+        let (cmsKontaktModel, cmsKontaktCmd) = CMSKontakt.update cmsKontaktMsg cmsKontaktModel 
+        { model with ActivePage = Page.CMSKontakt cmsKontaktModel }, Cmd.map CMSKontaktMsg cmsKontaktCmd 
 
     | Page.CMSLink cmsLinkModel, CMSLinkMsg cmsLinkMsg ->
-            let (cmsLinkModel, cmsLinkCmd) = CMSLink.update cmsLinkMsg cmsLinkModel
-            { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd
+        let (cmsLinkModel, cmsLinkCmd) = CMSLink.update cmsLinkMsg cmsLinkModel 
+        { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
+
+    | _, AskServerForSecurityTokenFile ->
+            let sendEvent = GetSecurityTokenFile.create false 
+            let cmd = Cmd.OfAsync.perform getSecurityTokenFileApi.getSecurityTokenFile sendEvent GetSecurityTokenFile
+            model, cmd
 
     | _, AskServerForDeletingSecurityTokenFile ->
-        let sendEvent = DeleteSecurityTokenFile.create true 
-        let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent Dummy
-        model, cmd
-
-    | _, Dummy value -> { model with DeleteSecurityTokenFile =
-                                            {                                                                 
-                                                DeleteSecurityTokenFile = value.DeleteSecurityTokenFile
-                                            }
-                        }, Cmd.none
-
-    | _, AskServerForSecurityTokens ->
-            let loadEvent = SharedSecurityToken.create String.Empty 
-            let cmd = Cmd.OfAsync.perform sendSavedSecurityTokenApi.sendSecurityToken loadEvent GetSecurityToken
+            let sendEvent = DeleteSecurityTokenFile.create true 
+            let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent DeleteSecurityTokenFile
             model, cmd
-         
-    | _, GetSecurityToken value -> { model with GetSecurityToken =
-                                                                {                                                                 
-                                                                    SecurityToken = value.SecurityToken
-                                                                }
-                                    }, Cmd.none
-                                 
+
+    | _, GetSecurityTokenFile value -> { model with GetSecurityTokenFile = { GetSecurityTokenFile = value.GetSecurityTokenFile } }, Cmd.none     
+
+    | _, DeleteSecurityTokenFile value -> { model with DeleteSecurityTokenFile = { DeleteSecurityTokenFile = value.DeleteSecurityTokenFile } }, Cmd.none                                              
+                                                                  
     //pokud potrebujeme aktivovat hodnoty uz pri spusteni public stranek        
     | _, AskServerForLinkAndLinkNameValues ->
             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.LinkAndLinkNameInputValues
@@ -261,37 +295,34 @@ let update (msg : Msg) (model : Model) =
                                                                                     V001n = value.V001n; V002n = value.V002n; V003n = value.V003n;
                                                                                     V004n = value.V004n; V005n = value.V005n; V006n = value.V006n;
                                                                                 }
-                                            }, Cmd.none    
-        
+                                            }, Cmd.none
+                                            
     | _, msg -> model, Cmd.none
-        //Browser.console.warn("Message discarded:\n", string msg)            
-                
-    
+        //Browser.console.warn("Message discarded:\n", string msg)    
 
-
-let view (model : Model) (dispatch : Dispatch<Msg>) =
+let view (model: Model) (dispatch: Dispatch<Msg>) =
          
     match model.ActivePage with
     | Page.NotFound -> str "404 Page not found"       
-    | Page.Home homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues model.GetSecurityToken.SecurityToken
-    | Page.Sluzby sluzbyModel -> Sluzby.view sluzbyModel (SluzbyMsg >> dispatch) model.LinkAndLinkNameValues model.GetSecurityToken.SecurityToken
-    | Page.Cenik cenikModel -> Cenik.view cenikModel (CenikMsg >> dispatch) model.LinkAndLinkNameValues model.GetSecurityToken.SecurityToken
-    | Page.Nenajdete nenajdeteModel -> Nenajdete.view nenajdeteModel (NenajdeteMsg >> dispatch) model.LinkAndLinkNameValues model.GetSecurityToken.SecurityToken
-    | Page.Kontakt kontaktModel -> Kontakt.view kontaktModel (KontaktMsg >> dispatch) model.LinkAndLinkNameValues model.GetSecurityToken.SecurityToken
-    | Page.Login loginModel -> Login.view loginModel (LoginMsg >> dispatch) model.GetSecurityToken.SecurityToken
-    | Page.Maintenance maintenanceModel -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch)   
-    | Page.CMSRozcestnik cmsRozcestnikModel -> CMSRozcestnik.view cmsRozcestnikModel (CMSRozcestnikMsg >> dispatch) model.GetSecurityToken
-    | Page.CMSCenik cmsCenikModel -> CMSCenik.view cmsCenikModel (CMSCenikMsg >> dispatch) model.GetSecurityToken
-    | Page.CMSKontakt cmsKontaktModel -> CMSKontakt.view cmsKontaktModel (CMSKontaktMsg >> dispatch) model.GetSecurityToken
-    | Page.CMSLink cmsLinkModel -> CMSLink.view cmsLinkModel (CMSLinkMsg >> dispatch) model.GetSecurityToken
-
+    | Page.Home homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues 
+    | Page.Sluzby sluzbyModel -> Sluzby.view sluzbyModel (SluzbyMsg >> dispatch) model.LinkAndLinkNameValues 
+    | Page.Cenik cenikModel -> Cenik.view cenikModel (CenikMsg >> dispatch) model.LinkAndLinkNameValues 
+    | Page.Nenajdete nenajdeteModel -> Nenajdete.view nenajdeteModel (NenajdeteMsg >> dispatch) model.LinkAndLinkNameValues 
+    | Page.Kontakt kontaktModel -> Kontakt.view kontaktModel (KontaktMsg >> dispatch) model.LinkAndLinkNameValues
+    | Page.Maintenance maintenanceModel -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch) //zatim nevyuzito
+    | Page.Login loginModel ->  Login.view loginModel (LoginMsg >> dispatch)                              
+    | Page.CMSRozcestnik cmsRozcestnikModel -> CMSRozcestnik.view cmsRozcestnikModel (CMSRozcestnikMsg >> dispatch)  
+    | Page.CMSCenik cmsCenikModel -> CMSCenik.view cmsCenikModel (CMSCenikMsg >> dispatch) 
+    | Page.CMSKontakt cmsKontaktModel -> CMSKontakt.view cmsKontaktModel (CMSKontaktMsg >> dispatch) 
+    | Page.CMSLink cmsLinkModel -> CMSLink.view cmsLinkModel (CMSLinkMsg >> dispatch)
+    | Page.Logout homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues //zatim nevyuzito
 
 open Elmish.UrlParser
 open Elmish.Navigation
 open Elmish.React
 
 Program.mkProgram init update view
-|> Program.toNavigable (parseHash Router.routeParser) setRoute
+|> Program.toNavigable (parseHash RouterM.routeParser) setRoute
 |> Program.withReactSynchronous "elmish-app"
 |> Program.run
 

@@ -1,7 +1,6 @@
 module ContentCMSRozcestnik
 
 open Feliz
-open Router
 
 //kompletni konvertovany html kod, zde se nepouziva layout
 let contentCMSRozcestnik deleteSecurityTokenFile = 
@@ -124,7 +123,7 @@ let contentCMSRozcestnik deleteSecurityTokenFile =
                                                                                       style.fontWeight.bold
                                                                                       style.color.blue
                                                                                     ]
-                                                                                prop.href (toHash (Router.CMSCenik 7))
+                                                                                prop.href (RouterM.toHash (RouterM.CMSCenik 7))
                                                                                 prop.children [
                                                                                     Html.text "Editace ceníku"
                                                                                 ]
@@ -138,7 +137,7 @@ let contentCMSRozcestnik deleteSecurityTokenFile =
                                                                                       style.fontWeight.bold
                                                                                       style.color.blue
                                                                                     ]
-                                                                                prop.href (toHash (Router.CMSKontakt 8))
+                                                                                prop.href (RouterM.toHash (RouterM.CMSKontakt 8))
                                                                                 prop.children [
                                                                                     Html.text "Editace kontaktních údajů"
                                                                                 ]
@@ -152,7 +151,7 @@ let contentCMSRozcestnik deleteSecurityTokenFile =
                                                                                         style.fontWeight.bold
                                                                                         style.color.blue
                                                                                     ]
-                                                                                prop.href (toHash (Router.CMSLink 9))
+                                                                                prop.href (RouterM.toHash (RouterM.CMSLink 9))
                                                                                 prop.children [
                                                                                     Html.text "Editace odkazů na webové stránky"
                                                                                 ]
