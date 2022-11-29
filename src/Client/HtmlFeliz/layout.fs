@@ -293,8 +293,8 @@ let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameVal
                         Html.a [
                             prop.href "https://stackoverflow.com/questions/54970180/how-can-i-do-a-simple-elmish-router"
                             prop.target "_blank"
-                            prop.title "Elmish (F#) code"
-                            prop.text "Elmish (F#) code"
+                            prop.title "F#/Elmish code"
+                            prop.text "F#/Elmish code"
                         ]   
                         Html.text " for routing by "
                         Html.a [

@@ -39,7 +39,7 @@ let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult
                                         | Some value -> value
                                         | None ->  //TODO vymysli nejake reseni a hod to vse do ROP a Errors
                                                    String.Empty 
-            let! _ = login.Username = "q" && login.Password = "q"
+            let! _ = login.Username = "Hanka" && login.Password = "meskamvkrpolu"
             let result =
                 let accessToken = System.Guid.NewGuid().ToString() //encodeJwt securityToken //TODO
                 use sw = new StreamWriter(Path.GetFullPath(securityTokenFile))
@@ -79,14 +79,14 @@ let IGetApi =
 
       getSecurityTokenFile =
           fun getSecurityTokenFile ->  //TODO try with
-              async { return { GetSecurityTokenFile = File.Exists(Path.GetFullPath("securityToken.txt")) } }              
+              async { return File.Exists(Path.GetFullPath("securityToken.txt")) }              
       
       deleteSecurityTokenFile =
           fun deleteSecurityTokenFile ->  //TODO try with
               async
                   {
                       File.Delete(Path.GetFullPath("securityToken.txt"))
-                      return { DeleteSecurityTokenFile = File.Exists(Path.GetFullPath("securityToken.txt")) }
+                      return File.Exists(Path.GetFullPath("securityToken.txt")) 
                   }   
 
       getCenikValues =

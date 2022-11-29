@@ -20,8 +20,8 @@ type ApplicationUser =  //zatim v Login nevyuzito
 type Model =
     {
       User: ApplicationUser 
-      GetSecurityTokenFile: GetSecurityTokenFile //zatim v Login nevyuzito
-      DeleteSecurityTokenFile: DeleteSecurityTokenFile //zatim v Login nevyuzito
+      GetSecurityTokenFile: bool //zatim v Login nevyuzito
+      DeleteSecurityTokenFile: bool //zatim v Login nevyuzito
       InputUsr: string
       InputPsw: string
       Id: int
@@ -34,8 +34,8 @@ type Msg =
     | GetLoginResults of SharedApi.LoginResult
     | AskServerForSecurityTokenFile
     | AskServerForDeletingSecurityTokenFile
-    | GetSecurityTokenFile of GetSecurityTokenFile //zatim v Login nevyuzito
-    | DeleteSecurityTokenFile of DeleteSecurityTokenFile //zatim v Login nevyuzito
+    | GetSecurityTokenFileMsg of bool //zatim v Login nevyuzito
+    | DeleteSecurityTokenFileMsg of bool //zatim v Login nevyuzito
 
 
 let private api() = Remoting.createApi ()
@@ -49,15 +49,8 @@ let private getLoginApi = api()
 let init id : Model * Cmd<Msg> =
     let model = {
                   User = FirstTimeRunAnonymous
-                  GetSecurityTokenFile =
-                                {
-                                    GetSecurityTokenFile = false  //whatever initial value
-                                }
-
-                  DeleteSecurityTokenFile =
-                                {
-                                    DeleteSecurityTokenFile = true //whatever initial value
-                                } 
+                  GetSecurityTokenFile = false
+                  DeleteSecurityTokenFile = false                           
                   InputUsr = String.Empty
                   InputPsw = String.Empty
                   Id = id
@@ -81,18 +74,18 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         result, Cmd.ofMsg AskServerForSecurityTokenFile
         
     | AskServerForSecurityTokenFile ->
-        let sendEvent = GetSecurityTokenFile.create false 
-        let cmd = Cmd.OfAsync.perform getSecurityTokenFileApi.getSecurityTokenFile sendEvent GetSecurityTokenFile
+        let sendEvent = GetSecurityTokenFile.create () 
+        let cmd = Cmd.OfAsync.perform getSecurityTokenFileApi.getSecurityTokenFile sendEvent GetSecurityTokenFileMsg
         model, cmd
 
     | AskServerForDeletingSecurityTokenFile ->
-        let sendEvent = DeleteSecurityTokenFile.create true 
-        let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent DeleteSecurityTokenFile
+        let sendEvent = DeleteSecurityTokenFile.create () 
+        let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent DeleteSecurityTokenFileMsg
         model, cmd
 
-    | GetSecurityTokenFile value -> { model with GetSecurityTokenFile = { GetSecurityTokenFile = value.GetSecurityTokenFile } }, Cmd.none     
+    | GetSecurityTokenFileMsg value -> { model with GetSecurityTokenFile = value }, Cmd.none     
 
-    | DeleteSecurityTokenFile value -> { model with DeleteSecurityTokenFile = { DeleteSecurityTokenFile = value.DeleteSecurityTokenFile } }, Cmd.none    
+    | DeleteSecurityTokenFileMsg value -> { model with DeleteSecurityTokenFile = value }, Cmd.none    
 
 let view (model: Model) (dispatch: Msg -> unit) =
 

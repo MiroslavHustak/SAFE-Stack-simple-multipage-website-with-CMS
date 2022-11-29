@@ -44,8 +44,8 @@ type Model =
         User: ApplicationUser 
         user: SharedApi.User
 
-        GetSecurityTokenFile: GetSecurityTokenFile
-        DeleteSecurityTokenFile: DeleteSecurityTokenFile
+        GetSecurityTokenFile: bool
+        DeleteSecurityTokenFile: bool
         LinkAndLinkNameValues: GetLinkAndLinkNameValues
         LinkAndLinkNameInputValues: GetLinkAndLinkNameValues
     }
@@ -67,8 +67,8 @@ type Msg =
     | GetLinkAndLinkNameValues of GetLinkAndLinkNameValues
     | AskServerForSecurityTokenFile
     | AskServerForDeletingSecurityTokenFile
-    | GetSecurityTokenFile of GetSecurityTokenFile
-    | DeleteSecurityTokenFile of DeleteSecurityTokenFile
+    | GetSecurityTokenFileMsg of bool
+    | DeleteSecurityTokenFileMsg of bool
 
 let private api() = Remoting.createApi ()
                     |> Remoting.withRouteBuilder Route.builder
@@ -85,18 +85,18 @@ let private setRoute (optRoute: RouterM.Route option) model =
                                                  
     let model =
         let applicationUser = 
-            match model.GetSecurityTokenFile.GetSecurityTokenFile with
+            match model.GetSecurityTokenFile with
             | true  -> LoggedIn model.user
             | false -> Anonymous
 
         let currentRoute =
-            match model.GetSecurityTokenFile.GetSecurityTokenFile with
+            match model.GetSecurityTokenFile with
             | true  -> optRoute
             | false -> Some RouterM.Route.Home
 
         {
             model with CurrentRoute = currentRoute
-                                      user = { Username = "q"; AccessToken = SharedApi.AccessToken ""}
+                                      user = { Username = "Hanka"; AccessToken = SharedApi.AccessToken ""}
                                       User = applicationUser                                                                                                                              
         }                          
          
@@ -112,23 +112,23 @@ let private setRoute (optRoute: RouterM.Route option) model =
 
     | Some (RouterM.Route.Sluzby sluzbyId) ->
         let (sluzbyModel, sluzbyCmd) = Sluzby.init sluzbyId
-        { model with ActivePage = Page.Sluzby sluzbyModel }, cmd1 SluzbyMsg sluzbyCmd AskServerForLinkAndLinkNameValues 
+        { model with ActivePage = Page.Sluzby sluzbyModel }, cmd2 SluzbyMsg sluzbyCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
 
     | Some (RouterM.Route.Cenik cenikId) ->
         let (cenikModel, cenikCmd) = Cenik.init cenikId
-        { model with ActivePage = Page.Cenik cenikModel }, cmd1 CenikMsg cenikCmd AskServerForLinkAndLinkNameValues 
+        { model with ActivePage = Page.Cenik cenikModel }, cmd2 CenikMsg cenikCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
 
     | Some (RouterM.Route.Nenajdete nenajdeteId) ->
         let (nenajdeteModel, nenajdeteCmd) = Nenajdete.init nenajdeteId
-        { model with ActivePage = Page.Nenajdete nenajdeteModel }, cmd1 NenajdeteMsg nenajdeteCmd AskServerForLinkAndLinkNameValues 
+        { model with ActivePage = Page.Nenajdete nenajdeteModel }, cmd2 NenajdeteMsg nenajdeteCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
 
     | Some (RouterM.Route.Kontakt kontaktId) ->
         let (kontaktModel, kontaktCmd) = Kontakt.init kontaktId
-        { model with ActivePage = Page.Kontakt kontaktModel }, cmd1 KontaktMsg kontaktCmd AskServerForLinkAndLinkNameValues 
+        { model with ActivePage = Page.Kontakt kontaktModel }, cmd2 KontaktMsg kontaktCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
 
     | Some (RouterM.Route.Login loginId) ->
         let (loginModel, loginCmd) = Login.init loginId
-        { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd
+        { model with ActivePage = Page.Login loginModel }, cmd1 LoginMsg loginCmd AskServerForDeletingSecurityTokenFile
 
     //zatim nevyuzito
     | Some (RouterM.Route.Logout) ->
@@ -194,15 +194,8 @@ let init (location: RouterM.Route option) =
             User = Anonymous
             user = { Username = ""; AccessToken = SharedApi.AccessToken ""}
                          
-            GetSecurityTokenFile =
-                {
-                    GetSecurityTokenFile = false  //whatever initial value
-                }
-
-            DeleteSecurityTokenFile =
-                {
-                    DeleteSecurityTokenFile = true //whatever initial value
-                } 
+            GetSecurityTokenFile = false              
+            DeleteSecurityTokenFile = false
 
             LinkAndLinkNameValues =
                 {
@@ -269,18 +262,18 @@ let update (msg: Msg) (model: Model) =
         { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
 
     | _, AskServerForSecurityTokenFile ->
-            let sendEvent = GetSecurityTokenFile.create false 
-            let cmd = Cmd.OfAsync.perform getSecurityTokenFileApi.getSecurityTokenFile sendEvent GetSecurityTokenFile
+            let sendEvent = GetSecurityTokenFile.create () 
+            let cmd = Cmd.OfAsync.perform getSecurityTokenFileApi.getSecurityTokenFile sendEvent GetSecurityTokenFileMsg
             model, cmd
 
     | _, AskServerForDeletingSecurityTokenFile ->
-            let sendEvent = DeleteSecurityTokenFile.create true 
-            let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent DeleteSecurityTokenFile
+            let sendEvent = DeleteSecurityTokenFile.create () 
+            let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent DeleteSecurityTokenFileMsg
             model, cmd
 
-    | _, GetSecurityTokenFile value -> { model with GetSecurityTokenFile = { GetSecurityTokenFile = value.GetSecurityTokenFile } }, Cmd.none     
+    | _, GetSecurityTokenFileMsg value -> { model with GetSecurityTokenFile = value }, Cmd.none     
 
-    | _, DeleteSecurityTokenFile value -> { model with DeleteSecurityTokenFile = { DeleteSecurityTokenFile = value.DeleteSecurityTokenFile } }, Cmd.none                                              
+    | _, DeleteSecurityTokenFileMsg value -> { model with DeleteSecurityTokenFile = value }, Cmd.none                                              
                                                                   
     //pokud potrebujeme aktivovat hodnoty uz pri spusteni public stranek        
     | _, AskServerForLinkAndLinkNameValues ->

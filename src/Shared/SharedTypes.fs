@@ -2,9 +2,9 @@ namespace SharedTypes
 
 type LoginInfo = { Username: string; Password: string }
 
-type GetSecurityTokenFile = { GetSecurityTokenFile: bool } 
+type GetSecurityTokenFile = unit
 
-type DeleteSecurityTokenFile = { DeleteSecurityTokenFile: bool }
+type DeleteSecurityTokenFile = unit
 
 type GetCenikValues =
     {
@@ -31,17 +31,18 @@ type GetLinkAndLinkNameValues =
 type IGetApi =
     {
         login : LoginInfo -> Async<SharedApi.LoginResult> 
-        getSecurityTokenFile: GetSecurityTokenFile -> Async<GetSecurityTokenFile>
-        deleteSecurityTokenFile: DeleteSecurityTokenFile -> Async<DeleteSecurityTokenFile>
-        getCenikValues: GetCenikValues -> Async<GetCenikValues>
+        getSecurityTokenFile: unit -> Async<bool>
+        deleteSecurityTokenFile: unit -> Async<bool>
+        getCenikValues: GetCenikValues -> Async<GetCenikValues> //GetCenikValues ponechano quli jednotnosti, jinak staci unit -> Async<GetCenikValues> **
         sendOldCenikValues: GetCenikValues -> Async<GetCenikValues>
         sendDeserialisedCenikValues: GetCenikValues -> Async<GetCenikValues>
-        getKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
+        getKontaktValues: GetKontaktValues -> Async<GetKontaktValues> //GetKontaktValues ponechano quli jednotnosti, jinak staci unit -> Async<GetKontaktValues> **
         sendOldKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
         sendDeserialisedKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
-        getLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
+        getLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues> //GetCenikValues ponechano quli jednotnosti, jinak staci unit -> Async<GetLinkAndLinkNameValues> **
         sendOldLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
         sendDeserialisedLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
     }
+    //** pokud bych dal unit, mel bych misto plno prazdnych hodnot v prislusnych fs souborech zase plno kodu na server a shared
 
 

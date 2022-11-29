@@ -21,34 +21,27 @@ type Model =
 
 type Msg =
     | AskServerForDeletingSecurityTokenFile
-    | Dummy of DeleteSecurityTokenFile    
+    | DeleteSecurityTokenFileMsg of bool   
 
-let getVerifiedSecurityToken =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IGetApi>
-
-let deleteSecurityTokenFileApi =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.buildProxy<IGetApi>
+let private deleteSecurityTokenFileApi = Remoting.createApi ()
+                                         |> Remoting.withRouteBuilder Route.builder
+                                         |> Remoting.buildProxy<IGetApi>
 
 let init id : Model * Cmd<Msg> =
     let model = {
                     Id = id
                 }
-
     //let model = { Dummy = () } 
     model, Cmd.none
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with
     | AskServerForDeletingSecurityTokenFile ->
-        let sendEvent = DeleteSecurityTokenFile.create true 
-        let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent Dummy
+        let sendEvent = DeleteSecurityTokenFile.create () 
+        let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent DeleteSecurityTokenFileMsg
         model, cmd
                                
-    | Dummy _ -> model, Cmd.none
+    | DeleteSecurityTokenFileMsg _ -> model, Cmd.none
 
 let view (model: Model) (dispatch: Msg -> unit) =
 
@@ -59,7 +52,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                 prop.children [
                     Html.input [
                         prop.type' "submit"
-                        prop.value "Log-off a návrat na webové stránky"
+                        prop.value "Logout a návrat na webové stránky"
                         prop.id "Button2"
                         prop.onClick (fun _ -> dispatch askServerForDeletingSecurityTokenFile)
                         prop.style

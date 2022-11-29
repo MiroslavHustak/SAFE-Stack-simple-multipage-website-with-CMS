@@ -108,7 +108,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         model, cmd
 
     | SendLinkAndLinkNameValuesToServer ->
-        let buttonClickEvent:GetLinkAndLinkNameValues =                                        
+        let buttonClickEvent:GetLinkAndLinkNameValues =   //GetLinkAndLinkNameValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit                                     
             SharedLinkAndLinkNameValues.create
             <| model.V001LinkInput <| model.V002LinkInput <| model.V003LinkInput 
             <| model.V004LinkInput <| model.V005LinkInput <| model.V006LinkInput

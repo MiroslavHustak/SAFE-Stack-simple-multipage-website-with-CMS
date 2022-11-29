@@ -16,18 +16,12 @@ module SharedLoginValues =
       
 module DeleteSecurityTokenFile =
         
-    let create deleteSecurityTokenFile =
-        {
-            DeleteSecurityTokenFile = deleteSecurityTokenFile
-        }
+    let create deleteSecurityTokenFile = ()  
 
-module GetSecurityTokenFile =
+module GetSecurityTokenFile = 
     
-    let create getSecurityTokenFile =
-        {
-            GetSecurityTokenFile = getSecurityTokenFile
-        }
-    
+    let create getSecurityTokenFile = ()
+  
 module SharedCenikValues =
         
     let isValid param = ()   //TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem

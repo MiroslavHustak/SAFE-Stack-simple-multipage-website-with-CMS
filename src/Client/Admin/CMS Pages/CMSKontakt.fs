@@ -86,7 +86,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         model, cmd
 
     | SendKontaktValuesToServer ->
-        let buttonClickEvent:GetKontaktValues = SharedKontaktValues.create
+        let buttonClickEvent: GetKontaktValues = SharedKontaktValues.create //GetKontaktValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
                                               <| model.V001Input <| model.V002Input <| model.V003Input 
                                               <| model.V004Input <| model.V005Input <| model.V006Input
                                               <| model.V007Input   
