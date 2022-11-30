@@ -39,7 +39,7 @@ let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult
                                         | Some value -> value
                                         | None ->  //TODO vymysli nejake reseni a hod to vse do ROP a Errors
                                                    String.Empty 
-            let! _ = login.Username = "q" && login.Password = "q" //meskamvkrpolu
+            let! _ = login.Username = "q" && login.Password = "q" 
             let result =                
                 let accessToken = System.Guid.NewGuid().ToString() //encodeJwt securityToken //TODO
                 let mySeq = seq { login.Username; accessToken }
