@@ -15,21 +15,21 @@ open Login
 
 type Model =
     {        
-      Id: int
+      Id: int    
       //Dummy: unit         
     }
 
 type Msg =
     | AskServerForDeletingSecurityTokenFile
-    | DeleteSecurityTokenFileMsg of bool   
+    | DeleteSecurityTokenFileMsg of unit   
 
 let private deleteSecurityTokenFileApi = Remoting.createApi ()
                                          |> Remoting.withRouteBuilder Route.builder
                                          |> Remoting.buildProxy<IGetApi>
 
-let init id : Model * Cmd<Msg> =
+let init id: Model * Cmd<Msg> =
     let model = {
-                    Id = id
+                    Id = id                
                 }
     //let model = { Dummy = () } 
     model, Cmd.none
@@ -41,18 +41,19 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent DeleteSecurityTokenFileMsg
         model, cmd
                                
-    | DeleteSecurityTokenFileMsg _ -> model, Cmd.none
+    | DeleteSecurityTokenFileMsg _ -> model, Cmd.none // value je unit, takze staci placement   
 
 let view (model: Model) (dispatch: Msg -> unit) =
 
-    let deleteSecurityTokenFile askServerForDeletingSecurityTokenFile =
-         Html.div [
+    //druhy rozcestnik
+    let returnButtonDiv askServerForDeletingSecurityTokenFile =
+         Html.div [            
             Html.form [
                 prop.action (RouterM.toHash (RouterM.Home))
                 prop.children [
                     Html.input [
                         prop.type' "submit"
-                        prop.value "Logout a návrat na webové stránky"
+                        prop.value "Logout a návrat na webové stránky" //druhy rozcestnik
                         prop.id "Button2"
                         prop.onClick (fun _ -> dispatch askServerForDeletingSecurityTokenFile)
                         prop.style
@@ -64,7 +65,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                               style.color.blue
                               style.fontFamily "sans-serif"
                             ]
-                    ]
+                    ]                  
                 ]                   
             ]
 
@@ -87,13 +88,5 @@ let view (model: Model) (dispatch: Msg -> unit) =
             *)
          ]      
 
-    contentCMSRozcestnik (deleteSecurityTokenFile AskServerForDeletingSecurityTokenFile) 
-         (*
-    //match securityToken1 = ziskana hodnota z Serveru with
-    match model.SecurityToken with 
-    | NoError ->  //dispatch AskServerForDeletingSecurityTokenFile 
-                             contentCMSRozcestnik (deleteSecurityTokenFile AskServerForDeletingSecurityTokenFile) model.SecurityToken1
-    | AuthenticationError -> contentCMSForbidden()
-    *)
-
+    contentCMSRozcestnik (returnButtonDiv AskServerForDeletingSecurityTokenFile) 
    

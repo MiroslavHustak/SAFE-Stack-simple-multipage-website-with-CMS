@@ -21,10 +21,14 @@ module DeleteSecurityTokenFile =
 module GetSecurityTokenFile = 
     
     let create getSecurityTokenFile = ()
+
+module GetSecurityToken = 
+    
+    let create getSecurityToken = ()
   
 module SharedCenikValues =
         
-    let isValid param = ()   //TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem
+    let isValid param = ()   //TODO pripadne pouziti validace dle potreby klienta 
         
     let create v001 v002 v003 v004 v005 v006 v007 v008 v009 =
         {
@@ -44,7 +48,7 @@ module SharedDeserialisedCenikValues =
 
 module SharedKontaktValues =
             
-    let isValid param = () //TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem
+    let isValid param = () //TODO pripadne pouziti validace dle potreby klienta 
             
     let create v001 v002 v003 v004 v005 v006 v007 =
         {
@@ -64,7 +68,7 @@ module SharedDeserialisedKontaktValues =
 
 module SharedLinkAndLinkNameValues =
     
-    let isValid param = ()  //TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem
+    let isValid param = ()  //TODO pripadne pouziti validace dle potreby klienta 
     
     let create v001 v002 v003 v004 v005 v006 v001n v002n v003n v004n v005n v006n =
         {

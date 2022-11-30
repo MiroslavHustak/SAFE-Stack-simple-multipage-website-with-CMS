@@ -21,7 +21,7 @@ type Model =
     {
       User: ApplicationUser 
       GetSecurityTokenFile: bool //zatim v Login nevyuzito
-      DeleteSecurityTokenFile: bool //zatim v Login nevyuzito
+      DeleteSecurityTokenFile: unit //zatim v Login nevyuzito
       InputUsr: string
       InputPsw: string
       Id: int
@@ -35,7 +35,7 @@ type Msg =
     | AskServerForSecurityTokenFile
     | AskServerForDeletingSecurityTokenFile
     | GetSecurityTokenFileMsg of bool //zatim v Login nevyuzito
-    | DeleteSecurityTokenFileMsg of bool //zatim v Login nevyuzito
+    | DeleteSecurityTokenFileMsg of unit //zatim v Login nevyuzito
 
 
 let private api() = Remoting.createApi ()
@@ -48,12 +48,12 @@ let private getLoginApi = api()
 
 let init id : Model * Cmd<Msg> =
     let model = {
-                  User = FirstTimeRunAnonymous
-                  GetSecurityTokenFile = false
-                  DeleteSecurityTokenFile = false                           
-                  InputUsr = String.Empty
-                  InputPsw = String.Empty
-                  Id = id
+                    User = FirstTimeRunAnonymous
+                    GetSecurityTokenFile = false
+                    DeleteSecurityTokenFile = ()                           
+                    InputUsr = String.Empty
+                    InputPsw = String.Empty
+                    Id = id
                 }
     model, Cmd.none
 
@@ -85,7 +85,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
 
     | GetSecurityTokenFileMsg value -> { model with GetSecurityTokenFile = value }, Cmd.none     
 
-    | DeleteSecurityTokenFileMsg value -> { model with DeleteSecurityTokenFile = value }, Cmd.none    
+    | DeleteSecurityTokenFileMsg _ -> model, Cmd.none // value je unit, takze staci placement   
 
 let view (model: Model) (dispatch: Msg -> unit) =
 
@@ -107,7 +107,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                 [
                   style.width(200)
                   style.fontWeight.bold
-                  style.fontSize(16) //font-size: large
+                  style.fontSize(16) 
                   style.color.blue
                   style.fontFamily "sans-serif"
                 ]
@@ -144,15 +144,15 @@ let view (model: Model) (dispatch: Msg -> unit) =
                  ]
         ]   
 
-   
-    let deleteSecurityTokenFile askServerForDeletingSecurityTokenFile =
+    //prvni rozcestnik    
+    let returnButtonDiv askServerForDeletingSecurityTokenFile =
         Html.div [
             Html.form [
                 prop.action (RouterM.toHash (RouterM.Home))
                 prop.children [
                     Html.input [
                         prop.type' "submit"
-                        prop.value "Log-off a návrat na webové stránky"
+                        prop.value "Logout a návrat na webové stránky" //prvni rozcestnik
                         prop.id "Button2"
                         prop.onClick (fun _ -> dispatch askServerForDeletingSecurityTokenFile)
                         prop.style
@@ -160,7 +160,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                 style.width(300)
                                 style.height(30)
                                 style.fontWeight.bold
-                                style.fontSize(16) //font-size: large
+                                style.fontSize(16) 
                                 style.color.blue
                                 style.fontFamily "sans-serif"
                             ]
@@ -192,5 +192,5 @@ let view (model: Model) (dispatch: Msg -> unit) =
     match model.User with      
     | Anonymous             -> fnError()
     | FirstTimeRunAnonymous -> fnFirstRun()
-    | LoggedIn user         -> contentCMSRozcestnik (deleteSecurityTokenFile AskServerForDeletingSecurityTokenFile) //parametr se presune do logoff
+    | LoggedIn user         -> contentCMSRozcestnik (returnButtonDiv AskServerForDeletingSecurityTokenFile) //parametr se presune do logout
                                    

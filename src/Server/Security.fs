@@ -2,6 +2,7 @@
 module Security
 
 //zatim nevyuzivano //TODO -> implement the code
+//kod prevzat z vyukovych stranek SAFE Stack
 
 open System
 open System.IO

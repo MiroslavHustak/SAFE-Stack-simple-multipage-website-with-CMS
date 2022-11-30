@@ -3,7 +3,7 @@ module ContentCMSRozcestnik
 open Feliz
 
 //kompletni konvertovany html kod, zde se nepouziva layout
-let contentCMSRozcestnik deleteSecurityTokenFile = 
+let contentCMSRozcestnik returnButtonDiv = 
 
     Html.html [
         prop.xmlns "http://www.w3.org/1999/xhtml"
@@ -159,7 +159,7 @@ let contentCMSRozcestnik deleteSecurityTokenFile =
                                                                         ]                                                                        
                                                                         Html.br []
                                                                         Html.br []
-                                                                        deleteSecurityTokenFile
+                                                                        returnButtonDiv
                                                                         (*
                                                                         Html.div [                                                                            
                                                                             

@@ -13,13 +13,13 @@ open ContentMaintenance
 
 type Model =
     {      
-        Id: int       
+        Id: int
     }
 
 type Msg =
     | DummyMsg
 
-let init id : Model * Cmd<Msg> =
+let init id: Model * Cmd<Msg> =
     let model = { Id = id }
     model, Cmd.none
 
@@ -36,9 +36,7 @@ let view (model: Model) (dispatch: Msg -> unit) links =
          Kontakt = prop.className "normal"
        }
            
-    match "" with
-    | "securityToken" -> layout <| contentNenajdete() <| nenajdeteRecord <| links //contentMaintenance()
-    | _ -> layout <| contentNenajdete() <| nenajdeteRecord <| links
+    layout <| contentNenajdete() <| nenajdeteRecord <| links
 
 
 

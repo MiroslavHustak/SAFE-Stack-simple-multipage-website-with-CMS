@@ -45,7 +45,7 @@ type Model =
         user: SharedApi.User
 
         GetSecurityTokenFile: bool
-        DeleteSecurityTokenFile: bool
+        DeleteSecurityTokenFile: unit
         LinkAndLinkNameValues: GetLinkAndLinkNameValues
         LinkAndLinkNameInputValues: GetLinkAndLinkNameValues
     }
@@ -66,15 +66,18 @@ type Msg =
     | AskServerForLinkAndLinkNameValues 
     | GetLinkAndLinkNameValues of GetLinkAndLinkNameValues
     | AskServerForSecurityTokenFile
+    | AskServerForSecurityToken
     | AskServerForDeletingSecurityTokenFile
     | GetSecurityTokenFileMsg of bool
-    | DeleteSecurityTokenFileMsg of bool
+    | GetSecurityTokenMsg of string seq
+    | DeleteSecurityTokenFileMsg of unit
 
 let private api() = Remoting.createApi ()
                     |> Remoting.withRouteBuilder Route.builder
                     |> Remoting.buildProxy<IGetApi>
 
 let private getSecurityTokenFileApi = api()
+let private getSecurityTokenApi = api()
 let private deleteSecurityTokenFileApi = api()
 let private sendDeserialisedLinkAndLinkNameValuesApi = api()
 
@@ -96,11 +99,35 @@ let private setRoute (optRoute: RouterM.Route option) model =
 
         {
             model with CurrentRoute = currentRoute
-                                      user = { Username = "Hanka"; AccessToken = SharedApi.AccessToken ""}
                                       User = applicationUser                                                                                                                              
         }                          
          
-    //let model = { model with CurrentRoute = optRoute }    
+    //let model = { model with CurrentRoute = optRoute }
+
+    
+    (*
+        //What's happening here is that F# allows you to deconstruct function arguments inline using arbitrarily complex pattern matching.
+        //This is often mentioned when introducing single case DU's, but it's rarely followed to the conclusion, which leads
+        //people to believe single case DU's are somehow special that way.
+
+        type Composite = Composite of int 
+        let unwrap (Composite a) = a
+
+        which corresponds to:
+        let unwrap x = 
+        match x with
+        | Composite a -> a
+    *)
+
+    //test zkraceneho match pro deconstruction single case DU
+    let accessToken = match model.user.AccessToken with SharedApi.AccessToken value -> value
+                      
+    //test pro deconstruction single case DU
+    let unwrap (SharedApi.AccessToken x) = x
+    let accessToken = unwrap model.user.AccessToken
+
+    //v pripade vlozeni do rozcestniku je treba jednou tady v setRoute dat dalsi parametry do RouterM.Route.CMSRozcestnik cmsRozcestnikId (druhy rozcestnik)
+    //a pak jeste to same z loginu (prvni rozcestnik) 
     
     match optRoute with
     | None ->
@@ -119,7 +146,7 @@ let private setRoute (optRoute: RouterM.Route option) model =
         { model with ActivePage = Page.Cenik cenikModel }, cmd2 CenikMsg cenikCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
 
     | Some (RouterM.Route.Nenajdete nenajdeteId) ->
-        let (nenajdeteModel, nenajdeteCmd) = Nenajdete.init nenajdeteId
+        let (nenajdeteModel, nenajdeteCmd) = Nenajdete.init nenajdeteId 
         { model with ActivePage = Page.Nenajdete nenajdeteModel }, cmd2 NenajdeteMsg nenajdeteCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
 
     | Some (RouterM.Route.Kontakt kontaktId) ->
@@ -194,8 +221,8 @@ let init (location: RouterM.Route option) =
             User = Anonymous
             user = { Username = ""; AccessToken = SharedApi.AccessToken ""}
                          
-            GetSecurityTokenFile = false              
-            DeleteSecurityTokenFile = false
+            GetSecurityTokenFile = false
+            DeleteSecurityTokenFile = ()
 
             LinkAndLinkNameValues =
                 {
@@ -243,7 +270,7 @@ let update (msg: Msg) (model: Model) =
 
     | Page.Login loginModel, LoginMsg loginMsg  ->
         let (loginModel, loginCmd) = Login.update loginMsg loginModel
-        { model with ActivePage = Page.Login loginModel }, cmd1 LoginMsg loginCmd AskServerForSecurityTokenFile //musi byt zrovna tady, jinak se Cenik, Kontakt, Link nezpristupni
+        { model with ActivePage = Page.Login loginModel }, cmd2 LoginMsg loginCmd AskServerForSecurityToken AskServerForSecurityTokenFile //musi byt zrovna tady, jinak se Cenik, Kontakt, Link nezpristupni
 
     | Page.CMSRozcestnik cmsRozcestnikModel, CMSRozcestnikMsg cmsRozcestnikMsg ->
         let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.update cmsRozcestnikMsg cmsRozcestnikModel
@@ -266,14 +293,21 @@ let update (msg: Msg) (model: Model) =
             let cmd = Cmd.OfAsync.perform getSecurityTokenFileApi.getSecurityTokenFile sendEvent GetSecurityTokenFileMsg
             model, cmd
 
+    | _, AskServerForSecurityToken ->
+                let sendEvent = GetSecurityToken.create () 
+                let cmd = Cmd.OfAsync.perform getSecurityTokenApi.getSecurityToken sendEvent GetSecurityTokenMsg
+                model, cmd
+
     | _, AskServerForDeletingSecurityTokenFile ->
             let sendEvent = DeleteSecurityTokenFile.create () 
             let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent DeleteSecurityTokenFileMsg
             model, cmd
 
-    | _, GetSecurityTokenFileMsg value -> { model with GetSecurityTokenFile = value }, Cmd.none     
+    | _, GetSecurityTokenFileMsg value -> { model with GetSecurityTokenFile = value }, Cmd.none
 
-    | _, DeleteSecurityTokenFileMsg value -> { model with DeleteSecurityTokenFile = value }, Cmd.none                                              
+    | _, GetSecurityTokenMsg value -> { model with user = { Username = (value |> Seq.item 0); AccessToken = SharedApi.AccessToken (value |> Seq.item 1) } }, Cmd.none  
+
+    | _, DeleteSecurityTokenFileMsg _  -> model, Cmd.none // value je unit, takze staci placement                                                
                                                                   
     //pokud potrebujeme aktivovat hodnoty uz pri spusteni public stranek        
     | _, AskServerForLinkAndLinkNameValues ->

@@ -4,6 +4,8 @@ type LoginInfo = { Username: string; Password: string }
 
 type GetSecurityTokenFile = unit
 
+type GetSecurityToken = unit
+
 type DeleteSecurityTokenFile = unit
 
 type GetCenikValues =
@@ -32,7 +34,8 @@ type IGetApi =
     {
         login : LoginInfo -> Async<SharedApi.LoginResult> 
         getSecurityTokenFile: unit -> Async<bool>
-        deleteSecurityTokenFile: unit -> Async<bool>
+        getSecurityToken: unit -> Async<string seq>
+        deleteSecurityTokenFile: unit -> Async<unit>
         getCenikValues: GetCenikValues -> Async<GetCenikValues> //GetCenikValues ponechano quli jednotnosti, jinak staci unit -> Async<GetCenikValues> **
         sendOldCenikValues: GetCenikValues -> Async<GetCenikValues>
         sendDeserialisedCenikValues: GetCenikValues -> Async<GetCenikValues>

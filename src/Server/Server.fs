@@ -39,16 +39,17 @@ let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult
                                         | Some value -> value
                                         | None ->  //TODO vymysli nejake reseni a hod to vse do ROP a Errors
                                                    String.Empty 
-            let! _ = login.Username = "Hanka" && login.Password = "meskamvkrpolu"
-            let result =
+            let! _ = login.Username = "Hanka" && login.Password = "q" //meskamvkrpolu
+            let result =                
                 let accessToken = System.Guid.NewGuid().ToString() //encodeJwt securityToken //TODO
-                use sw = new StreamWriter(Path.GetFullPath(securityTokenFile))
+                let mySeq = seq { login.Username; accessToken }
+                use sw = new StreamWriter(Path.GetFullPath(securityTokenFile)) //TODO vse do trywith
                          |> Option.ofObj
                          |> function
                              | Some value -> value
                              | None ->  //TODO vymysli nejake reseni a hod to vse do ROP a Errors
-                                        new StreamWriter(Path.GetFullPath(securityTokenFile))  
-                do sw.WriteLine(accessToken) 
+                                        new StreamWriter(Path.GetFullPath(securityTokenFile)) 
+                mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) //TODO vse do trywith
                 SharedApi.LoggedIn { Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             return result
          }
@@ -79,14 +80,27 @@ let IGetApi =
 
       getSecurityTokenFile =
           fun getSecurityTokenFile ->  //TODO try with
-              async { return File.Exists(Path.GetFullPath("securityToken.txt")) }              
+
+            async { return File.Exists(Path.GetFullPath("securityToken.txt")) }
+
+      getSecurityToken =
+          fun getSecurityToken ->  //TODO try with
+              async
+                  {
+                      match File.Exists(Path.GetFullPath("securityToken.txt")) with
+                      | false -> return Seq.empty  //TODO nejaku chybu vyhodit do stranky loginu
+                      | true  -> //StreamReader taky nejak nechtel fungovat                              
+                                 match File.ReadAllLines("securityToken.txt") |> Option.ofObj with
+                                 | Some value -> return (value |> Seq.ofArray) 
+                                 | None       -> return Seq.empty  //TODO nejaku chybu vyhodit do stranky loginu                             
+                  }        
       
       deleteSecurityTokenFile =
           fun deleteSecurityTokenFile ->  //TODO try with
               async
                   {
                       File.Delete(Path.GetFullPath("securityToken.txt"))
-                      return File.Exists(Path.GetFullPath("securityToken.txt")) 
+                      return ()
                   }   
 
       getCenikValues =
