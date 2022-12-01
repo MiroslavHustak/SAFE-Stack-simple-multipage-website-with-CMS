@@ -109,11 +109,15 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
 
     | SendLinkAndLinkNameValuesToServer ->
         let buttonClickEvent:GetLinkAndLinkNameValues =   //GetLinkAndLinkNameValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit                                     
+            let input current old =
+                match String.IsNullOrEmpty(current) with //String.IsNullOrWhiteSpace(current) ||
+                | true  -> old
+                | false -> current 
             SharedLinkAndLinkNameValues.create
-            <| model.V001LinkInput <| model.V002LinkInput <| model.V003LinkInput 
-            <| model.V004LinkInput <| model.V005LinkInput <| model.V006LinkInput
-            <| model.V001LinkNameInput <| model.V002LinkNameInput <| model.V003LinkNameInput 
-            <| model.V004LinkNameInput <| model.V005LinkNameInput <| model.V006LinkNameInput
+            <| input model.V001LinkInput model.OldLinkAndLinkNameValues.V001 <| input model.V002LinkInput model.OldLinkAndLinkNameValues.V002 <| input model.V003LinkInput model.OldLinkAndLinkNameValues.V003 
+            <| input model.V004LinkInput model.OldLinkAndLinkNameValues.V004 <| input model.V005LinkInput model.OldLinkAndLinkNameValues.V005 <| input model.V006LinkInput model.OldLinkAndLinkNameValues.V006
+            <| input model.V001LinkNameInput model.OldLinkAndLinkNameValues.V001n <| input model.V002LinkNameInput model.OldLinkAndLinkNameValues.V002n <| input model.V003LinkNameInput model.OldLinkAndLinkNameValues.V003n 
+            <| input model.V004LinkNameInput model.OldLinkAndLinkNameValues.V004n <| input model.V005LinkNameInput model.OldLinkAndLinkNameValues.V005n <| input model.V006LinkNameInput model.OldLinkAndLinkNameValues.V006n
 
         let cmd = Cmd.OfAsync.perform getLinkAndLinkNameValuesApi.getLinkAndLinkNameValues buttonClickEvent GetLinkAndLinkNameValues
         model, cmd
@@ -259,6 +263,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "001a"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V001n 
                                                                 prop.onChange (fun (ev: string) -> SetV001LinkNameInput ev |> dispatch)                                                       
                                                                 prop.autoFocus true
                                                             ]    
@@ -271,6 +276,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "001b"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V001
                                                                 prop.onChange (fun (ev: string) -> SetV001LinkInput ev |> dispatch)                                                       
                                                                 prop.autoFocus true
                                                             ]    
@@ -291,6 +297,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "002a"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V002n
                                                                 prop.onChange (fun (ev: string) -> SetV002LinkNameInput ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -301,6 +308,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "002b"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V002
                                                                 prop.onChange (fun (ev: string) -> SetV002LinkInput ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -320,6 +328,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "003a"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V003n
                                                                 prop.onChange (fun (ev: string) -> SetV003LinkNameInput ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -330,6 +339,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "003b"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V003
                                                                 prop.onChange (fun (ev: string) -> SetV003LinkInput ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -349,6 +359,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "004a"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V004n
                                                                 prop.onChange (fun (ev: string) -> SetV004LinkNameInput ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -359,6 +370,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "004b"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V004
                                                                 prop.onChange (fun (ev: string) -> SetV004LinkInput ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -377,7 +389,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             Html.input [
                                                                 prop.type' "text"
                                                                 prop.id "005a"
-                                                                prop.name ""                                                           
+                                                                prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V005n
                                                                 prop.onChange (fun (ev: string) -> SetV005LinkNameInput ev |> dispatch)                                                                                                                   
                                                                 prop.autoFocus true
                                                             ]    
@@ -387,7 +400,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             Html.input [
                                                                 prop.type' "text"
                                                                 prop.id "005b"
-                                                                prop.name ""                                                           
+                                                                prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V005
                                                                 prop.onChange (fun (ev: string) -> SetV005LinkInput ev |> dispatch)                                                                                                                   
                                                                 prop.autoFocus true
                                                             ]    
@@ -407,26 +421,71 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             Html.input [
                                                                 prop.type' "text"
                                                                 prop.id "006"
-                                                                prop.name ""                                                            
-                                                                prop.onChange (fun (ev: string) -> SetV006LinkNameInput ev |> dispatch)                                                                                                                
+                                                                prop.name ""
+                                                                prop.placeholder model.OldLinkAndLinkNameValues.V006
+                                                                prop.onChange (fun (ev: string) -> SetV006LinkInput ev |> dispatch)                                                                                                                
                                                                 prop.autoFocus true
                                                             ]    
                                                         ]      
                                                 ]
-                                            ]                                                                                                      
+                                            ]
                                             Html.tr [
                                                 prop.style
                                                     [
                                                         //style.marginLeft(0)
-                                                        style.height(50)  
+                                                        style.height(15)  
+                                                    ] 
+                                                prop.children [
+                                                    Html.td []    
+                                                    Html.td []
+                                                    Html.td []                                                                                                                  
+                                                ]
+                                            ]        
+                                            Html.tr [
+                                                prop.style
+                                                    [
+                                                        //style.marginLeft(0)                                                       
+                                                    ] 
+                                                prop.children [    
+                                                    Html.td [                                                       
+                                                        prop.style
+                                                            [
+                                                                   
+                                                                style.fontFamily "sans-serif"
+                                                                style.fontWeight.bold
+                                                            ]                                                           
+                                                        prop.children [
+                                                            Html.text "Použij mezerník pro generování prázdného řádku"
+                                                        ]
+                                                        
+                                                    ]                                                  
+                                                    Html.td [
+                                                        prop.style
+                                                            [
+                                                                style.visibility.hidden
+                                                            ]
+                                                        prop.children
+                                                            [                                                            
+                                                                 Html.text "****" 
+                                                            ]                                                                                                                
+                                                    ]  
+                                                    Html.td [                                                        
+                                                    ]                                                  
+                                                ]
+                                            ]
+                                            Html.tr [
+                                                prop.style
+                                                    [
+                                                        //style.marginLeft(0)
+                                                        style.height(15)  
                                                     ] 
                                                 prop.children [
                                                     Html.td []    
                                                     Html.td []
                                                     Html.td []
-                                                                                             
+                                                                                                                                        
                                                 ]
-                                            ]                                      
+                                            ]            
                                             Html.tr [
                                                 prop.style
                                                     [
@@ -476,7 +535,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         ]
                                                     ]                                                  
                                                 ]
-                                            ]                                           
+
+                                            ]            
                                         ]
                                     ]           
                                 ]

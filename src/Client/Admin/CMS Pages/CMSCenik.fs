@@ -104,10 +104,15 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         model, cmd
 
     | SendCenikValuesToServer ->
-        let buttonClickEvent:GetCenikValues = SharedCenikValues.create //GetCenikValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
-                                              <| model.V001Input <| model.V002Input <| model.V003Input 
-                                              <| model.V004Input <| model.V005Input <| model.V006Input
-                                              <| model.V007Input <| model.V008Input <| model.V009Input   
+        let buttonClickEvent:GetCenikValues =
+            let input current old =
+                match String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current) with
+                | true  -> old
+                | false -> current 
+            SharedCenikValues.create //GetCenikValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
+            <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
+            <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
+            <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
         let cmd = Cmd.OfAsync.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues
         model, cmd
 
@@ -274,6 +279,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "001"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldCenikValues.V001 
                                                                 prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch) 
                                                                 //nasledujici nelze, bo event nemoze byt takeho typu, bohuzel
                                                                 //prop.onChange (fun (ev: GetCenikValues) ->  SetInput ev.V001 |> dispatch) 
@@ -311,6 +317,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "002"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldCenikValues.V002 
                                                                 prop.onChange (fun (ev: string) -> SetV002Input ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -346,6 +353,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "003"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldCenikValues.V003 
                                                                 prop.onChange (fun (ev: string) -> SetV003Input ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -381,6 +389,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "004"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldCenikValues.V004
                                                                 prop.onChange (fun (ev: string) -> SetV004Input ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -415,7 +424,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             Html.input [
                                                                 prop.type' "text"
                                                                 prop.id "005"
-                                                                prop.name ""                                                           
+                                                                prop.name ""
+                                                                prop.placeholder model.OldCenikValues.V005
                                                                 prop.onChange (fun (ev: string) -> SetV005Input ev |> dispatch)                                                                                                                   
                                                                 prop.autoFocus true
                                                             ]    
@@ -450,7 +460,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             Html.input [
                                                                 prop.type' "text"
                                                                 prop.id "006"
-                                                                prop.name ""                                                            
+                                                                prop.name ""
+                                                                prop.placeholder model.OldCenikValues.V006
                                                                 prop.onChange (fun (ev: string) -> SetV006Input ev |> dispatch)                                                                                                                
                                                                 prop.autoFocus true
                                                             ]    
@@ -486,6 +497,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "007"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldCenikValues.V007
                                                                 prop.onChange (fun (ev: string) -> SetV007Input ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -521,6 +533,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "008"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldCenikValues.V008
                                                                 prop.onChange (fun (ev: string) -> SetV008Input ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -556,6 +569,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "009"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldCenikValues.V009
                                                                 prop.onChange (fun (ev: string) -> SetV009Input ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -584,7 +598,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         //style.marginLeft(0)                                                       
                                                     ] 
                                                 prop.children [
-                                                    Html.td []
+                                                    Html.td [ ]                                                   
                                                     Html.td [
                                                         Html.a [
                                                             prop.style
@@ -624,7 +638,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 [
                                                                   style.width(200)
                                                                   style.fontWeight.bold
-                                                                  style.fontSize(16) //font-size: large
+                                                                  style.fontSize(16) 
                                                                   style.color.blue
                                                                   style.fontFamily "sans-serif"
                                                                 ]
@@ -643,12 +657,3 @@ let view (model: Model) (dispatch: Msg -> unit) =
         ]    
 
     completeContent()
-    (*
-    match model.AuthenticationError with 
-       | NoError -> completeContent()                              
-       | AuthenticationError -> contentCMSForbidden()
-
-    match true with //model.GetCredentials.SecurityTokenFile with credentials.SecurityTokenFile
-    | true -> completeContent()
-    | false -> contentCMSForbidden()
-    *)

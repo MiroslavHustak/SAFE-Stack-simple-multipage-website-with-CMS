@@ -104,7 +104,6 @@ let view (model: Model) (dispatch: Msg -> unit) links =
                             ]
                         prop.children [
                             Html.text model.KontaktValues.V002
-                            Html.br []
                         ]
                     ]
                     Html.p [
@@ -134,26 +133,27 @@ let view (model: Model) (dispatch: Msg -> unit) links =
                               style.padding(0)
                             ]
                         prop.children [
-                            Html.text model.KontaktValues.V005
-                            Html.br []
+                            Html.text model.KontaktValues.V005                            
                         ]
                     ]
                     Html.p [
+                        prop.id 21
                         prop.style
                             [
-                              style.marginRight(0)
-                            ]    
+                              style.padding(0)
+                            ]
                         prop.children [
-                            Html.text model.KontaktValues.V006                             
+                            Html.text model.KontaktValues.V006                            
                         ]
                     ]
                     Html.p [
+                        prop.id 21
                         prop.style
-                            [
-                              style.marginRight(0)
-                            ]    
+                           [
+                             style.padding(0)
+                           ]
                         prop.children [
-                            Html.text model.KontaktValues.V007                             
+                           Html.text model.KontaktValues.V007                            
                         ]
                     ]
                 ]
@@ -162,7 +162,7 @@ let view (model: Model) (dispatch: Msg -> unit) links =
                     prop.children [
                         Html.p [
                             prop.className "editable"
-                            prop.id 22
+                            prop.id 24
                             prop.style
                                 [
                                   style.padding(0)
@@ -173,7 +173,7 @@ let view (model: Model) (dispatch: Msg -> unit) links =
                         ]
                         Html.p [
                             prop.className "editable"
-                            prop.id 23
+                            prop.id 25
                             prop.style
                                 [
                                   style.padding(0)
@@ -185,7 +185,7 @@ let view (model: Model) (dispatch: Msg -> unit) links =
                         ]
                         Html.p [
                             prop.className "editable"
-                            prop.id 24
+                            prop.id 26
                             prop.style
                                 [
                                     style.padding(0)
@@ -197,7 +197,7 @@ let view (model: Model) (dispatch: Msg -> unit) links =
                         ]
                         Html.p [
                             prop.className "editable"
-                            prop.id 25
+                            prop.id 27
                             prop.style
                                 [
                                     style.padding(0)
@@ -209,7 +209,7 @@ let view (model: Model) (dispatch: Msg -> unit) links =
                         ]
                         Html.p [
                             prop.className "editable"
-                            prop.id 26
+                            prop.id 28
                             prop.style
                                 [
                                   style.padding(0)

@@ -86,10 +86,15 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         model, cmd
 
     | SendKontaktValuesToServer ->
-        let buttonClickEvent: GetKontaktValues = SharedKontaktValues.create //GetKontaktValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
-                                              <| model.V001Input <| model.V002Input <| model.V003Input 
-                                              <| model.V004Input <| model.V005Input <| model.V006Input
-                                              <| model.V007Input   
+        let buttonClickEvent: GetKontaktValues =
+            let input current old =
+                match String.IsNullOrEmpty(current) with
+                | true  -> old
+                | false -> current 
+            SharedKontaktValues.create //GetKontaktValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
+            <| input model.V001Input model.OldKontaktValues.V001 <| input model.V002Input model.OldKontaktValues.V002 <| input model.V003Input model.OldKontaktValues.V003 
+            <| input model.V004Input model.OldKontaktValues.V004 <| input model.V005Input model.OldKontaktValues.V005 <| input model.V006Input model.OldKontaktValues.V006
+            <| input model.V007Input model.OldKontaktValues.V007 
         let cmd = Cmd.OfAsync.perform getKontaktValuesApi.getKontaktValues buttonClickEvent GetKontaktValues
         model, cmd
 
@@ -246,6 +251,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "001"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldKontaktValues.V001
                                                                 prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch)                                                       
                                                                 prop.autoFocus true
                                                             ]    
@@ -278,6 +284,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "002"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldKontaktValues.V002
                                                                 prop.onChange (fun (ev: string) -> SetV002Input ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -310,6 +317,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "003"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldKontaktValues.V003
                                                                 prop.onChange (fun (ev: string) -> SetV003Input ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -342,6 +350,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "004"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldKontaktValues.V004
                                                                 prop.onChange (fun (ev: string) -> SetV004Input ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -373,7 +382,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             Html.input [
                                                                 prop.type' "text"
                                                                 prop.id "005"
-                                                                prop.name ""                                                           
+                                                                prop.name ""
+                                                                prop.placeholder model.OldKontaktValues.V005
                                                                 prop.onChange (fun (ev: string) -> SetV005Input ev |> dispatch)                                                                                                                   
                                                                 prop.autoFocus true
                                                             ]    
@@ -405,7 +415,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             Html.input [
                                                                 prop.type' "text"
                                                                 prop.id "006"
-                                                                prop.name ""                                                            
+                                                                prop.name ""
+                                                                prop.placeholder model.OldKontaktValues.V006
                                                                 prop.onChange (fun (ev: string) -> SetV006Input ev |> dispatch)                                                                                                                
                                                                 prop.autoFocus true
                                                             ]    
@@ -438,6 +449,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.type' "text"
                                                                 prop.id "007"
                                                                 prop.name ""
+                                                                prop.placeholder model.OldKontaktValues.V007 
                                                                 prop.onChange (fun (ev: string) -> SetV007Input ev |> dispatch)
                                                                 prop.autoFocus true
                                                             ]    
@@ -448,10 +460,20 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                 prop.style
                                                     [
                                                         //style.marginLeft(0)
-                                                        style.height(50)  
+                                                        style.height(50)                                                        
                                                     ] 
                                                 prop.children [
-                                                    Html.td []    
+                                                    Html.td [
+                                                        prop.style
+                                                            [                                                               
+                                                                style.fontFamily "sans-serif"
+                                                                style.fontWeight.bold
+                                                            ]
+                                                        prop.children
+                                                            [
+                                                                 Html.text "Použij mezerník pro generování prázdného řádku"
+                                                            ]
+                                                    ]    
                                                     Html.td []
                                                     Html.td []
                                                     Html.td []                                                   

@@ -70,7 +70,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         let result =           
             match value with
             | SharedApi.UsernameOrPasswordIncorrect    -> { model with User = ApplicationUser.Anonymous}
-            | SharedApi.LoggedIn user ->                  { model with User = ApplicationUser.LoggedIn user}     
+            | SharedApi.LoggedIn user                  -> { model with User = ApplicationUser.LoggedIn user}     
         result, Cmd.ofMsg AskServerForSecurityTokenFile
         
     | AskServerForSecurityTokenFile ->
