@@ -37,18 +37,18 @@ let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult
                                     |> Option.ofObj
                                     |> function
                                         | Some value -> value
-                                        | None ->  //TODO vymysli nejake reseni a hod to vse do ROP a Errors
-                                                   String.Empty 
+                                        | None       -> //TODO vymysli nejake reseni a hod to vse do ROP a Errors
+                                                        String.Empty 
             let! _ = login.Username = "q" && login.Password = "q" 
             let result =                
-                let accessToken = System.Guid.NewGuid().ToString() //encodeJwt securityToken //TODO
+                let accessToken = string <| System.Guid.NewGuid() //encodeJwt securityToken //TODO
                 let mySeq = seq { login.Username; accessToken }
                 use sw = new StreamWriter(Path.GetFullPath(securityTokenFile)) //TODO vse do trywith
                          |> Option.ofObj
                          |> function
                              | Some value -> value
-                             | None ->  //TODO vymysli nejake reseni a hod to vse do ROP a Errors
-                                        new StreamWriter(Path.GetFullPath(securityTokenFile)) 
+                             | None       -> //TODO vymysli nejake reseni a hod to vse do ROP a Errors
+                                             new StreamWriter(Path.GetFullPath(securityTokenFile)) 
                 mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) //TODO vse do trywith
                 SharedApi.LoggedIn { Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             return result
@@ -75,18 +75,16 @@ let private verifyLinkAndLinkNameValues (linkValues: GetLinkAndLinkNameValues) =
 let IGetApi =
     {
       login =
-          fun login ->
-              async { return (verifyLogin login) }                 
+          fun login -> async { return (verifyLogin login) }                               
 
-      getSecurityTokenFile =
-          fun getSecurityTokenFile ->  //TODO try with
-
-            async { return File.Exists(Path.GetFullPath("securityToken.txt")) }
+      getSecurityTokenFile = //TODO try with
+          fun getSecurityTokenFile -> async { return File.Exists(Path.GetFullPath("securityToken.txt")) } 
+            
 
       getSecurityToken =
           fun getSecurityToken ->  //TODO try with
               async
-                  {
+                  {   //TODO https://stackoverflow.com/questions/12376833/combine-f-async-and-maybe-computation-expression                 
                       match File.Exists(Path.GetFullPath("securityToken.txt")) with
                       | false -> return Seq.empty  //TODO nejaku chybu vyhodit do stranky loginu
                       | true  -> //StreamReader taky nejak nechtel fungovat                              
