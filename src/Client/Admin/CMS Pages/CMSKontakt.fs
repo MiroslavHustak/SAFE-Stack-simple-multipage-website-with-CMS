@@ -7,6 +7,8 @@ open Fable.Remoting.Client
 open Shared
 open SharedTypes
 
+open FSharp.Control
+
 open System
 
 open Layout
@@ -25,6 +27,7 @@ type Model =
       V006Input: string
       V007Input: string       
       Id: int
+      DelayMsg: string
     }
 
 type Msg =    
@@ -39,6 +42,7 @@ type Msg =
     | SendOldKontaktValuesToServer
     | GetKontaktValues of GetKontaktValues
     | GetOldKontaktValues of GetKontaktValues
+    | AsyncWorkIsComplete 
     
 let getKontaktValuesApi =
     Remoting.createApi ()
@@ -67,6 +71,7 @@ let init id : Model * Cmd<Msg> =
         V006Input = ""
         V007Input = ""       
         Id = id
+        DelayMsg = String.Empty
       }
     model, Cmd.ofMsg SendOldKontaktValuesToServer
 
@@ -85,19 +90,47 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         let cmd = Cmd.OfAsync.perform getKontaktValuesApi.sendOldKontaktValues loadEvent GetOldKontaktValues
         model, cmd
 
+    | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
+        
     | SendKontaktValuesToServer ->
-        let buttonClickEvent: GetKontaktValues =
-            let input current old =
-                match String.IsNullOrEmpty(current) with
-                | true  -> old
-                | false -> current 
-            SharedKontaktValues.create //GetKontaktValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
-            <| input model.V001Input model.OldKontaktValues.V001 <| input model.V002Input model.OldKontaktValues.V002 <| input model.V003Input model.OldKontaktValues.V003 
-            <| input model.V004Input model.OldKontaktValues.V004 <| input model.V005Input model.OldKontaktValues.V005 <| input model.V006Input model.OldKontaktValues.V006
-            <| input model.V007Input model.OldKontaktValues.V007 
-        let cmd = Cmd.OfAsync.perform getKontaktValuesApi.getKontaktValues buttonClickEvent GetKontaktValues
-        model, cmd
+                try
+                    try
+                        let buttonClickEvent: GetKontaktValues =
+                            let input current old =
+                                match String.IsNullOrEmpty(current) with
+                                | true  -> old
+                                | false -> current 
+                            SharedKontaktValues.create //GetKontaktValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
+                            <| input model.V001Input model.OldKontaktValues.V001 <| input model.V002Input model.OldKontaktValues.V002 <| input model.V003Input model.OldKontaktValues.V003 
+                            <| input model.V004Input model.OldKontaktValues.V004 <| input model.V005Input model.OldKontaktValues.V005 <| input model.V006Input model.OldKontaktValues.V006
+                            <| input model.V007Input model.OldKontaktValues.V007 
+                        let cmd = Cmd.OfAsync.perform getKontaktValuesApi.getKontaktValues buttonClickEvent GetKontaktValues
 
+                        let delayedCmd (dispatch: Msg -> unit): unit =                                                  
+                            let delayedDispatch: Async<unit> =
+                                async
+                                    {
+                                        //prvni pruchod
+                                        let! hardwork1 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
+                                        let result1 = hardwork1
+                                        //druhy a dalsi pruchody
+                                        //doba ulozeni starych a novych hodnot nemusi byt v pozadovanem poradi, proto radeji opakovat
+                                        let! hardwork2 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
+                                        let result2 = hardwork2
+                                        AsyncSeq.initInfinite (fun _ -> model.KontaktValues)
+                                        |> AsyncSeq.takeWhile ((<>) model.OldKontaktValues) 
+                                        |> AsyncSeq.iterAsync (fun _ -> result2) |> ignore
+                                        dispatch AsyncWorkIsComplete
+                                    } 
+                                      
+                            Async.StartImmediate delayedDispatch                                                            
+                        let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
+                        { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
+                    finally
+                    ()   
+                with
+                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot ... " }, Cmd.none  
+                  
     | GetKontaktValues valueNew ->
         {
             model with

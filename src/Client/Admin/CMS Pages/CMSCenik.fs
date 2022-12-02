@@ -4,6 +4,8 @@ open Elmish
 open Feliz
 open Fable.Remoting.Client
 
+open FSharp.Control
+
 open Shared
 open SharedTypes
 
@@ -124,21 +126,29 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                         let cmd = Cmd.OfAsync.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues
 
                         let delayedCmd (dispatch: Msg -> unit): unit =                                                  
-                            let delayedDispatch: Async<unit> = 
+                            let delayedDispatch: Async<unit> =
                                 async
                                     {
-                                        do! Async.Sleep 1000 //musime pockat, az se nove hodnoty ulozi a znova nactou a deprem potem si rict o update
-                                        let! hardWork = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
-                                        do! Async.Sleep 500 //pozdrzime zobrazovani DelayMsg
+                                        //prvni pruchod
+                                        let! hardwork1 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
+                                        let result1 = hardwork1
+                                        //druhy a dalsi pruchody
+                                        //doba ulozeni starych a novych hodnot nemusi byt v pozadovanem poradi, proto radeji opakovat
+                                        let! hardwork2 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
+                                        let result2 = hardwork2
+                                        AsyncSeq.initInfinite (fun _ -> model.CenikValues)
+                                        |> AsyncSeq.takeWhile ((<>) model.OldCenikValues) 
+                                        |> AsyncSeq.iterAsync (fun _ -> result2) |> ignore
                                         dispatch AsyncWorkIsComplete
-                                    }                                       
+                                    } 
+                              
                             Async.StartImmediate delayedDispatch                                                            
                         let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
                         { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
                     finally
                     ()   
                 with
-                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot" }, Cmd.none //TODO zjistit dusledky       
+                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot ... " }, Cmd.none   
 
     | GetCenikValues valueNew ->
         {
@@ -304,9 +314,11 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 prop.id "001"
                                                                 prop.name ""
                                                                 prop.placeholder model.OldCenikValues.V001 
-                                                                prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch) 
+                                                                //String.IsNullOrEmpty() || String.IsNullOrWhiteSpace()
+                                                                prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch)    
                                                                 //nasledujici nelze, bo event nemoze byt takeho typu, bohuzel
-                                                                //prop.onChange (fun (ev: GetCenikValues) ->  SetInput ev.V001 |> dispatch) 
+                                                                //prop.onChange (fun (ev: GetCenikValues) ->  SetInput ev.V001 |> dispatch)
+                                                                
                                                                 prop.autoFocus true
                                                             ]    
                                                         ]                                             
@@ -615,8 +627,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             prop.style
                                                                 [
                                                                     style.fontWeight.bold
-                                                                    style.fontSize(12) 
-                                                                    style.color.blue
+                                                                    style.fontSize(14) 
+                                                                    style.color.red
                                                                     style.fontFamily "sans-serif"
                                                                 ]
                                                             prop.children
@@ -654,11 +666,15 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                     Html.td [
                                                         prop.style
                                                             [
+                                                                style.fontWeight.bold
+                                                                style.fontSize(14) 
+                                                                style.color.blue
+                                                                style.fontFamily "sans-serif"
                                                                 style.visibility.hidden
                                                             ]
                                                         prop.children
                                                             [                                                            
-                                                                Html.text "Probíhá načítání..." 
+                                                                Html.text "**********************" 
                                                             ]                                                                                                                
                                                             ]
                                                     Html.td [

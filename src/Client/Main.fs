@@ -162,7 +162,8 @@ let private setRoute (optRoute: RouterM.Route option) model =
                    { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
         | LoggedIn user  ->
                    let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.init cmsRozcestnikId 
-                   { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd 
+                   { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd
+         //FirstTimeRunAnonymous je moc dluhe, takze podrzitko...
         | _     -> let (homeModel, homeCmd) = Home.init () //or Login.init      
                    { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues                  
                      
@@ -290,7 +291,7 @@ let update (msg: Msg) (model: Model) =
                                                                                     V001n = value.V001n; V002n = value.V002n; V003n = value.V003n;
                                                                                     V004n = value.V004n; V005n = value.V005n; V006n = value.V006n;
                                                                                 }
-                                            }, Cmd.none
+                                           }, Cmd.none
                                             
     | _, msg -> model, Cmd.none
         //Browser.console.warn("Message discarded:\n", string msg)    

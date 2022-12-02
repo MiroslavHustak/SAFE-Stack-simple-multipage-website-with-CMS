@@ -7,6 +7,8 @@ open Fable.Remoting.Client
 open Shared
 open SharedTypes
 
+open FSharp.Control
+
 open System
 
 open Layout
@@ -30,6 +32,7 @@ type Model =
       V005LinkNameInput: string
       V006LinkNameInput: string
       Id: int
+      DelayMsg: string
     }
 
 type Msg =
@@ -49,6 +52,7 @@ type Msg =
     | SendOldLinkAndLinkNameValuesToServer
     | GetLinkAndLinkNameValues of GetLinkAndLinkNameValues
     | GetOldLinkAndLinkNameValues of GetLinkAndLinkNameValues
+    | AsyncWorkIsComplete 
 
 let getLinkAndLinkNameValuesApi =
     Remoting.createApi ()
@@ -84,6 +88,7 @@ let init id : Model * Cmd<Msg> =
         V005LinkNameInput = ""
         V006LinkNameInput = "Facebook"           
         Id = id
+        DelayMsg = String.Empty
       }
     model, Cmd.ofMsg SendOldLinkAndLinkNameValuesToServer
 
@@ -107,20 +112,49 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         let cmd = Cmd.OfAsync.perform getLinkAndLinkNameValuesApi.sendOldLinkAndLinkNameValues loadEvent GetOldLinkAndLinkNameValues
         model, cmd
 
+    | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
+    
     | SendLinkAndLinkNameValuesToServer ->
-        let buttonClickEvent:GetLinkAndLinkNameValues =   //GetLinkAndLinkNameValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit                                     
-            let input current old =
-                match String.IsNullOrEmpty(current) with //String.IsNullOrWhiteSpace(current) ||
-                | true  -> old
-                | false -> current 
-            SharedLinkAndLinkNameValues.create
-            <| input model.V001LinkInput model.OldLinkAndLinkNameValues.V001 <| input model.V002LinkInput model.OldLinkAndLinkNameValues.V002 <| input model.V003LinkInput model.OldLinkAndLinkNameValues.V003 
-            <| input model.V004LinkInput model.OldLinkAndLinkNameValues.V004 <| input model.V005LinkInput model.OldLinkAndLinkNameValues.V005 <| input model.V006LinkInput model.OldLinkAndLinkNameValues.V006
-            <| input model.V001LinkNameInput model.OldLinkAndLinkNameValues.V001n <| input model.V002LinkNameInput model.OldLinkAndLinkNameValues.V002n <| input model.V003LinkNameInput model.OldLinkAndLinkNameValues.V003n 
-            <| input model.V004LinkNameInput model.OldLinkAndLinkNameValues.V004n <| input model.V005LinkNameInput model.OldLinkAndLinkNameValues.V005n <| input model.V006LinkNameInput model.OldLinkAndLinkNameValues.V006n
+                try
+                    try
+                        let buttonClickEvent:GetLinkAndLinkNameValues =   //GetLinkAndLinkNameValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit                                     
+                            let input current old =
+                                match String.IsNullOrEmpty(current) with //String.IsNullOrWhiteSpace(current) ||
+                                | true  -> old
+                                | false -> current 
+                            SharedLinkAndLinkNameValues.create
+                            <| input model.V001LinkInput model.OldLinkAndLinkNameValues.V001 <| input model.V002LinkInput model.OldLinkAndLinkNameValues.V002 <| input model.V003LinkInput model.OldLinkAndLinkNameValues.V003 
+                            <| input model.V004LinkInput model.OldLinkAndLinkNameValues.V004 <| input model.V005LinkInput model.OldLinkAndLinkNameValues.V005 <| input model.V006LinkInput model.OldLinkAndLinkNameValues.V006
+                            <| input model.V001LinkNameInput model.OldLinkAndLinkNameValues.V001n <| input model.V002LinkNameInput model.OldLinkAndLinkNameValues.V002n <| input model.V003LinkNameInput model.OldLinkAndLinkNameValues.V003n 
+                            <| input model.V004LinkNameInput model.OldLinkAndLinkNameValues.V004n <| input model.V005LinkNameInput model.OldLinkAndLinkNameValues.V005n <| input model.V006LinkNameInput model.OldLinkAndLinkNameValues.V006n
 
-        let cmd = Cmd.OfAsync.perform getLinkAndLinkNameValuesApi.getLinkAndLinkNameValues buttonClickEvent GetLinkAndLinkNameValues
-        model, cmd
+                        let cmd = Cmd.OfAsync.perform getLinkAndLinkNameValuesApi.getLinkAndLinkNameValues buttonClickEvent GetLinkAndLinkNameValues
+
+                        //tady neni treba delayedCmd, ale dodano quli jednotnosti CMS systemu
+                        let delayedCmd (dispatch: Msg -> unit): unit =                                                  
+                            let delayedDispatch: Async<unit> =
+                                async
+                                    {
+                                        //prvni pruchod
+                                        let! hardwork1 = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
+                                        let result1 = hardwork1
+                                        //druhy a dalsi pruchody
+                                        //doba ulozeni starych a novych hodnot nemusi byt v pozadovanem poradi, proto radeji opakovat
+                                        let! hardwork2 = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
+                                        let result2 = hardwork2
+                                        AsyncSeq.initInfinite (fun _ -> model.LinkAndLinkNameValues)
+                                        |> AsyncSeq.takeWhile ((<>) model.OldLinkAndLinkNameValues) 
+                                        |> AsyncSeq.iterAsync (fun _ -> result2) |> ignore
+                                        dispatch AsyncWorkIsComplete
+                                    } 
+                                  
+                            Async.StartImmediate delayedDispatch                                                            
+                        let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
+                        { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
+                    finally
+                    ()   
+                with
+                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot ... " }, Cmd.none  
 
     | GetLinkAndLinkNameValues valueNew ->
         {
