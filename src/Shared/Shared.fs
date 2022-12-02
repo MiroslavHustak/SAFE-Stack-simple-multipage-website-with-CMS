@@ -13,18 +13,6 @@ module SharedLoginValues =
             Username = username   //client -> server
             Password = password   //client -> server
         }
-      
-module DeleteSecurityTokenFile =
-        
-    let create deleteSecurityTokenFile = ()  
-
-module GetSecurityTokenFile = 
-    
-    let create getSecurityTokenFile = ()
-
-module GetSecurityToken = 
-    
-    let create getSecurityToken = ()
   
 module SharedCenikValues =
         

@@ -12,7 +12,6 @@ open SharedTypes
 
 open Security
 
-open Helpers
 open ROP_Functions
 open Helpers.CopyingFiles
 open Helpers.Serialisation
@@ -50,6 +49,7 @@ let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult
                              | None       -> //TODO vymysli nejake reseni a hod to vse do ROP a Errors
                                              new StreamWriter(Path.GetFullPath(securityTokenFile)) 
                 mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) //TODO vse do trywith
+                //vyse uvedeny kod pro ukladani na server (puvodne workaround) ponechan pro pripadne pristi pouziti
                 SharedApi.LoggedIn { Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             return result
          }
@@ -75,22 +75,22 @@ let private verifyLinkAndLinkNameValues (linkValues: GetLinkAndLinkNameValues) =
 let IGetApi =
     {
       login =
-          fun login -> async { return (verifyLogin login) }                               
-
+          fun login -> async { return (verifyLogin login) }
+          
+     (*
       getSecurityTokenFile = //TODO try with
-          fun getSecurityTokenFile -> async { return File.Exists(Path.GetFullPath("securityToken.txt")) } 
-            
-
+          fun getSecurityTokenFile -> async { return File.Exists(Path.GetFullPath("securityToken.txt")) }             
+     
       getSecurityToken =
           fun getSecurityToken ->  //TODO try with
               async
-                  {   //TODO https://stackoverflow.com/questions/12376833/combine-f-async-and-maybe-computation-expression                 
+                  {       
                       match File.Exists(Path.GetFullPath("securityToken.txt")) with
-                      | false -> return Seq.empty  //TODO nejaku chybu vyhodit do stranky loginu
+                      | false -> return Seq.empty  //TODO error+reseni
                       | true  -> //StreamReader taky nejak nechtel fungovat                              
                                  match File.ReadAllLines("securityToken.txt") |> Option.ofObj with
                                  | Some value -> return (value |> Seq.ofArray) 
-                                 | None       -> return Seq.empty  //TODO nejaku chybu vyhodit do stranky loginu                             
+                                 | None       -> return Seq.empty  //TODO error+reseni                           
                   }        
       
       deleteSecurityTokenFile =
@@ -100,6 +100,7 @@ let IGetApi =
                       File.Delete(Path.GetFullPath("securityToken.txt"))
                       return ()
                   }   
+      *)
 
       getCenikValues =
           fun getCenikValues ->

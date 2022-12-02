@@ -11,17 +11,14 @@ open Layout
 open Records
 open ContentCMSRozcestnik
 open ContentCMSForbidden
-open Login
 
 type Model =
     {        
-      Id: int    
-      //Dummy: unit         
+      Id: int   
     }
 
 type Msg =
-    | AskServerForDeletingSecurityTokenFile
-    | DeleteSecurityTokenFileMsg of unit   
+     | Dummy  
 
 let private deleteSecurityTokenFileApi = Remoting.createApi ()
                                          |> Remoting.withRouteBuilder Route.builder
@@ -31,22 +28,16 @@ let init id: Model * Cmd<Msg> =
     let model = {
                     Id = id                
                 }
-    //let model = { Dummy = () } 
     model, Cmd.none
 
-let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+let update (msg: Msg) (model: Model): Model * Cmd<Msg> =
     match msg with
-    | AskServerForDeletingSecurityTokenFile ->
-        let sendEvent = DeleteSecurityTokenFile.create () 
-        let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent DeleteSecurityTokenFileMsg
-        model, cmd
-                               
-    | DeleteSecurityTokenFileMsg _ -> model, Cmd.none // value je unit, takze staci placement   
+    | Dummy -> model, Cmd.none 
 
 let view (model: Model) (dispatch: Msg -> unit) =
 
     //druhy rozcestnik
-    let returnButtonDiv askServerForDeletingSecurityTokenFile =
+    let returnButtonDiv =
          Html.div [            
             Html.form [
                 prop.action (RouterM.toHash (RouterM.Home))
@@ -55,13 +46,13 @@ let view (model: Model) (dispatch: Msg -> unit) =
                         prop.type' "submit"
                         prop.value "Logout a návrat na webové stránky" //druhy rozcestnik
                         prop.id "Button2"
-                        prop.onClick (fun _ -> dispatch askServerForDeletingSecurityTokenFile)
+                        prop.onClick (fun _ -> dispatch Dummy) //v Main.fs je Session = None pro druhy rozcestnik
                         prop.style
                             [
                               style.width(300)
                               style.height(30)
                               style.fontWeight.bold
-                              style.fontSize(16) //font-size: large
+                              style.fontSize(16) 
                               style.color.blue
                               style.fontFamily "sans-serif"
                             ]
@@ -88,5 +79,5 @@ let view (model: Model) (dispatch: Msg -> unit) =
             *)
          ]      
 
-    contentCMSRozcestnik (returnButtonDiv AskServerForDeletingSecurityTokenFile) 
+    contentCMSRozcestnik returnButtonDiv 
    

@@ -15,6 +15,7 @@ open Fable.Remoting.Client
 
 open Shared
 open SharedTypes
+open LoginExtended
 
 type ApplicationUser =
     | FirstTimeRunAnonymous
@@ -35,7 +36,7 @@ type Page =
     | CMSKontakt of CMSKontakt.Model
     | CMSLink of CMSLink.Model
     | NotFound
-    | Logout of Home.Model
+    //| Logout of Home.Model
 
 type Model =
     {
@@ -44,8 +45,8 @@ type Model =
         User: ApplicationUser 
         user: SharedApi.User
 
-        GetSecurityTokenFile: bool
-        DeleteSecurityTokenFile: unit
+        Session: SharedApi.LoginResult option
+
         LinkAndLinkNameValues: GetLinkAndLinkNameValues
         LinkAndLinkNameInputValues: GetLinkAndLinkNameValues
     }
@@ -65,20 +66,11 @@ type Msg =
 
     | AskServerForLinkAndLinkNameValues 
     | GetLinkAndLinkNameValues of GetLinkAndLinkNameValues
-    | AskServerForSecurityTokenFile
-    | AskServerForSecurityToken
-    | AskServerForDeletingSecurityTokenFile
-    | GetSecurityTokenFileMsg of bool
-    | GetSecurityTokenMsg of string seq
-    | DeleteSecurityTokenFileMsg of unit
 
 let private api() = Remoting.createApi ()
                     |> Remoting.withRouteBuilder Route.builder
                     |> Remoting.buildProxy<IGetApi>
 
-let private getSecurityTokenFileApi = api()
-let private getSecurityTokenApi = api()
-let private deleteSecurityTokenFileApi = api()
 let private sendDeserialisedLinkAndLinkNameValuesApi = api()
 
 let private cmd1 fn cmd msg = Cmd.batch <| seq { Cmd.map fn cmd; Cmd.ofMsg msg }
@@ -87,23 +79,19 @@ let private cmd2 fn cmd msg msg' = Cmd.batch <| seq { Cmd.map fn cmd; Cmd.ofMsg 
 let private setRoute (optRoute: RouterM.Route option) model = 
                                                  
     let model =
+                          
         let applicationUser = 
-            match model.GetSecurityTokenFile with
-            | true  -> LoggedIn model.user
-            | false -> Anonymous
-
-        let currentRoute =
-            match model.GetSecurityTokenFile with
-            | true  -> optRoute
-            | false -> Some RouterM.Route.Home
+            match model.Session with
+            | Some value ->
+                            match value with
+                            | SharedApi.UsernameOrPasswordIncorrect -> Anonymous
+                            | SharedApi.LoggedIn user               -> LoggedIn user  
+            | None       -> Anonymous
 
         {
-            model with CurrentRoute = currentRoute
+            model with CurrentRoute = optRoute //currentRoute //neni treba, User = applicationUser se v patter matching postara o spravny routing
                                       User = applicationUser                                                                                                                              
-        }                          
-         
-    //let model = { model with CurrentRoute = optRoute }
-
+        }    
     
     (*
         //What's happening here is that F# allows you to deconstruct function arguments inline using arbitrarily complex pattern matching.
@@ -135,32 +123,32 @@ let private setRoute (optRoute: RouterM.Route option) model =
 
     | Some RouterM.Route.Home ->    
        let (homeModel, homeCmd) = Home.init ()       
-       { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+       { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
     | Some (RouterM.Route.Sluzby sluzbyId) ->
         let (sluzbyModel, sluzbyCmd) = Sluzby.init sluzbyId
-        { model with ActivePage = Page.Sluzby sluzbyModel }, cmd2 SluzbyMsg sluzbyCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+        { model with ActivePage = Page.Sluzby sluzbyModel }, cmd1 SluzbyMsg sluzbyCmd AskServerForLinkAndLinkNameValues 
 
     | Some (RouterM.Route.Cenik cenikId) ->
         let (cenikModel, cenikCmd) = Cenik.init cenikId
-        { model with ActivePage = Page.Cenik cenikModel }, cmd2 CenikMsg cenikCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+        { model with ActivePage = Page.Cenik cenikModel }, cmd1 CenikMsg cenikCmd AskServerForLinkAndLinkNameValues 
 
     | Some (RouterM.Route.Nenajdete nenajdeteId) ->
         let (nenajdeteModel, nenajdeteCmd) = Nenajdete.init nenajdeteId 
-        { model with ActivePage = Page.Nenajdete nenajdeteModel }, cmd2 NenajdeteMsg nenajdeteCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+        { model with ActivePage = Page.Nenajdete nenajdeteModel }, cmd1 NenajdeteMsg nenajdeteCmd AskServerForLinkAndLinkNameValues 
 
     | Some (RouterM.Route.Kontakt kontaktId) ->
         let (kontaktModel, kontaktCmd) = Kontakt.init kontaktId
-        { model with ActivePage = Page.Kontakt kontaktModel }, cmd2 KontaktMsg kontaktCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+        { model with ActivePage = Page.Kontakt kontaktModel }, cmd1 KontaktMsg kontaktCmd AskServerForLinkAndLinkNameValues 
 
     | Some (RouterM.Route.Login loginId) ->
         let (loginModel, loginCmd) = Login.init loginId
-        { model with ActivePage = Page.Login loginModel }, cmd1 LoginMsg loginCmd AskServerForDeletingSecurityTokenFile
+        { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd 
 
     //zatim nevyuzito
     | Some (RouterM.Route.Logout) ->
         let (homeModel, homeCmd) = Home.init () //or Login.init
-        { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+        { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
     //zatim nevyuzito
     | Some (RouterM.Route.Maintenance) ->
@@ -171,40 +159,40 @@ let private setRoute (optRoute: RouterM.Route option) model =
         match model.User with
         | Anonymous ->  
                    let (homeModel, homeCmd) = Home.init () //or Login.init      
-                   { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+                   { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
         | LoggedIn user  ->
                    let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.init cmsRozcestnikId 
                    { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd 
         | _     -> let (homeModel, homeCmd) = Home.init () //or Login.init      
-                   { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile                 
+                   { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues                  
                      
     | Some (RouterM.Route.CMSCenik cmsCenikId) ->  
         match model.User with
         | Anonymous ->  
                     let (homeModel, homeCmd) = Home.init () //or Login.init      
-                    { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+                    { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
         | LoggedIn user ->
                     let (cmsCenikModel, cmsCenikCmd) = CMSCenik.init cmsCenikId
                     { model with ActivePage = Page.CMSCenik cmsCenikModel }, Cmd.map CMSCenikMsg cmsCenikCmd 
         | _      -> let (homeModel, homeCmd) = Home.init () //or Login.init      
-                    { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+                    { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
     | Some (RouterM.Route.CMSKontakt cmsKontaktId) ->
         match model.User with
         | Anonymous ->  
                    let (homeModel, homeCmd) = Home.init () //or Login.init     
-                   { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+                   { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
         | LoggedIn user ->
                    let (cmsKontaktModel, cmsKontaktCmd) = CMSKontakt.init cmsKontaktId
                    { model with ActivePage = Page.CMSKontakt cmsKontaktModel }, Cmd.map CMSKontaktMsg cmsKontaktCmd 
         | _ ->     let (homeModel, homeCmd) = Home.init () //or Login.init      
-                   { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+                   { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
     | Some (RouterM.Route.CMSLink cmsLinkId) ->    
         match model.User with
         | Anonymous ->  
                    let (homeModel, homeCmd) = Home.init () //or Login.init      
-                   { model with ActivePage = Page.Home homeModel }, cmd2 HomeMsg homeCmd AskServerForLinkAndLinkNameValues AskServerForDeletingSecurityTokenFile
+                   { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
         | LoggedIn user ->
                    let (cmsLinkModel, cmsLinkCmd) = CMSLink.init cmsLinkId
                    { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
@@ -220,10 +208,9 @@ let init (location: RouterM.Route option) =
 
             User = Anonymous
             user = { Username = ""; AccessToken = SharedApi.AccessToken ""}
-                         
-            GetSecurityTokenFile = false
-            DeleteSecurityTokenFile = ()
 
+            Session = None
+          
             LinkAndLinkNameValues =
                 {
                     V001 = ""; V002 = ""; V003 = "";
@@ -250,31 +237,33 @@ let update (msg: Msg) (model: Model) =
 
     | Page.Home homeModel, HomeMsg homeMsg ->
         let (homeModel, homeCmd) = Home.update homeMsg homeModel       
-        { model with ActivePage = Page.Home homeModel }, Cmd.map HomeMsg homeCmd
+        { model with ActivePage = Page.Home homeModel; Session = None }, Cmd.map HomeMsg homeCmd
 
     | Page.Sluzby sluzbyModel, SluzbyMsg sluzbyMsg ->
         let (sluzbyModel, sluzbyCmd) = Sluzby.update sluzbyMsg sluzbyModel
-        { model with ActivePage = Page.Sluzby sluzbyModel }, Cmd.map SluzbyMsg sluzbyCmd
+        { model with ActivePage = Page.Sluzby sluzbyModel; Session = None }, Cmd.map SluzbyMsg sluzbyCmd
 
     | Page.Cenik cenikModel, CenikMsg cenikMsg ->
         let (cenikModel, cenikCmd) = Cenik.update cenikMsg cenikModel
-        { model with ActivePage = Page.Cenik cenikModel }, Cmd.map CenikMsg cenikCmd
+        { model with ActivePage = Page.Cenik cenikModel; Session = None }, Cmd.map CenikMsg cenikCmd
 
     | Page.Nenajdete nenajdeteModel, NenajdeteMsg nenajdeteMsg ->
         let (nenajdeteModel, nenajdeteCmd) = Nenajdete.update nenajdeteMsg nenajdeteModel
-        { model with ActivePage = Page.Nenajdete nenajdeteModel }, Cmd.map NenajdeteMsg nenajdeteCmd
+        { model with ActivePage = Page.Nenajdete nenajdeteModel; Session = None }, Cmd.map NenajdeteMsg nenajdeteCmd
 
     | Page.Kontakt kontaktModel, KontaktMsg kontaktMsg ->
         let (kontaktModel, kontaktCmd) = Kontakt.update kontaktMsg kontaktModel
-        { model with ActivePage = Page.Kontakt kontaktModel }, Cmd.map KontaktMsg kontaktCmd
+        { model with ActivePage = Page.Kontakt kontaktModel; Session = None }, Cmd.map KontaktMsg kontaktCmd
 
     | Page.Login loginModel, LoginMsg loginMsg  ->
-        let (loginModel, loginCmd) = Login.update loginMsg loginModel
-        { model with ActivePage = Page.Login loginModel }, cmd2 LoginMsg loginCmd AskServerForSecurityToken AskServerForSecurityTokenFile //musi byt zrovna tady, jinak se Cenik, Kontakt, Link nezpristupni
+        let (loginModel, loginCmd, loginExtraMsg) = Login.update loginMsg loginModel        
+        match loginExtraMsg with
+        | Login.ExternalMsg.NoOp -> { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd
+        | Login.ExternalMsg.SignedIn session -> { model with ActivePage = Page.Login loginModel; Session = Some session }, Cmd.map LoginMsg loginCmd
 
     | Page.CMSRozcestnik cmsRozcestnikModel, CMSRozcestnikMsg cmsRozcestnikMsg ->
         let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.update cmsRozcestnikMsg cmsRozcestnikModel
-        { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd 
+        { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel; Session = None }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd //to None bude pri druhem rozcestniku
 
     | Page.CMSCenik cmsCenikModel, CMSCenikMsg cmsCenikMsg ->
         let (cmsCenikModel, cmsCenikCmd) = CMSCenik.update cmsCenikMsg cmsCenikModel 
@@ -287,27 +276,6 @@ let update (msg: Msg) (model: Model) =
     | Page.CMSLink cmsLinkModel, CMSLinkMsg cmsLinkMsg ->
         let (cmsLinkModel, cmsLinkCmd) = CMSLink.update cmsLinkMsg cmsLinkModel 
         { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
-
-    | _, AskServerForSecurityTokenFile ->
-            let sendEvent = GetSecurityTokenFile.create () 
-            let cmd = Cmd.OfAsync.perform getSecurityTokenFileApi.getSecurityTokenFile sendEvent GetSecurityTokenFileMsg
-            model, cmd
-
-    | _, AskServerForSecurityToken ->
-                let sendEvent = GetSecurityToken.create () 
-                let cmd = Cmd.OfAsync.perform getSecurityTokenApi.getSecurityToken sendEvent GetSecurityTokenMsg
-                model, cmd
-
-    | _, AskServerForDeletingSecurityTokenFile ->
-            let sendEvent = DeleteSecurityTokenFile.create () 
-            let cmd = Cmd.OfAsync.perform deleteSecurityTokenFileApi.deleteSecurityTokenFile sendEvent DeleteSecurityTokenFileMsg
-            model, cmd
-
-    | _, GetSecurityTokenFileMsg value -> { model with GetSecurityTokenFile = value }, Cmd.none
-
-    | _, GetSecurityTokenMsg value -> { model with user = { Username = (value |> Seq.item 0); AccessToken = SharedApi.AccessToken (value |> Seq.item 1) } }, Cmd.none  
-
-    | _, DeleteSecurityTokenFileMsg _  -> model, Cmd.none // value je unit, takze staci placement                                                
                                                                   
     //pokud potrebujeme aktivovat hodnoty uz pri spusteni public stranek        
     | _, AskServerForLinkAndLinkNameValues ->
@@ -342,7 +310,7 @@ let view (model: Model) (dispatch: Dispatch<Msg>) =
     | Page.CMSCenik cmsCenikModel -> CMSCenik.view cmsCenikModel (CMSCenikMsg >> dispatch) 
     | Page.CMSKontakt cmsKontaktModel -> CMSKontakt.view cmsKontaktModel (CMSKontaktMsg >> dispatch) 
     | Page.CMSLink cmsLinkModel -> CMSLink.view cmsLinkModel (CMSLinkMsg >> dispatch)
-    | Page.Logout homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues //zatim nevyuzito
+   // | Page.Logout homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues //zatim nevyuzito
 
 open Elmish.UrlParser
 open Elmish.Navigation

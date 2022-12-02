@@ -28,6 +28,7 @@ type Model =
       V008Input: string
       V009Input: string      
       Id: int
+      DelayMsg: string
     }
 
 type Msg =
@@ -45,6 +46,7 @@ type Msg =
     | SendOldCenikValuesToServer
     | GetCenikValues of GetCenikValues
     | GetOldCenikValues of GetCenikValues
+    | AsyncWorkIsComplete 
 
 let getVerifiedSecurityToken =
     Remoting.createApi ()
@@ -81,8 +83,10 @@ let init id : Model * Cmd<Msg> =
         V008Input = ""
         V009Input = "" 
         Id = id
+        DelayMsg = String.Empty
       }
     model, Cmd.ofMsg SendOldCenikValuesToServer
+
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with
@@ -97,24 +101,44 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | SetV007Input value -> { model with V007Input = value }, Cmd.none
     | SetV008Input value -> { model with V008Input = value }, Cmd.none
     | SetV009Input value -> { model with V009Input = value }, Cmd.none
-
-    | SendOldCenikValuesToServer ->
+    
+    | SendOldCenikValuesToServer ->   
         let loadEvent = SharedDeserialisedCenikValues.create model.OldCenikValues
         let cmd = Cmd.OfAsync.perform getCenikValuesApi.sendOldCenikValues loadEvent GetOldCenikValues
         model, cmd
 
+    | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
+
     | SendCenikValuesToServer ->
-        let buttonClickEvent:GetCenikValues =
-            let input current old =
-                match String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current) with
-                | true  -> old
-                | false -> current 
-            SharedCenikValues.create //GetCenikValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
-            <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
-            <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
-            <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
-        let cmd = Cmd.OfAsync.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues
-        model, cmd
+                try
+                    try
+                        let buttonClickEvent:GetCenikValues =
+                            let input current old =
+                                match String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current) with
+                                | true  -> old
+                                | false -> current 
+                            SharedCenikValues.create //GetCenikValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
+                            <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
+                            <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
+                            <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
+                        let cmd = Cmd.OfAsync.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues
+
+                        let delayedCmd (dispatch: Msg -> unit): unit =                                                  
+                            let delayedDispatch: Async<unit> = 
+                                async
+                                    {
+                                        do! Async.Sleep 1000 //musime pockat, az se nove hodnoty ulozi a znova nactou a deprem potem si rict o update
+                                        let! hardWork = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
+                                        do! Async.Sleep 500 //pozdrzime zobrazovani DelayMsg
+                                        dispatch AsyncWorkIsComplete
+                                    }                                       
+                            Async.StartImmediate delayedDispatch                                                            
+                        let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
+                        { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
+                    finally
+                    ()   
+                with
+                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot" }, Cmd.none //TODO zjistit dusledky       
 
     | GetCenikValues valueNew ->
         {
@@ -558,7 +582,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             ]
                                                         prop.children
                                                             [                                                            
-                                                                 Html.text model.OldCenikValues.V009 
+                                                                 Html.text model.OldCenikValues.V009  
                                                             ]   
                                                         ]
                                                     Html.td []
@@ -585,8 +609,21 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                 prop.children [
                                                     Html.td []                                                   
                                                     Html.td []
-                                                    Html.td []
-                                                    Html.td []
+                                                    Html.td []                                                                                                       
+                                                    Html.td
+                                                        [
+                                                            prop.style
+                                                                [
+                                                                    style.fontWeight.bold
+                                                                    style.fontSize(12) 
+                                                                    style.color.blue
+                                                                    style.fontFamily "sans-serif"
+                                                                ]
+                                                            prop.children
+                                                                [                                                            
+                                                                    Html.text model.DelayMsg
+                                                                ]                                                                                                                
+                                                        ]
                                                     Html.td []
                                                     Html.td []
                                                     Html.td []
@@ -614,7 +651,16 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         ]
                                                     ]
                                                     Html.td []
-                                                    Html.td []
+                                                    Html.td [
+                                                        prop.style
+                                                            [
+                                                                style.visibility.hidden
+                                                            ]
+                                                        prop.children
+                                                            [                                                            
+                                                                Html.text "Probíhá načítání..." 
+                                                            ]                                                                                                                
+                                                            ]
                                                     Html.td [
                                                         prop.style
                                                             [
