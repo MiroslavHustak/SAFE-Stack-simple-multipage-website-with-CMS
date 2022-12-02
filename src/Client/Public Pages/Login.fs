@@ -185,7 +185,9 @@ module Login =
         | LoggedIn user         -> contentCMSRozcestnik returnButtonDiv //prvni rozcestnik
 
                    
-// Redundant code - for learning purposes only!!!
+//Redundant code - for learning purposes only!!!
+//Code by Maxime Mangel
+//https://medium.com/@MangelMaxime/my-tips-for-working-with-elmish-ab8d193d52fd
 module Parent =
 
     open SharedTypes

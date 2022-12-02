@@ -110,26 +110,20 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                             let delayedDispatch: Async<unit> =
                                 async
                                     {
-                                        //prvni pruchod
+                                        //komentar viz CenikCMS
+                                        do! Async.Sleep 500
                                         let! hardwork1 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
-                                        let result1 = hardwork1
-                                        //druhy a dalsi pruchody
-                                        //doba ulozeni starych a novych hodnot nemusi byt v pozadovanem poradi, proto radeji opakovat
-                                        let! hardwork2 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
-                                        let result2 = hardwork2
-                                        AsyncSeq.initInfinite (fun _ -> model.KontaktValues)
-                                        |> AsyncSeq.takeWhile ((<>) model.OldKontaktValues) 
-                                        |> AsyncSeq.iterAsync (fun _ -> result2) |> ignore
+                                        do! Async.Sleep 500
+                                        let! hardwork2 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })                                      
                                         dispatch AsyncWorkIsComplete
-                                    } 
-                                      
+                                    }                                      
                             Async.StartImmediate delayedDispatch                                                            
                         let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
                         { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
                     finally
                     ()   
                 with
-                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot ... " }, Cmd.none  
+                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
                   
     | GetKontaktValues valueNew ->
         {
@@ -155,7 +149,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
    
 let view (model: Model) (dispatch: Msg -> unit) =
 
-    let completeContent = 
+    let completeContent() = 
         Html.html [
             prop.xmlns "http://www.w3.org/1999/xhtml"
             prop.children [
@@ -508,7 +502,20 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             ]
                                                     ]    
                                                     Html.td []
-                                                    Html.td []
+                                                    Html.td
+                                                        [
+                                                            prop.style
+                                                                [
+                                                                    style.fontWeight.bold
+                                                                    style.fontSize(14) 
+                                                                    style.color.red
+                                                                    style.fontFamily "sans-serif"
+                                                                ]
+                                                            prop.children
+                                                                [                                                            
+                                                                    Html.text model.DelayMsg
+                                                                ]                                                                                                                
+                                                        ]    
                                                     Html.td []                                                   
                                                 ]
                                             ]                                      
@@ -518,7 +525,17 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         //style.marginLeft(0)                                                       
                                                     ] 
                                                 prop.children [    
-                                                    Html.td []    
+                                                    Html.td
+                                                        [
+                                                            prop.style
+                                                                [                                                                    
+                                                                    style.visibility.hidden
+                                                                ]
+                                                            prop.children
+                                                                [                                                            
+                                                                    Html.text "*********"
+                                                                ]                                                                                                                
+                                                        ]    
                                                     Html.td [
                                                         Html.a [
                                                             prop.style
@@ -533,16 +550,17 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             ]
                                                         ]
                                                     ]                                                  
-                                                    Html.td [
-                                                        prop.style
-                                                            [
-                                                                style.visibility.hidden
-                                                            ]
-                                                        prop.children
-                                                            [                                                            
-                                                                 Html.text "****" 
-                                                            ]                                                                                                                
-                                                    ]  
+                                                    Html.td
+                                                        [
+                                                            prop.style
+                                                                [                                                                    
+                                                                    style.visibility.hidden
+                                                                ]
+                                                            prop.children
+                                                                [                                                            
+                                                                    Html.text "********************"
+                                                                ]                                                                                            
+                                                        ]    
                                                     Html.td [
                                                         Html.input [
                                                             prop.type' "submit"
@@ -572,9 +590,6 @@ let view (model: Model) (dispatch: Msg -> unit) =
                 ]
             ]
         ]
-
     
-    match true with //model.GetCredentials.SecurityTokenFile with credentials.SecurityTokenFile
-    | true -> completeContent
-    | false -> contentCMSForbidden()
+    completeContent()
 

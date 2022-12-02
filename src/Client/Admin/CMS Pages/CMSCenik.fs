@@ -15,6 +15,7 @@ open Layout
 open ContentCMSCenik
 open ContentHome
 open ContentCMSForbidden
+open System.Threading
 
 type Model =
     {
@@ -125,30 +126,33 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                             <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
                         let cmd = Cmd.OfAsync.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues
 
-                        let delayedCmd (dispatch: Msg -> unit): unit =                                                  
+                        let delayedCmd (dispatch: Msg -> unit): unit =
+
+                           
+
                             let delayedDispatch: Async<unit> =
                                 async
                                     {
-                                        //prvni pruchod
+                                        //uvodni pouziti 
+                                        do! Async.Sleep 500
                                         let! hardwork1 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
-                                        let result1 = hardwork1
-                                        //druhy a dalsi pruchody
-                                        //doba ulozeni starych a novych hodnot nemusi byt v pozadovanem poradi, proto radeji opakovat
+
+                                        //druhe a dalsi pouziti
+                                        //doba ulozeni starych a novych hodnot nemusi byt v pozadovanem poradi aji pres pridani sleep, proto radeji opakovat
+                                        // cykly mi tady nejak nefungovaly
+                                        do! Async.Sleep 500
                                         let! hardwork2 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
-                                        let result2 = hardwork2
-                                        AsyncSeq.initInfinite (fun _ -> model.CenikValues)
-                                        |> AsyncSeq.takeWhile ((<>) model.OldCenikValues) 
-                                        |> AsyncSeq.iterAsync (fun _ -> result2) |> ignore
+                                                                               
                                         dispatch AsyncWorkIsComplete
-                                    } 
-                              
+                                    }
+                                    
                             Async.StartImmediate delayedDispatch                                                            
                         let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
                         { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
                     finally
                     ()   
                 with
-                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot ... " }, Cmd.none   
+                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot." }, Cmd.none   
 
     | GetCenikValues valueNew ->
         {
