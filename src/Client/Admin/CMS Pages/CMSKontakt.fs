@@ -111,11 +111,18 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                         async
                             {
                                 //komentar viz CenikCMS
-                                do! Async.Sleep 666
+                                do! Async.Sleep 100
                                 let! hardwork1 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
-                                do! Async.Sleep 666
-                                let! hardwork2 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })                                      
-                                dispatch AsyncWorkIsComplete
+                                let result = hardwork1
+                                match model.KontaktValues = model.OldKontaktValues with
+                                | true  -> let! hardwork2 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
+                                           let result = hardwork2
+                                           dispatch AsyncWorkIsComplete
+                                | false -> do! Async.Sleep 666
+                                           let! hardwork2 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
+                                           let result = hardwork2
+                                           do! Async.Sleep 666
+                                           dispatch AsyncWorkIsComplete 
                             }                                      
                     Async.StartImmediate delayedDispatch                                                            
                 let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              

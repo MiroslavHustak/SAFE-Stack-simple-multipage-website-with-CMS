@@ -128,20 +128,22 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
 
                 let delayedCmd (dispatch: Msg -> unit): unit =                           
                     let delayedDispatch: Async<unit> =
-                        //workaround quli tomu, ze okamzik ulozeni starych a novych hodnot nemusi byt v pozadovanem poradi
+                        //pattern matching je workaround quli tomu, ze okamzik ulozeni starych a novych hodnot nemusi byt v mnou pozadovanem poradi
                         async
                             {
-                                //uvodni pouziti 
-                                do! Async.Sleep 666
-                                let! hardwork1 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
-                                //druhe a dalsi pouziti                                        
-                                //Neither Seq nor AsyncSeq were invoked here.
-                                do! Async.Sleep 666
-                                let! hardwork2 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
-                                                                               
-                                dispatch AsyncWorkIsComplete
-                            }
-                                    
+                                do! Async.Sleep 100
+                                let! hardwork1 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer }) //prvni pruchod
+                                let result = hardwork1
+                                match model.CenikValues = model.OldCenikValues with //ostatni pruchody
+                                | true  -> let! hardwork2 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
+                                           let result = hardwork2                                         
+                                           dispatch AsyncWorkIsComplete
+                                | false -> do! Async.Sleep 666
+                                           let! hardwork2 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
+                                           let result = hardwork2
+                                           do! Async.Sleep 666
+                                           dispatch AsyncWorkIsComplete      
+                            }                                    
                     Async.StartImmediate delayedDispatch                                                            
                 let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
                 { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
