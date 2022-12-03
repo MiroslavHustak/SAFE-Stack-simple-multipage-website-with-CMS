@@ -113,46 +113,42 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
 
     | SendCenikValuesToServer ->
-                try
-                    try
-                        let buttonClickEvent:GetCenikValues =
-                            let input current old =
-                                match String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current) with
-                                | true  -> old
-                                | false -> current 
-                            SharedCenikValues.create //GetCenikValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
-                            <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
-                            <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
-                            <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
-                        let cmd = Cmd.OfAsync.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues
+        try
+            try
+                let buttonClickEvent:GetCenikValues =
+                    let input current old =
+                        match String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current) with
+                        | true  -> old
+                        | false -> current 
+                    SharedCenikValues.create //GetCenikValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
+                    <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
+                    <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
+                    <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
+                let cmd = Cmd.OfAsync.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues
 
-                        let delayedCmd (dispatch: Msg -> unit): unit =
-
-                           
-
-                            let delayedDispatch: Async<unit> =
-                                async
-                                    {
-                                        //uvodni pouziti 
-                                        do! Async.Sleep 500
-                                        let! hardwork1 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
-
-                                        //druhe a dalsi pouziti
-                                        //doba ulozeni starych a novych hodnot nemusi byt v pozadovanem poradi aji pres pridani sleep, proto radeji opakovat
-                                        // cykly mi tady nejak nefungovaly
-                                        do! Async.Sleep 500
-                                        let! hardwork2 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
+                let delayedCmd (dispatch: Msg -> unit): unit =                           
+                    let delayedDispatch: Async<unit> =
+                        //workaround quli tomu, ze okamzik ulozeni starych a novych hodnot nemusi byt v pozadovanem poradi
+                        async
+                            {
+                                //uvodni pouziti 
+                                do! Async.Sleep 666
+                                let! hardwork1 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
+                                //druhe a dalsi pouziti                                        
+                                //Neither Seq nor AsyncSeq were invoked here.
+                                do! Async.Sleep 666
+                                let! hardwork2 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
                                                                                
-                                        dispatch AsyncWorkIsComplete
-                                    }
+                                dispatch AsyncWorkIsComplete
+                            }
                                     
-                            Async.StartImmediate delayedDispatch                                                            
-                        let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
-                        { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
-                    finally
-                    ()   
-                with
-                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot." }, Cmd.none   
+                    Async.StartImmediate delayedDispatch                                                            
+                let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
+                { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
+            finally
+            ()   
+        with
+        | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot." }, Cmd.none   
 
     | GetCenikValues valueNew ->
         {
@@ -255,23 +251,19 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                             ]                                                                             
                                             Html.tr [
                                                 prop.children [
-                                                    Html.td []
-                                                    Html.td []
-                                                    Html.td []
-                                                    Html.td []
-                                                    Html.td []
-                                                    Html.td []
-                                                    Html.td []                                                  
-                                                    (*
+                                                    yield! [
+                                                        for item in 1..7 do Html.td []    
+                                                    ]
                                                     //zkusebni kod
-                                                    //let myList = [ Html.td []; Html.td []; Html.td []; Html.td []; Html.td [] ]
-                                                    let myList = [ Html.text "001"; Html.text "002"; Html.text "003"; Html.text "004"; Html.text "005" ]
+                                                    (*
+                                                    let myList = [ Html.td []; Html.td []; Html.td []; Html.td []; Html.td [] ]
+                                                    //let myList = [ Html.text "001"; Html.text "002"; Html.text "003"; Html.text "004"; Html.text "005" ]
                                                     yield! [
                                                         for item in myList do
                                                             Html.text ", "
                                                             item
                                                     ] |> List.tail //quli carky, kera je prvni
-                                                    *) 
+                                                    *)
                                                 ]
                                             ]                                        
                                             Html.tr [
@@ -623,9 +615,9 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         style.height(50)  
                                                     ] 
                                                 prop.children [
-                                                    Html.td []                                                   
-                                                    Html.td []
-                                                    Html.td []                                                                                                       
+                                                    yield! [
+                                                        for item in 1..3 do Html.td []    
+                                                    ]                                                                                                   
                                                     Html.td
                                                         [
                                                             prop.style
@@ -640,9 +632,9 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                     Html.text model.DelayMsg
                                                                 ]                                                                                                                
                                                         ]
-                                                    Html.td []
-                                                    Html.td []
-                                                    Html.td []
+                                                    yield! [
+                                                        for item in 1..3 do Html.td []    
+                                                    ]
                                                 ]
                                             ]                                      
                                             Html.tr [

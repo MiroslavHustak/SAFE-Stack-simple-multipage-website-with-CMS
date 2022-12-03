@@ -115,39 +115,39 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
     
     | SendLinkAndLinkNameValuesToServer ->
-                try
-                    try
-                        let buttonClickEvent:GetLinkAndLinkNameValues =   //GetLinkAndLinkNameValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit                                     
-                            let input current old =
-                                match String.IsNullOrEmpty(current) with //String.IsNullOrWhiteSpace(current) ||
-                                | true  -> old
-                                | false -> current 
-                            SharedLinkAndLinkNameValues.create
-                            <| input model.V001LinkInput model.OldLinkAndLinkNameValues.V001 <| input model.V002LinkInput model.OldLinkAndLinkNameValues.V002 <| input model.V003LinkInput model.OldLinkAndLinkNameValues.V003 
-                            <| input model.V004LinkInput model.OldLinkAndLinkNameValues.V004 <| input model.V005LinkInput model.OldLinkAndLinkNameValues.V005 <| input model.V006LinkInput model.OldLinkAndLinkNameValues.V006
-                            <| input model.V001LinkNameInput model.OldLinkAndLinkNameValues.V001n <| input model.V002LinkNameInput model.OldLinkAndLinkNameValues.V002n <| input model.V003LinkNameInput model.OldLinkAndLinkNameValues.V003n 
-                            <| input model.V004LinkNameInput model.OldLinkAndLinkNameValues.V004n <| input model.V005LinkNameInput model.OldLinkAndLinkNameValues.V005n <| input model.V006LinkNameInput model.OldLinkAndLinkNameValues.V006n
+        try
+            try
+                let buttonClickEvent:GetLinkAndLinkNameValues =   //GetLinkAndLinkNameValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit                                     
+                    let input current old =
+                        match String.IsNullOrEmpty(current) with //String.IsNullOrWhiteSpace(current) ||
+                        | true  -> old
+                        | false -> current 
+                    SharedLinkAndLinkNameValues.create
+                    <| input model.V001LinkInput model.OldLinkAndLinkNameValues.V001 <| input model.V002LinkInput model.OldLinkAndLinkNameValues.V002 <| input model.V003LinkInput model.OldLinkAndLinkNameValues.V003 
+                    <| input model.V004LinkInput model.OldLinkAndLinkNameValues.V004 <| input model.V005LinkInput model.OldLinkAndLinkNameValues.V005 <| input model.V006LinkInput model.OldLinkAndLinkNameValues.V006
+                    <| input model.V001LinkNameInput model.OldLinkAndLinkNameValues.V001n <| input model.V002LinkNameInput model.OldLinkAndLinkNameValues.V002n <| input model.V003LinkNameInput model.OldLinkAndLinkNameValues.V003n 
+                    <| input model.V004LinkNameInput model.OldLinkAndLinkNameValues.V004n <| input model.V005LinkNameInput model.OldLinkAndLinkNameValues.V005n <| input model.V006LinkNameInput model.OldLinkAndLinkNameValues.V006n
 
-                        let cmd = Cmd.OfAsync.perform getLinkAndLinkNameValuesApi.getLinkAndLinkNameValues buttonClickEvent GetLinkAndLinkNameValues
+                let cmd = Cmd.OfAsync.perform getLinkAndLinkNameValuesApi.getLinkAndLinkNameValues buttonClickEvent GetLinkAndLinkNameValues
 
-                        let delayedCmd (dispatch: Msg -> unit): unit =                                                  
-                            let delayedDispatch: Async<unit> =
-                                async
-                                    {
-                                        //komentar viz CenikCMS
-                                        do! Async.Sleep 500
-                                        let! hardwork1 = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
-                                        do! Async.Sleep 500
-                                        let! hardwork2 = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
-                                        dispatch AsyncWorkIsComplete
-                                    }                                   
-                            Async.StartImmediate delayedDispatch                                                            
-                        let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
-                        { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
-                    finally
-                    ()   
-                with
-                | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
+                let delayedCmd (dispatch: Msg -> unit): unit =                                                  
+                    let delayedDispatch: Async<unit> =
+                        async
+                            {
+                                //komentar viz CenikCMS
+                                do! Async.Sleep 666
+                                let! hardwork1 = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
+                                do! Async.Sleep 666
+                                let! hardwork2 = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
+                                dispatch AsyncWorkIsComplete
+                            }                                   
+                    Async.StartImmediate delayedDispatch                                                            
+                let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
+                { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
+            finally
+            ()   
+        with
+        | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
 
     | GetLinkAndLinkNameValues valueNew ->
         {
@@ -252,9 +252,9 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                             ]                                                                             
                                             Html.tr [
                                                 prop.children [
-                                                    Html.td []
-                                                    Html.td []
-                                                    Html.td []                                  
+                                                    yield! [
+                                                        for item in 1..3 do Html.td []    
+                                                    ]                                
                                                
                                                     (*
                                                     //zkusebni kod
@@ -463,9 +463,9 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         style.height(15)  
                                                     ] 
                                                 prop.children [
-                                                    Html.td []    
-                                                    Html.td []
-                                                    Html.td []                                                                                                                  
+                                                    yield! [
+                                                        for item in 1..3 do Html.td []    
+                                                    ]                                                                                                                 
                                                 ]
                                             ]        
                                             Html.tr [

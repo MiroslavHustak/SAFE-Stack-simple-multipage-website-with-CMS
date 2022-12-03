@@ -30,29 +30,31 @@ type MyPatternBuilder = MyPatternBuilder with
 let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>
 
     MyPatternBuilder    
-         {  
+        {  
             let! _ = SharedLoginValues.isValid login.Username login.Password
             let securityTokenFile = Path.GetFullPath("securityToken.txt")
                                     |> Option.ofObj
                                     |> function
                                         | Some value -> value
-                                        | None       -> //TODO vymysli nejake reseni a hod to vse do ROP a Errors
+                                        | None       -> //TODO 
                                                         String.Empty 
             let! _ = login.Username = "q" && login.Password = "q" 
             let result =                
                 let accessToken = string <| System.Guid.NewGuid() //encodeJwt securityToken //TODO
+                //********************************************************************************
                 let mySeq = seq { login.Username; accessToken }
                 use sw = new StreamWriter(Path.GetFullPath(securityTokenFile)) //TODO vse do trywith
                          |> Option.ofObj
                          |> function
                              | Some value -> value
-                             | None       -> //TODO vymysli nejake reseni a hod to vse do ROP a Errors
+                             | None       -> //TODO
                                              new StreamWriter(Path.GetFullPath(securityTokenFile)) 
                 mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) //TODO vse do trywith
                 //vyse uvedeny kod pro ukladani na server (puvodne workaround) ponechan pro pripadne pristi pouziti
+                //**********************************************************************************
                 SharedApi.LoggedIn { Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             return result
-         }
+        }
     
  //TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem
 let private verifyCenikValues (cenikValues: GetCenikValues) =
@@ -75,8 +77,7 @@ let private verifyLinkAndLinkNameValues (linkValues: GetLinkAndLinkNameValues) =
 let IGetApi =
     {
       login =
-          fun login -> async { return (verifyLogin login) }
-          
+          fun login -> async { return (verifyLogin login) }          
      (*
       getSecurityTokenFile = //TODO try with
           fun getSecurityTokenFile -> async { return File.Exists(Path.GetFullPath("securityToken.txt")) }             
@@ -101,7 +102,6 @@ let IGetApi =
                       return ()
                   }   
       *)
-
       getCenikValues =
           fun getCenikValues ->
               async

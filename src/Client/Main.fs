@@ -278,7 +278,7 @@ let update (msg: Msg) (model: Model) =
         let (cmsLinkModel, cmsLinkCmd) = CMSLink.update cmsLinkMsg cmsLinkModel 
         { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
                                                                   
-    //pokud potrebujeme aktivovat hodnoty uz pri spusteni public stranek        
+         //potrebujeme aktivovat hodnoty uz pri spusteni public stranek        
     | _, AskServerForLinkAndLinkNameValues ->
             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.LinkAndLinkNameInputValues
             let cmd = Cmd.OfAsync.perform sendDeserialisedLinkAndLinkNameValuesApi.sendDeserialisedLinkAndLinkNameValues loadEvent GetLinkAndLinkNameValues
