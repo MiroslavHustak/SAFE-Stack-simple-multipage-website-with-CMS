@@ -37,11 +37,11 @@ let neco() =
                       "   
   
     //**************** Parameters for command.Parameters.AddWithValue("@val", nejake hodnota) *****************
-    let myList = [
-                    ("@valState", "fixed"); ("@val01", "300"); ("@val02", "300");
-                    ("@val03", "2 200"); ("@val04", "250"); ("@val05", "230");
-                    ("@val06", "400"); ("@val07", "600"); ("@val08", "450"); ("@val09", "450")
-                 ]   
+    let fixedParamList = [
+                            ("@valState", "fixed"); ("@val01", "300"); ("@val02", "300");
+                            ("@val03", "2 200"); ("@val04", "250"); ("@val05", "230");
+                            ("@val06", "400"); ("@val07", "600"); ("@val08", "450"); ("@val09", "450")
+                         ]   
 
     //**************** SqlConnectionOpen *****************
     use connection = new SqlConnection(connStringLocal)
@@ -58,10 +58,7 @@ let neco() =
                 ()
     | None   ->                                 
                 cmdInsert.Parameters.AddWithValue("@valId", 2) |> ignore
-                           
-                myList |> List.iter (fun item ->
-                                                cmdInsert.Parameters.AddWithValue(item) |> ignore
-                                    )
+                fixedParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
                 cmdInsert.ExecuteNonQuery() |> ignore
                 //connection.Close()
                 //connection.Dispose()
