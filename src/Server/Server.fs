@@ -17,6 +17,9 @@ open Helpers.CopyingFiles
 open Helpers.Serialisation
 open Helpers.Deserialisation
 
+open FSharp.Data
+open FSharp.Data.SqlClient
+
 let (>>=) condition nextFunc = 
     match condition with
     | false -> SharedApi.UsernameOrPasswordIncorrect  
@@ -73,7 +76,8 @@ let private verifyLinkAndLinkNameValues (linkValues: GetLinkAndLinkNameValues) =
    match SharedLinkAndLinkNameValues.isValid () with
    | () -> Ok ()        
    // | _  -> Error ""
-  
+
+
 let IGetApi =
     {
       login =
@@ -105,8 +109,9 @@ let IGetApi =
       getCenikValues =
           fun getCenikValues ->
               async
-                  {
-                    let getNewCenikValues: GetCenikValues = 
+                  {                   
+                    let getNewCenikValues: GetCenikValues =
+
                         match verifyCenikValues getCenikValues with                
                         | Ok () -> serialize getCenikValues "jsonCenikValues.xml"  //TODO try with
                                    {
@@ -124,6 +129,8 @@ let IGetApi =
                                        V007 = String.Empty; V008 = String.Empty;
                                        V009 = String.Empty
                                    }
+                         
+                        
 
                     return getNewCenikValues
                   }
@@ -249,6 +256,7 @@ let webApp =
     |> Remoting.buildHttpHandler
 
 let app =
+    neco()
     application
         {
             use_router webApp

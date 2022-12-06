@@ -252,10 +252,9 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                 ]
                                             ]                                                                             
                                             Html.tr [
-                                                prop.children [
-                                                    yield! [
-                                                        for item in 1..7 do Html.td []    
-                                                    ]
+                                                prop.children [                                                   
+                                                    yield! [ for item in 1..7 do Html.td [] ] |> List.map (fun item -> item) 
+                                                ]  
                                                     //zkusebni kod
                                                     (*
                                                     let myList = [ Html.td []; Html.td []; Html.td []; Html.td []; Html.td [] ]
@@ -266,7 +265,6 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                             item
                                                     ] |> List.tail //quli carky, kera je prvni
                                                     *)
-                                                ]
                                             ]                                        
                                             Html.tr [
                                                 prop.style

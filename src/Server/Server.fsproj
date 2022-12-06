@@ -6,6 +6,7 @@
     <FSharpPreferNetFrameworkTools>True</FSharpPreferNetFrameworkTools>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="SQL Queries.txt" />
     <None Include="paket.references" />
     <Compile Include="Auxiliaries\DiscriminatedUnions.fs" />
     <Compile Include="Auxiliaries\Errors.fs" />
@@ -20,6 +21,7 @@
     <PackageReference Include="Fable.React" Version="7.4.3" />
     <PackageReference Include="Feliz.Router" Version="3.8.0" />
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />
+    <PackageReference Include="FSharp.Data.SqlClient" Version="2.1.2" />
     <PackageReference Include="jose-jwt" Version="4.0.1" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
   </ItemGroup>
