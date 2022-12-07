@@ -148,8 +148,8 @@ let IGetApi =
                      copyFiles 
                      <| "jsonCenikValues.xml"
                      <| "jsonCenikValuesBackUp.xml"
-                     let mySeq = selectValues 2 connection
-                    
+                     let mySeq = selectValues1 2 connection
+                     let neco = mySeq.V009
                        (*
                      let mySeq = selectValues 2 connection
                    

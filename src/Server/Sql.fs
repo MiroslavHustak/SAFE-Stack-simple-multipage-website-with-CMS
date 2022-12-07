@@ -172,22 +172,57 @@ let selectValues idInt connection =
             *)
             while reader.Read() do
                 yield
-                
                         {
-                                V001 = whatIs (reader.["CenikValuesV001"])
-                                V002 = whatIs (reader.["CenikValuesV002"])
-                                V003 = whatIs (reader.["CenikValuesV003"])
-                                V004 = whatIs (reader.["CenikValuesV004"])
-                                V005 = whatIs (reader.["CenikValuesV005"])
-                                V006 = whatIs (reader.["CenikValuesV006"])
-                                V007 = whatIs (reader.["CenikValuesV007"])
-                                V008 = whatIs (reader.["CenikValuesV008"])
-                                V009 = whatIs (reader.["CenikValuesV009"])
+                            V001 = whatIs (reader.["CenikValuesV001"])
+                            V002 = whatIs (reader.["CenikValuesV002"])
+                            V003 = whatIs (reader.["CenikValuesV003"])
+                            V004 = whatIs (reader.["CenikValuesV004"])
+                            V005 = whatIs (reader.["CenikValuesV005"])
+                            V006 = whatIs (reader.["CenikValuesV006"])
+                            V007 = whatIs (reader.["CenikValuesV007"])
+                            V008 = whatIs (reader.["CenikValuesV008"])
+                            V009 = whatIs (reader.["CenikValuesV009"])
                         }
-                
-          
-
         }
+
+let selectValues1 idInt connection =
+  
+      //TODO  try with
+    
+    let idString = string idInt
+
+    //**************** SqlCommands *****************
+    let cmdExists = new SqlCommand(queryExists idString, connection)
+    let cmdSelect = new SqlCommand(querySelect idString, connection)
+
+    //**************** Add values to parameters and execute commands with business logic *****************
+    let reader =
+        let e = "error"
+        match cmdExists.ExecuteScalar() |> Option.ofObj with
+        | Some _ -> cmdSelect.ExecuteReader() 
+        | None   -> insertOrUpdate e idInt idString connection e e e e e e e e e 
+                    cmdSelect.ExecuteReader()
+
+    Seq.initInfinite (fun _ -> reader.Read())
+    |> Seq.takeWhile ((=) true) 
+    |> Seq.collect (fun _ ->  
+                            seq
+                                {
+                                yield    
+                                    {
+                                        V001 = whatIs (reader.["CenikValuesV001"])
+                                        V002 = whatIs (reader.["CenikValuesV002"])
+                                        V003 = whatIs (reader.["CenikValuesV003"])
+                                        V004 = whatIs (reader.["CenikValuesV004"])
+                                        V005 = whatIs (reader.["CenikValuesV005"])
+                                        V006 = whatIs (reader.["CenikValuesV006"])
+                                        V007 = whatIs (reader.["CenikValuesV007"])
+                                        V008 = whatIs (reader.["CenikValuesV008"])
+                                        V009 = whatIs (reader.["CenikValuesV009"])
+                                    }
+                                } 
+                    ) |> Seq.head
+
     
     
          
