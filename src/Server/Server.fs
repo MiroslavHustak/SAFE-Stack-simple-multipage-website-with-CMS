@@ -2,6 +2,7 @@ module Server
 
 open System
 open System.IO
+open System.Data.SqlClient
 
 open Saturn
 open Fable.Remoting.Server
@@ -10,6 +11,7 @@ open Fable.Remoting.Giraffe
 open Shared
 open SharedTypes
 
+open Sql
 open Security
 
 open ROP_Functions
@@ -17,8 +19,11 @@ open Helpers.CopyingFiles
 open Helpers.Serialisation
 open Helpers.Deserialisation
 
-open FSharp.Data
-open FSharp.Data.SqlClient
+//let [<Literal>] connStringSomee = @"workstation id=nterapie.mssql.somee.com;packet size=4096;user id=FSharpDeveloper_SQLLogin_1;pwd=1791iyi6tf;data source=nterapie.mssql.somee.com;persist security info=False;initial catalog=nterapie" 
+let [<Literal>] connStringLocal = @"Data Source=Misa\SQLEXPRESS;Initial Catalog=nterapieLocal;Integrated Security=True"
+
+ //nelze use
+let connection = new SqlConnection(connStringLocal) //trywith
 
 let (>>=) condition nextFunc = 
     match condition with
@@ -30,7 +35,7 @@ type MyPatternBuilder = MyPatternBuilder with
     member _.Using x = x
     member _.Return x = x
 
-let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>
+let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>   
 
     MyPatternBuilder    
         {  
@@ -113,7 +118,10 @@ let IGetApi =
                     let getNewCenikValues: GetCenikValues =
 
                         match verifyCenikValues getCenikValues with                
-                        | Ok () -> serialize getCenikValues "jsonCenikValues.xml"  //TODO try with
+                        | Ok () -> insertOrUpdateNew connection getCenikValues.V001 getCenikValues.V002 getCenikValues.V003
+                                                                getCenikValues.V004 getCenikValues.V005 getCenikValues.V006
+                                                                getCenikValues.V007 getCenikValues.V008 getCenikValues.V009
+                                   serialize getCenikValues "jsonCenikValues.xml"  //TODO try with                              
                                    {
                                        V001 = getCenikValues.V001; V002 = getCenikValues.V002;
                                        V003 = getCenikValues.V003; V004 = getCenikValues.V004;
@@ -121,6 +129,7 @@ let IGetApi =
                                        V007 = getCenikValues.V007; V008 = getCenikValues.V008;
                                        V009 = getCenikValues.V009
                                    }
+                                  
                         | _    ->
                                    {
                                        V001 = String.Empty; V002 = String.Empty;
@@ -128,10 +137,7 @@ let IGetApi =
                                        V005 = String.Empty; V006 = String.Empty;
                                        V007 = String.Empty; V008 = String.Empty;
                                        V009 = String.Empty
-                                   }
-                         
-                        
-
+                                   }     
                     return getNewCenikValues
                   }
 
@@ -142,8 +148,27 @@ let IGetApi =
                      copyFiles 
                      <| "jsonCenikValues.xml"
                      <| "jsonCenikValuesBackUp.xml"
-
+                     let mySeq = selectValues 2 connection
+                    
+                       (*
+                     let mySeq = selectValues 2 connection
+                   
+                     insertOrUpdateOld connection (mySeq |> Seq.item 0) (mySeq |> Seq.item 1) (mySeq |> Seq.item 2)
+                                                  (mySeq |> Seq.item 3) (mySeq |> Seq.item 4) (mySeq |> Seq.item 5)
+                                                  (mySeq |> Seq.item 6) (mySeq |> Seq.item 7) (mySeq |> Seq.item 8)  
+                      *) 
                      let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
+                        (*
+                     let mySeq = selectValues 3 connection
+                     let sendOldCenikValues1 = 
+                            {
+                                V001 = mySeq |> Seq.item 0; V002 = mySeq |> Seq.item 1;
+                                V003 = mySeq |> Seq.item 2; V004 = mySeq |> Seq.item 3;
+                                V005 = mySeq |> Seq.item 4; V006 = mySeq |> Seq.item 5;
+                                V007 = mySeq |> Seq.item 6; V008 = mySeq |> Seq.item 7;
+                                V009 = mySeq |> Seq.item 8
+                            }
+                            *)
                      return sendOldCenikValues
                   } 
 
@@ -153,6 +178,18 @@ let IGetApi =
                  {
                     //vzpomen si na problem s records s odlisnymi fields :-)
                     let sendCenikValues = deserialize "jsonCenikValues.xml" //TODO try with
+                       (* 
+                    let mySeq = selectValues 2 connection
+                   
+                    let sendCenikValues = 
+                           {
+                               V001 = mySeq |> Seq.item 0; V002 = mySeq |> Seq.item 1;
+                               V003 = mySeq |> Seq.item 2; V004 = mySeq |> Seq.item 3;
+                               V005 = mySeq |> Seq.item 4; V006 = mySeq |> Seq.item 5;
+                               V007 = mySeq |> Seq.item 6; V008 = mySeq |> Seq.item 7;
+                               V009 = mySeq |> Seq.item 8
+                           }
+                           *)
                     return sendCenikValues
                  }
 
@@ -256,7 +293,8 @@ let webApp =
     |> Remoting.buildHttpHandler
 
 let app =
-    neco()
+    connection.Open()
+    insertOrUpdateFixed connection
     application
         {
             use_router webApp
@@ -265,7 +303,10 @@ let app =
             use_gzip
         }
 
+
 [<EntryPoint>]
 let main _ =    
     run app
+    connection.Close()
+    connection.Dispose()
     0

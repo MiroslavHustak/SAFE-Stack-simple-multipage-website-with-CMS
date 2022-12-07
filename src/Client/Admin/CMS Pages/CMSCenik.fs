@@ -251,19 +251,27 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                     ]
                                                 ]
                                             ]                                                                             
-                                            Html.tr [
-                                                prop.children [                                                   
-                                                    yield! [ for item in 1..7 do Html.td [] ] |> List.map (fun item -> item) 
-                                                ]  
+                                            Html.tr [                                              
+                                                prop.children
+                                                    [
+                                                        //let studyIt = [ yield! ( [ 1..7 ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) ] //zajimava konstrukce quli yield
+                                                        yield! ( [ 1..7 ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)    
+                                                    ]  
                                                     //zkusebni kod
                                                     (*
-                                                    let myList = [ Html.td []; Html.td []; Html.td []; Html.td []; Html.td [] ]
-                                                    //let myList = [ Html.text "001"; Html.text "002"; Html.text "003"; Html.text "004"; Html.text "005" ]
+                                                    let myList = [ Html.text "001"; Html.text "002"; Html.text "003"; Html.text "004"; Html.text "005" ]
                                                     yield! [
                                                         for item in myList do
                                                             Html.text ", "
                                                             item
                                                     ] |> List.tail //quli carky, kera je prvni
+                                                   
+                                                    *)
+                                                    (*
+                                                    prop.children [                                                   
+                                                        yield! [ for item in 1..7 do Html.td [] ] |> List.map (fun item -> item)                                            
+                                                    ]
+
                                                     *)
                                             ]                                        
                                             Html.tr [

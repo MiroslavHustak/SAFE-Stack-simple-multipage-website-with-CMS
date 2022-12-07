@@ -190,7 +190,9 @@
       <PackageReference Include="Fable.Form.Simple.Bulma" Version="3.0.0" />     
       <PackageReference Include="Fable.Reactstrap" Version="0.5.1" />     
       <PackageReference Include="Feliz.Router" Version="3.8.0" />     
-      <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />
+      <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />     
+      <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />     
+      <PackageReference Include="System.Text.Json" Version="6.0.3" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Shared\Shared.fsproj" />
