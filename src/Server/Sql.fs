@@ -6,10 +6,7 @@ open System.Data.SqlClient
 open Connection
 open SharedTypes
 
-//**************** ConnectionStrings *****************
-
-
-//**************** SqlQueries - definitions *****************
+//**************** Sql query strings *****************
 let private queryCreateDatabase = "CREATE DATABASE nterapieLocal" //nelze pro connStringSomee
 let private queryDeleteAll = "DELETE FROM CENIK" //Deleting all data from the relevant table
 let private queryDelete id = sprintf "%s%s" "DELETE FROM CENIK WHERE Id = " id 
@@ -54,7 +51,7 @@ let private queryInsert = "
 
 
 
-//**************** SqlCommands *****************
+//**************** Sql commands - template *****************
 (*
 use cmdExists = new SqlCommand(queryExists idString, connection)
 use cmdInsert = new SqlCommand(queryInsert, connection)
@@ -63,7 +60,80 @@ use cmdDeleteAll = new SqlCommand(queryDeleteAll, connection)
 use cmdDelete = new SqlCommand(queryDelete idString, connection) 
 *)  
 
-//**************** SqlQueries - executions *****************
+//**************** Sql queries - templates  *****************
+let insertOrUpdate connection valState idInt val01 val02 val03 val04 val05 val06 val07 val08 val09 = //TODO trywith
+     
+    let idString = string idInt //Primary Key for new value state
+
+    //**************** Parameters for command.Parameters.AddWithValue("@val", nejake hodnota) *****************
+    let newParamList = [
+                           ("@valState", valState); ("@val01", val01); ("@val02", val02);
+                           ("@val03", val03); ("@val04", val04); ("@val05", val05);
+                           ("@val06", val06); ("@val07", val07); ("@val08", val08); ("@val09", val09)
+                       ]       
+
+     //**************** SqlCommands *****************
+    use cmdExists = new SqlCommand(queryExists idString, connection)
+    use cmdInsert = new SqlCommand(queryInsert, connection)
+    use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
+
+    //**************** Add values to parameters and execute commands with business logic *****************
+    match cmdExists.ExecuteScalar() |> Option.ofObj with
+    | Some _ -> 
+                newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
+                cmdUpdate.ExecuteNonQuery() |> ignore //for learning purposes              
+    | None   -> 
+                cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
+                newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
+                cmdInsert.ExecuteNonQuery() |> ignore       
+
+let selectValues connection idInt =
+
+    let whatIs(x: obj) =
+        match x with
+        | :? string as str -> str  //aby nedoslo k nerizene chybe behem runtime
+        | _                -> //error4 "error 4 - x :?> string"   //TODO                           
+                              x :?> string
+    let result = 
+        let idString = string idInt
+
+        //**************** SqlCommands *****************
+        use cmdExists = new SqlCommand(queryExists idString, connection)
+        use cmdSelect = new SqlCommand(querySelect idString, connection)
+
+        //**************** Add values to parameters and execute commands with business logic *****************
+        let reader =
+            let e = "error"
+            match cmdExists.ExecuteScalar() |> Option.ofObj with //cmdExists.ExecuteScalar() |> Option.ofObj
+            | Some _ -> cmdSelect.ExecuteReader() 
+            | None   -> //insertOrUpdateOld e e e e e e e e e e //TODO
+                        cmdSelect.ExecuteReader()
+
+        //while reader.Read() do yield { //filling in a record } |> Seq.head 
+        Seq.initInfinite (fun _ -> reader.Read())
+        |> Seq.takeWhile ((=) true) 
+        |> Seq.collect (fun _ ->  
+                                seq
+                                    {
+                                    yield    
+                                        {
+                                            V001 = whatIs (reader.["CenikValuesV001"])
+                                            V002 = whatIs (reader.["CenikValuesV002"])
+                                            V003 = whatIs (reader.["CenikValuesV003"])
+                                            V004 = whatIs (reader.["CenikValuesV004"])
+                                            V005 = whatIs (reader.["CenikValuesV005"])
+                                            V006 = whatIs (reader.["CenikValuesV006"])
+                                            V007 = whatIs (reader.["CenikValuesV007"])
+                                            V008 = whatIs (reader.["CenikValuesV008"])
+                                            V009 = whatIs (reader.["CenikValuesV009"])
+                                        }
+                                    } 
+                        ) |> Seq.head
+    connection.Close()
+    connection.Dispose()
+    result
+
+//**************** Sql queries - executions *****************
 let insertOrUpdateFixed () = //TODO trywith
     let connection = new SqlConnection(connStringLocal) //trywith
     connection.Open()
@@ -97,71 +167,28 @@ let insertOrUpdateFixed () = //TODO trywith
     connection.Close()
     connection.Dispose()
 
-let insertOrUpdateNew valState idInt val01 val02 val03 val04 val05 val06 val07 val08 val09 = //TODO trywith
+let insertOrUpdateNew val01 val02 val03 val04 val05 val06 val07 val08 val09 = //TODO trywith
     let connection = new SqlConnection(connStringLocal) //trywith
     connection.Open()
-    let idString = string idInt //Primary Key for new value state
+    let valState = "new"
+    let idInt = 2
 
-    //**************** Parameters for command.Parameters.AddWithValue("@val", nejake hodnota) *****************
-    let newParamList = [
-                           ("@valState", valState); ("@val01", val01); ("@val02", val02);
-                           ("@val03", val03); ("@val04", val04); ("@val05", val05);
-                           ("@val06", val06); ("@val07", val07); ("@val08", val08); ("@val09", val09)
-                       ]       
-
-     //**************** SqlCommands *****************
-    use cmdExists = new SqlCommand(queryExists idString, connection)
-    use cmdInsert = new SqlCommand(queryInsert, connection)
-    use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
-
-    //**************** Add values to parameters and execute commands with business logic *****************
-    match cmdExists.ExecuteScalar() |> Option.ofObj with
-    | Some _ -> 
-                newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
-                cmdUpdate.ExecuteNonQuery() |> ignore //for learning purposes              
-    | None   -> 
-                cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
-                newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
-                cmdInsert.ExecuteNonQuery() |> ignore       
-
-    connection.Close()
-    connection.Dispose()
-
-let insertOrUpdateOld valState idInt val01 val02 val03 val04 val05 val06 val07 val08 val09 = //TODO trywith
-    let connection = new SqlConnection(connStringLocal) //trywith
-    connection.Open()
-    let idString = string idInt //Primary Key for new value state
-    
-    //**************** Parameters for command.Parameters.AddWithValue("@val", nejake hodnota) *****************
-    let newParamList = [
-                            ("@valState", "valState"); ("@val01", val01); ("@val02", val02); //valState
-                            ("@val03", val03); ("@val04", val04); ("@val05", val05);
-                            ("@val06", val06); ("@val07", val07); ("@val08", val08); ("@val09", val09)
-                        ]       
-    
-    //**************** SqlCommands *****************
-    use cmdExists = new SqlCommand(queryExists idString, connection)
-    use cmdInsert = new SqlCommand(queryInsert, connection)
-    use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
-    
-    //**************** Add values to parameters and execute commands with business logic *****************   
-    match cmdExists.ExecuteScalar() |> Option.ofObj with
-    | Some _ -> //cmdExists.Dispose()
-                newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
-                cmdUpdate.ExecuteNonQuery() |> ignore //for learning purposes              
-    | None   -> //cmdExists.Dispose()
-                cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
-                newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
-                cmdInsert.ExecuteNonQuery() |> ignore      
+    insertOrUpdate connection valState idInt val01 val02 val03 val04 val05 val06 val07 val08 val09
     
     connection.Close()
     connection.Dispose()
 
-let private whatIs(x: obj) =
-    match x with
-    | :? string as str -> str  //aby nedoslo k nerizene chybe behem runtime
-    | _                -> //error4 "error 4 - x :?> string"   //TODO                           
-                          x :?> string
+let insertOrUpdateOld val01 val02 val03 val04 val05 val06 val07 val08 val09 = //TODO trywith
+    let connection = new SqlConnection(connStringLocal) //trywith
+    connection.Open()
+    let valState = "old"
+    let idInt = 3
+
+    insertOrUpdate connection valState idInt val01 val02 val03 val04 val05 val06 val07 val08 val09
+
+    connection.Close()
+    connection.Dispose()
+
 (*
 let selectValuesW idString connection =
             seq
@@ -172,133 +199,22 @@ let selectValuesW idString connection =
                 } |> Seq.head            
 *)       
 
-let selectValuesSeqDeser idInt =
+let selectDeserValues () =
+    let connection = new SqlConnection(connStringLocal) //trywith
+    connection.Open()
+    let idInt = 2
+    selectValues connection idInt //TODO  try with   
+
+let selectNewValues () =
     let connection = new SqlConnection(connStringLocal) //trywith
     connection.Open()
       //TODO  try with
-    let result = 
-        let idString = string idInt
+    let idInt = 2
+    selectValues connection idInt //TODO  try with
 
-        //**************** SqlCommands *****************
-        use cmdExists = new SqlCommand(queryExists idString, connection)
-        use cmdSelect = new SqlCommand(querySelect idString, connection)
-
-        //**************** Add values to parameters and execute commands with business logic *****************
-        let reader =
-            let e = "error"
-            match cmdExists.ExecuteScalar() |> Option.ofObj with //cmdExists.ExecuteScalar() |> Option.ofObj
-            | Some _ -> cmdSelect.ExecuteReader() 
-            | None   -> insertOrUpdateOld e idInt e e e e e e e e e 
-                        cmdSelect.ExecuteReader()
-       
-        Seq.initInfinite (fun _ -> reader.Read())
-        |> Seq.takeWhile ((=) true) 
-        |> Seq.collect (fun _ ->  
-                                seq
-                                    {
-                                    yield    
-                                        {
-                                            V001 = whatIs (reader.["CenikValuesV001"])
-                                            V002 = whatIs (reader.["CenikValuesV002"])
-                                            V003 = whatIs (reader.["CenikValuesV003"])
-                                            V004 = whatIs (reader.["CenikValuesV004"])
-                                            V005 = whatIs (reader.["CenikValuesV005"])
-                                            V006 = whatIs (reader.["CenikValuesV006"])
-                                            V007 = whatIs (reader.["CenikValuesV007"])
-                                            V008 = whatIs (reader.["CenikValuesV008"])
-                                            V009 = whatIs (reader.["CenikValuesV009"])
-                                        }
-                                    } 
-                        ) |> Seq.head
-    connection.Close()
-    connection.Dispose()
-    result
-
-let selectValuesSeqNew idInt =
-    let connection = new SqlConnection(connStringLocal) //trywith
-    connection.Open()
-      //TODO  try with
-    let result = 
-        let idString = string idInt
-
-        //**************** SqlCommands *****************
-        use cmdExists = new SqlCommand(queryExists idString, connection)
-        use cmdSelect = new SqlCommand(querySelect idString, connection)
-
-        //**************** Add values to parameters and execute commands with business logic *****************
-        let reader =
-            let e = "error"
-            match cmdExists.ExecuteScalar() |> Option.ofObj with //cmdExists.ExecuteScalar() |> Option.ofObj
-            | Some _ -> cmdSelect.ExecuteReader() 
-            | None   -> insertOrUpdateOld e idInt e e e e e e e e e 
-                        cmdSelect.ExecuteReader()
-       
-        Seq.initInfinite (fun _ -> reader.Read())
-        |> Seq.takeWhile ((=) true) 
-        |> Seq.collect (fun _ ->  
-                                seq
-                                    {
-                                    yield    
-                                        {
-                                            V001 = whatIs (reader.["CenikValuesV001"])
-                                            V002 = whatIs (reader.["CenikValuesV002"])
-                                            V003 = whatIs (reader.["CenikValuesV003"])
-                                            V004 = whatIs (reader.["CenikValuesV004"])
-                                            V005 = whatIs (reader.["CenikValuesV005"])
-                                            V006 = whatIs (reader.["CenikValuesV006"])
-                                            V007 = whatIs (reader.["CenikValuesV007"])
-                                            V008 = whatIs (reader.["CenikValuesV008"])
-                                            V009 = whatIs (reader.["CenikValuesV009"])
-                                        }
-                                    } 
-                        ) |> Seq.head
-    connection.Close()
-    connection.Dispose()
-    result
-
-let selectValuesSeqOld idInt =
+let selectOldValues () =
     let connection = new SqlConnection(connStringLocal) //trywith
     connection.Open()
         //TODO  try with
-    let result = 
-        let idString = string idInt
-    
-        //**************** SqlCommands *****************
-        use cmdExists = new SqlCommand(queryExists idString, connection)
-        use cmdSelect = new SqlCommand(querySelect idString, connection)
-    
-        //**************** Add values to parameters and execute commands with business logic *****************
-        let reader =
-            let e = "error"
-            match cmdExists.ExecuteScalar() |> Option.ofObj with //
-            | Some _ -> cmdSelect.ExecuteReader() 
-            | None   -> insertOrUpdateOld e idInt e e e e e e e e e 
-                        cmdSelect.ExecuteReader()
-           
-        Seq.initInfinite (fun _ -> reader.Read())
-        |> Seq.takeWhile ((=) true) 
-        |> Seq.collect (fun _ ->  
-                                seq
-                                    {
-                                    yield    
-                                        {
-                                            V001 = whatIs (reader.["CenikValuesV001"])
-                                            V002 = whatIs (reader.["CenikValuesV002"])
-                                            V003 = whatIs (reader.["CenikValuesV003"])
-                                            V004 = whatIs (reader.["CenikValuesV004"])
-                                            V005 = whatIs (reader.["CenikValuesV005"])
-                                            V006 = whatIs (reader.["CenikValuesV006"])
-                                            V007 = whatIs (reader.["CenikValuesV007"])
-                                            V008 = whatIs (reader.["CenikValuesV008"])
-                                            V009 = whatIs (reader.["CenikValuesV009"])
-                                        }
-                                    } 
-                        ) |> Seq.head
-    connection.Close()
-    connection.Dispose()
-    result
-    
-         
-    
-    
-  
+    let idInt = 3
+    selectValues connection idInt //TODO  try with

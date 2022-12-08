@@ -12,7 +12,6 @@ open Shared
 open SharedTypes
 
 open Sql
-open SqlInsertUpdate
 open Security
 
 open Connection
@@ -113,10 +112,10 @@ let IGetApi =
                   {                   
                     let getNewCenikValues: GetCenikValues =                        
                         match verifyCenikValues getCenikValues with                
-                        | Ok () -> insertOrUpdateNew "new" 2 getCenikValues.V001 getCenikValues.V002 getCenikValues.V003                                                  
-                                                          getCenikValues.V004 getCenikValues.V005 getCenikValues.V006
-                                                          getCenikValues.V007 getCenikValues.V008 getCenikValues.V009
-                                   serialize getCenikValues "jsonCenikValues.xml"  //TODO try with                              
+                        | Ok () -> insertOrUpdateNew getCenikValues.V001 getCenikValues.V002 getCenikValues.V003                                                  
+                                                     getCenikValues.V004 getCenikValues.V005 getCenikValues.V006
+                                                     getCenikValues.V007 getCenikValues.V008 getCenikValues.V009
+                                   serialize getCenikValues "jsonCenikValues.xml"  //TODO try with   //ponechat serializaci kvuli aktualizaci xml                           
                                    {
                                        V001 = getCenikValues.V001; V002 = getCenikValues.V002;
                                        V003 = getCenikValues.V003; V004 = getCenikValues.V004;
@@ -140,17 +139,18 @@ let IGetApi =
           fun _ ->
               async
                   {
+                     //ponechat kopirovani kvuli aktualizaci xml 
                      copyFiles 
                      <| "jsonCenikValues.xml"
                      <| "jsonCenikValuesBackUp.xml"
-                     let newDb = selectValuesSeqNew 2 
+                     let newDb = selectNewValues () 
                                         
-                     insertOrUpdateOld "old" 3 newDb.V001 newDb.V002 newDb.V003
-                                            newDb.V004 newDb.V005 newDb.V006
-                                            newDb.V007 newDb.V008 newDb.V009
+                     insertOrUpdateOld newDb.V001 newDb.V002 newDb.V003
+                                       newDb.V004 newDb.V005 newDb.V006
+                                       newDb.V007 newDb.V008 newDb.V009
                      
                      //let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
-                     let dbSendOldCenikValues = selectValuesSeqOld 3 
+                     let dbSendOldCenikValues = selectOldValues () 
                       
                      //return sendOldCenikValues
                      return dbSendOldCenikValues
@@ -161,9 +161,9 @@ let IGetApi =
              async
                  {
                     //vzpomen si na problem s records s odlisnymi fields :-)
-                    let sendCenikValues = deserialize "jsonCenikValues.xml" //TODO try with
+                    //let sendCenikValues = deserialize "jsonCenikValues.xml" //TODO try with
 
-                    let dbSendCenikValues = selectValuesSeqDeser 2 
+                    let dbSendCenikValues = selectDeserValues ()
                      
                     //return sendCenikValues
                     return dbSendCenikValues

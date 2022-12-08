@@ -14,7 +14,7 @@
     <Compile Include="Auxiliaries\ROP_Functions.fs" />
     <Compile Include="Auxiliaries\Helpers.fs" />
     <Compile Include="Security.fs" />
-    <Compile Include="SqlInsertUpdate.fs" />
+    <Compile Include="Dapper.fs" />
     <Compile Include="Sql.fs" />
     <Compile Include="Server.fs" />
   </ItemGroup>
