@@ -74,7 +74,7 @@ let private insertOrUpdate connection valState idInt (getCenikValues: GetCenikVa
     let val08 = getCenikValues.V008
     let val09 = getCenikValues.V009
        
-    //**************** Parameters for command.Parameters.AddWithValue("@val", nejake hodnota) *****************
+    //**************** Parameters for command.Parameters.AddWithValue("@val", nejaka hodnota) *****************
     let newParamList = [
                            ("@valState", valState); ("@val01", val01); ("@val02", val02);
                            ("@val03", val03); ("@val04", val04); ("@val05", val05);
@@ -110,7 +110,7 @@ let private selectValues connection idInt =
         use cmdExists = new SqlCommand(queryExists idString, connection)
         use cmdSelect = new SqlCommand(querySelect idString, connection)
 
-        //**************** Add values to parameters and execute commands with business logic *****************
+        //**************** Read values from DB *****************
         let reader =
             let e = "error"
             match cmdExists.ExecuteScalar() |> Option.ofObj with //cmdExists.ExecuteScalar() |> Option.ofObj
