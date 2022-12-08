@@ -12,18 +12,14 @@ open Shared
 open SharedTypes
 
 open Sql
+open SqlInsertUpdate
 open Security
 
+open Connection
 open ROP_Functions
 open Helpers.CopyingFiles
 open Helpers.Serialisation
 open Helpers.Deserialisation
-
-//let [<Literal>] connStringSomee = @"workstation id=nterapie.mssql.somee.com;packet size=4096;user id=FSharpDeveloper_SQLLogin_1;pwd=1791iyi6tf;data source=nterapie.mssql.somee.com;persist security info=False;initial catalog=nterapie" 
-let [<Literal>] connStringLocal = @"Data Source=Misa\SQLEXPRESS;Initial Catalog=nterapieLocal;Integrated Security=True"
-
- //nelze use
-let connection = new SqlConnection(connStringLocal) //trywith
 
 let (>>=) condition nextFunc = 
     match condition with
@@ -115,12 +111,11 @@ let IGetApi =
           fun getCenikValues ->
               async
                   {                   
-                    let getNewCenikValues: GetCenikValues =
-
+                    let getNewCenikValues: GetCenikValues =                        
                         match verifyCenikValues getCenikValues with                
-                        | Ok () -> insertOrUpdateNew connection getCenikValues.V001 getCenikValues.V002 getCenikValues.V003
-                                                                getCenikValues.V004 getCenikValues.V005 getCenikValues.V006
-                                                                getCenikValues.V007 getCenikValues.V008 getCenikValues.V009
+                        | Ok () -> insertOrUpdateNew "new" 2 getCenikValues.V001 getCenikValues.V002 getCenikValues.V003                                                  
+                                                          getCenikValues.V004 getCenikValues.V005 getCenikValues.V006
+                                                          getCenikValues.V007 getCenikValues.V008 getCenikValues.V009
                                    serialize getCenikValues "jsonCenikValues.xml"  //TODO try with                              
                                    {
                                        V001 = getCenikValues.V001; V002 = getCenikValues.V002;
@@ -148,28 +143,17 @@ let IGetApi =
                      copyFiles 
                      <| "jsonCenikValues.xml"
                      <| "jsonCenikValuesBackUp.xml"
-                     let mySeq = selectValues1 2 connection
-                     let neco = mySeq.V009
-                       (*
-                     let mySeq = selectValues 2 connection
-                   
-                     insertOrUpdateOld connection (mySeq |> Seq.item 0) (mySeq |> Seq.item 1) (mySeq |> Seq.item 2)
-                                                  (mySeq |> Seq.item 3) (mySeq |> Seq.item 4) (mySeq |> Seq.item 5)
-                                                  (mySeq |> Seq.item 6) (mySeq |> Seq.item 7) (mySeq |> Seq.item 8)  
-                      *) 
-                     let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
-                        (*
-                     let mySeq = selectValues 3 connection
-                     let sendOldCenikValues1 = 
-                            {
-                                V001 = mySeq |> Seq.item 0; V002 = mySeq |> Seq.item 1;
-                                V003 = mySeq |> Seq.item 2; V004 = mySeq |> Seq.item 3;
-                                V005 = mySeq |> Seq.item 4; V006 = mySeq |> Seq.item 5;
-                                V007 = mySeq |> Seq.item 6; V008 = mySeq |> Seq.item 7;
-                                V009 = mySeq |> Seq.item 8
-                            }
-                            *)
-                     return sendOldCenikValues
+                     let newDb = selectValuesSeqNew 2 
+                                        
+                     insertOrUpdateOld "old" 3 newDb.V001 newDb.V002 newDb.V003
+                                            newDb.V004 newDb.V005 newDb.V006
+                                            newDb.V007 newDb.V008 newDb.V009
+                     
+                     //let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
+                     let dbSendOldCenikValues = selectValuesSeqOld 3 
+                      
+                     //return sendOldCenikValues
+                     return dbSendOldCenikValues
                   } 
 
       sendDeserialisedCenikValues =
@@ -178,19 +162,11 @@ let IGetApi =
                  {
                     //vzpomen si na problem s records s odlisnymi fields :-)
                     let sendCenikValues = deserialize "jsonCenikValues.xml" //TODO try with
-                       (* 
-                    let mySeq = selectValues 2 connection
-                   
-                    let sendCenikValues = 
-                           {
-                               V001 = mySeq |> Seq.item 0; V002 = mySeq |> Seq.item 1;
-                               V003 = mySeq |> Seq.item 2; V004 = mySeq |> Seq.item 3;
-                               V005 = mySeq |> Seq.item 4; V006 = mySeq |> Seq.item 5;
-                               V007 = mySeq |> Seq.item 6; V008 = mySeq |> Seq.item 7;
-                               V009 = mySeq |> Seq.item 8
-                           }
-                           *)
-                    return sendCenikValues
+
+                    let dbSendCenikValues = selectValuesSeqDeser 2 
+                     
+                    //return sendCenikValues
+                    return dbSendCenikValues
                  }
 
       getKontaktValues =
@@ -293,8 +269,7 @@ let webApp =
     |> Remoting.buildHttpHandler
 
 let app =
-    connection.Open()
-    insertOrUpdateFixed connection
+    insertOrUpdateFixed ()
     application
         {
             use_router webApp
@@ -305,8 +280,6 @@ let app =
 
 
 [<EntryPoint>]
-let main _ =    
-    run app
-    connection.Close()
-    connection.Dispose()
+let main _ =
+    run app    
     0
