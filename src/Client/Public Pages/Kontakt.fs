@@ -1,6 +1,5 @@
 module Kontakt
 
-open System
 open Elmish
 open Feliz
 open Fable.Remoting.Client
@@ -10,8 +9,6 @@ open SharedTypes
 
 open Layout
 open Records
-open ContentKontakt
-open ContentMaintenance
 
 type Model =
     {

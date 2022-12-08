@@ -7,10 +7,8 @@ open Fable.Remoting.Client
 open Shared
 open SharedTypes
 
-open Layout
 open Records
 open ContentCMSRozcestnik
-open ContentCMSForbidden
 
 type Model =
     {        

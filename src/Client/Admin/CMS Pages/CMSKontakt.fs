@@ -1,5 +1,7 @@
 module CMSKontakt
 
+open System
+
 open Elmish
 open Feliz
 open Fable.Remoting.Client
@@ -9,25 +11,19 @@ open SharedTypes
 
 open FSharp.Control
 
-open System
-
-open Layout
-open ContentCMSKontakt
-open ContentCMSForbidden
-
 type Model =
     {
-      KontaktValues: GetKontaktValues
-      OldKontaktValues: GetKontaktValues
-      V001Input: string
-      V002Input: string
-      V003Input: string
-      V004Input: string
-      V005Input: string
-      V006Input: string
-      V007Input: string       
-      Id: int
-      DelayMsg: string
+        KontaktValues: GetKontaktValues
+        OldKontaktValues: GetKontaktValues
+        V001Input: string
+        V002Input: string
+        V003Input: string
+        V004Input: string
+        V005Input: string
+        V006Input: string
+        V007Input: string       
+        Id: int
+        DelayMsg: string
     }
 
 type Msg =    

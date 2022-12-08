@@ -5,6 +5,7 @@ open System.Data.SqlClient
 
 open Connection
 open SharedTypes
+open Microsoft.FSharp.Quotations
 
 //**************** Sql query strings *****************
 let private queryCreateDatabase = "CREATE DATABASE nterapieLocal" //nelze pro connStringSomee
@@ -47,11 +48,9 @@ let private queryInsert = "
                       [CenikValuesV008],
                       [CenikValuesV009]
                       )
-    VALUES (@valId, @valState, @val01, @val02, @val03, @val04, @val05, @val06, @val07, @val08, @val09)"  
+    VALUES (@valId, @valState, @val01, @val02, @val03, @val04, @val05, @val06, @val07, @val08, @val09)"
 
-
-
-//**************** Sql commands - template *****************
+//**************** Sql commands - templates *****************
 (*
 use cmdExists = new SqlCommand(queryExists idString, connection)
 use cmdInsert = new SqlCommand(queryInsert, connection)
@@ -60,11 +59,21 @@ use cmdDeleteAll = new SqlCommand(queryDeleteAll, connection)
 use cmdDelete = new SqlCommand(queryDelete idString, connection) 
 *)  
 
-//**************** Sql queries - templates  *****************
-let insertOrUpdate connection valState idInt val01 val02 val03 val04 val05 val06 val07 val08 val09 = //TODO trywith
+//**************** Sql queries - inner functions  *****************
+let private insertOrUpdate connection valState idInt (getCenikValues: GetCenikValues) = //TODO trywith
      
-    let idString = string idInt //Primary Key for new value state
+    let idString = string idInt //idInt = Primary Key for new/old/fixed value state
 
+    let val01 = getCenikValues.V001
+    let val02 = getCenikValues.V002
+    let val03 = getCenikValues.V003
+    let val04 = getCenikValues.V004
+    let val05 = getCenikValues.V005
+    let val06 = getCenikValues.V006
+    let val07 = getCenikValues.V007
+    let val08 = getCenikValues.V008
+    let val09 = getCenikValues.V009
+       
     //**************** Parameters for command.Parameters.AddWithValue("@val", nejake hodnota) *****************
     let newParamList = [
                            ("@valState", valState); ("@val01", val01); ("@val02", val02);
@@ -72,7 +81,7 @@ let insertOrUpdate connection valState idInt val01 val02 val03 val04 val05 val06
                            ("@val06", val06); ("@val07", val07); ("@val08", val08); ("@val09", val09)
                        ]       
 
-     //**************** SqlCommands *****************
+    //**************** SqlCommands *****************
     use cmdExists = new SqlCommand(queryExists idString, connection)
     use cmdInsert = new SqlCommand(queryInsert, connection)
     use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
@@ -87,7 +96,7 @@ let insertOrUpdate connection valState idInt val01 val02 val03 val04 val05 val06
                 newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
                 cmdInsert.ExecuteNonQuery() |> ignore       
 
-let selectValues connection idInt =
+let private selectValues connection idInt =
 
     let whatIs(x: obj) =
         match x with
@@ -109,7 +118,7 @@ let selectValues connection idInt =
             | None   -> //insertOrUpdateOld e e e e e e e e e e //TODO
                         cmdSelect.ExecuteReader()
 
-        //while reader.Read() do yield { //filling in a record } |> Seq.head 
+        //seq { while reader.Read() do yield { //filling in a record } } |> Seq.head 
         Seq.initInfinite (fun _ -> reader.Read())
         |> Seq.takeWhile ((=) true) 
         |> Seq.collect (fun _ ->  
@@ -117,15 +126,15 @@ let selectValues connection idInt =
                                     {
                                     yield    
                                         {
-                                            V001 = whatIs (reader.["CenikValuesV001"])
-                                            V002 = whatIs (reader.["CenikValuesV002"])
-                                            V003 = whatIs (reader.["CenikValuesV003"])
-                                            V004 = whatIs (reader.["CenikValuesV004"])
-                                            V005 = whatIs (reader.["CenikValuesV005"])
-                                            V006 = whatIs (reader.["CenikValuesV006"])
-                                            V007 = whatIs (reader.["CenikValuesV007"])
-                                            V008 = whatIs (reader.["CenikValuesV008"])
-                                            V009 = whatIs (reader.["CenikValuesV009"])
+                                            V001 = whatIs reader.["CenikValuesV001"]
+                                            V002 = whatIs reader.["CenikValuesV002"]
+                                            V003 = whatIs reader.["CenikValuesV003"]
+                                            V004 = whatIs reader.["CenikValuesV004"]
+                                            V005 = whatIs reader.["CenikValuesV005"]
+                                            V006 = whatIs reader.["CenikValuesV006"]
+                                            V007 = whatIs reader.["CenikValuesV007"]
+                                            V008 = whatIs reader.["CenikValuesV008"]
+                                            V009 = whatIs reader.["CenikValuesV009"]
                                         }
                                     } 
                         ) |> Seq.head
@@ -134,87 +143,48 @@ let selectValues connection idInt =
     result
 
 //**************** Sql queries - executions *****************
-let insertOrUpdateFixed () = //TODO trywith
-    let connection = new SqlConnection(connStringLocal) //trywith
+  //TODO  vsecko try with
+let insertOrUpdateFixed () = 
+    let connection = new SqlConnection(connStringLocal) 
     connection.Open()
-    
-    let idInt = 1 //Primary Key for fixed value state
-    let idString = string idInt
-
-    //**************** SqlCommands *****************
-    use cmdExists = new SqlCommand(queryExists idString, connection)
-    use cmdInsert = new SqlCommand(queryInsert, connection)
-    use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
-
-    //**************** Parameters for command.Parameters.AddWithValue("@val", nejake hodnota) *****************
-    let fixedParamList = [
-                            ("@valState", "fixed"); ("@val01", "300"); ("@val02", "300");
-                            ("@val03", "2 200"); ("@val04", "250"); ("@val05", "230");
-                            ("@val06", "400"); ("@val07", "600"); ("@val08", "450"); ("@val09", "450")
-                         ]  
-
-    //**************** Add values to parameters and execute commands with business logic *****************
-    match cmdExists.ExecuteScalar() |> Option.ofObj with
-    | Some _ -> 
-                fixedParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) //for learning purposes
-                cmdUpdate.ExecuteNonQuery() |> ignore //for learning purposes
-               
-    | None   -> 
-                cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
-                fixedParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
-                cmdInsert.ExecuteNonQuery() |> ignore
-              
+    let valState = "fixed"
+    let idInt = 1 //Primary Key for fixed value state   
+    insertOrUpdate connection valState idInt GetCenikValues.Default
     connection.Close()
     connection.Dispose()
 
-let insertOrUpdateNew val01 val02 val03 val04 val05 val06 val07 val08 val09 = //TODO trywith
-    let connection = new SqlConnection(connStringLocal) //trywith
+let insertOrUpdateNew newDbCenikValues = 
+    let connection = new SqlConnection(connStringLocal) 
     connection.Open()
     let valState = "new"
-    let idInt = 2
-
-    insertOrUpdate connection valState idInt val01 val02 val03 val04 val05 val06 val07 val08 val09
-    
+    let idInt = 2 //Primary Key for new value state
+    insertOrUpdate connection valState idInt newDbCenikValues    
     connection.Close()
     connection.Dispose()
 
-let insertOrUpdateOld val01 val02 val03 val04 val05 val06 val07 val08 val09 = //TODO trywith
-    let connection = new SqlConnection(connStringLocal) //trywith
+let insertOrUpdateOld newDbCenikValues = //new vales transpiled into old values
+    let connection = new SqlConnection(connStringLocal) 
     connection.Open()
     let valState = "old"
-    let idInt = 3
-
-    insertOrUpdate connection valState idInt val01 val02 val03 val04 val05 val06 val07 val08 val09
-
+    let idInt = 3 //Primary Key for old value state
+    insertOrUpdate connection valState idInt newDbCenikValues
     connection.Close()
     connection.Dispose()
 
-(*
-let selectValuesW idString connection =
-            seq
-                {    
-                    use cmdSelect = new SqlCommand(querySelect idString, connection)
-                    let reader = cmdSelect.ExecuteReader()
-                    while reader.Read() do yield { //filling in a record } 
-                } |> Seq.head            
-*)       
-
 let selectDeserValues () =
-    let connection = new SqlConnection(connStringLocal) //trywith
+    let connection = new SqlConnection(connStringLocal) 
     connection.Open()
-    let idInt = 2
-    selectValues connection idInt //TODO  try with   
+    let idInt = 2 //Primary Key for new value state
+    selectValues connection idInt   
 
 let selectNewValues () =
-    let connection = new SqlConnection(connStringLocal) //trywith
-    connection.Open()
-      //TODO  try with
-    let idInt = 2
+    let connection = new SqlConnection(connStringLocal) 
+    connection.Open()    
+    let idInt = 2 //Primary Key for new value state
     selectValues connection idInt //TODO  try with
 
 let selectOldValues () =
-    let connection = new SqlConnection(connStringLocal) //trywith
-    connection.Open()
-        //TODO  try with
-    let idInt = 3
-    selectValues connection idInt //TODO  try with
+    let connection = new SqlConnection(connStringLocal) 
+    connection.Open()       
+    let idInt = 3 //Primary Key for old value state
+    selectValues connection idInt 

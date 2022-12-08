@@ -4,10 +4,6 @@ open Feliz
 open Elmish
 open Fable.Remoting.Client
 
-open Shared
-
-open Layout
-open Records
 open ContentMaintenance
 
 type Model =

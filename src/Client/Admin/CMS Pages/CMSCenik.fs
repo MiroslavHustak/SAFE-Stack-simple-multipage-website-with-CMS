@@ -1,5 +1,7 @@
 module CMSCenik
 
+open System
+
 open Elmish
 open Feliz
 open Fable.Remoting.Client
@@ -9,29 +11,21 @@ open FSharp.Control
 open Shared
 open SharedTypes
 
-open System
-
-open Layout
-open ContentCMSCenik
-open ContentHome
-open ContentCMSForbidden
-open System.Threading
-
 type Model =
     {
-      CenikValues: GetCenikValues
-      OldCenikValues: GetCenikValues
-      V001Input: string
-      V002Input: string
-      V003Input: string
-      V004Input: string
-      V005Input: string
-      V006Input: string
-      V007Input: string
-      V008Input: string
-      V009Input: string      
-      Id: int
-      DelayMsg: string
+        CenikValues: GetCenikValues
+        OldCenikValues: GetCenikValues
+        V001Input: string
+        V002Input: string
+        V003Input: string
+        V004Input: string
+        V005Input: string
+        V006Input: string
+        V007Input: string
+        V008Input: string
+        V009Input: string      
+        Id: int
+        DelayMsg: string
     }
 
 type Msg =
@@ -62,32 +56,22 @@ let getCenikValuesApi =
     |> Remoting.buildProxy<IGetApi>
 
 let init id : Model * Cmd<Msg> =
-    let model = {
-        CenikValues =
-            {
-                V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = ""; V006 = "";
-                V007 = ""; V008 = ""; V009 = ""
-            }
-        OldCenikValues =
-            {
-                V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = ""; V006 = "";
-                V007 = ""; V008 = ""; V009 = ""
-            }
-
-        V001Input = ""
-        V002Input = ""
-        V003Input = ""
-        V004Input = ""
-        V005Input = ""
-        V006Input = ""
-        V007Input = ""
-        V008Input = ""
-        V009Input = "" 
-        Id = id
-        DelayMsg = String.Empty
-      }
+    let model =
+        {
+            CenikValues = GetCenikValues.Default           
+            OldCenikValues = GetCenikValues.Default       
+            V001Input = String.Empty
+            V002Input = String.Empty
+            V003Input = String.Empty
+            V004Input = String.Empty
+            V005Input = String.Empty
+            V006Input = String.Empty
+            V007Input = String.Empty
+            V008Input = String.Empty
+            V009Input = String.Empty 
+            Id = id
+            DelayMsg = String.Empty
+        }
     model, Cmd.ofMsg SendOldCenikValuesToServer
 
 
@@ -254,6 +238,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                             Html.tr [                                              
                                                 prop.children
                                                     [
+                                                        //let studyIt =  yield! [ for item in 1..7 do Html.td [] ] |> List.map (fun item -> item)
                                                         //let studyIt = [ yield! ( [ 1..7 ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) ] //zajimava konstrukce quli yield
                                                         yield! ( [ 1..7 ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)    
                                                     ]  
@@ -264,15 +249,8 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         for item in myList do
                                                             Html.text ", "
                                                             item
-                                                    ] |> List.tail //quli carky, kera je prvni
-                                                   
-                                                    *)
-                                                    (*
-                                                    prop.children [                                                   
-                                                        yield! [ for item in 1..7 do Html.td [] ] |> List.map (fun item -> item)                                            
-                                                    ]
-
-                                                    *)
+                                                    ] |> List.tail //quli carky, kera je prvni                                                   
+                                                    *)                                                    
                                             ]                                        
                                             Html.tr [
                                                 prop.style

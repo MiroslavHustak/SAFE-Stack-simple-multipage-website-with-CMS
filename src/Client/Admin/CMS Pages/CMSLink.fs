@@ -1,5 +1,7 @@
 module CMSLink
 
+open System
+
 open Elmish
 open Feliz
 open Fable.Remoting.Client
@@ -9,30 +11,24 @@ open SharedTypes
 
 open FSharp.Control
 
-open System
-
-open Layout
-open ContentCMSKontakt
-open ContentCMSForbidden
-
 type Model =
     {
-      LinkAndLinkNameValues: GetLinkAndLinkNameValues
-      OldLinkAndLinkNameValues: GetLinkAndLinkNameValues
-      V001LinkInput: string
-      V002LinkInput: string
-      V003LinkInput: string
-      V004LinkInput: string
-      V005LinkInput: string
-      V006LinkInput: string
-      V001LinkNameInput: string
-      V002LinkNameInput: string
-      V003LinkNameInput: string
-      V004LinkNameInput: string
-      V005LinkNameInput: string
-      V006LinkNameInput: string
-      Id: int
-      DelayMsg: string
+        LinkAndLinkNameValues: GetLinkAndLinkNameValues
+        OldLinkAndLinkNameValues: GetLinkAndLinkNameValues
+        V001LinkInput: string
+        V002LinkInput: string
+        V003LinkInput: string
+        V004LinkInput: string
+        V005LinkInput: string
+        V006LinkInput: string
+        V001LinkNameInput: string
+        V002LinkNameInput: string
+        V003LinkNameInput: string
+        V004LinkNameInput: string
+        V005LinkNameInput: string
+        V006LinkNameInput: string
+        Id: int
+        DelayMsg: string
     }
 
 type Msg =
@@ -161,10 +157,10 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
             model with
                        LinkAndLinkNameValues =
                           {
-                            V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
-                            V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
-                            V001n = valueNew.V001n; V002n = valueNew.V002n; V003n = valueNew.V003n;
-                            V004n = valueNew.V004n; V005n = valueNew.V005n; V006n = "Facebook"
+                              V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
+                              V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
+                              V001n = valueNew.V001n; V002n = valueNew.V002n; V003n = valueNew.V003n;
+                              V004n = valueNew.V004n; V005n = valueNew.V005n; V006n = "Facebook"
                           }
         },  Cmd.none
 
@@ -173,10 +169,10 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
             model with
                         OldLinkAndLinkNameValues =
                             {
-                              V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
-                              V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
-                              V001n = valueOld.V001n; V002n = valueOld.V002n; V003n = valueOld.V003n;
-                              V004n = valueOld.V004n; V005n = valueOld.V005n; V006n = "Facebook"
+                                V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
+                                V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
+                                V001n = valueOld.V001n; V002n = valueOld.V002n; V003n = valueOld.V003n;
+                                V004n = valueOld.V004n; V005n = valueOld.V005n; V006n = "Facebook"
                             }
         },  Cmd.none
    

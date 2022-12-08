@@ -20,12 +20,13 @@ open Helpers.CopyingFiles
 open Helpers.Serialisation
 open Helpers.Deserialisation
 
-let (>>=) condition nextFunc = 
+let private (>>=) condition nextFunc = 
     match condition with
     | false -> SharedApi.UsernameOrPasswordIncorrect  
     | true  -> nextFunc() 
 
-type MyPatternBuilder = MyPatternBuilder with            
+[<Struct>]
+type private MyPatternBuilder = MyPatternBuilder with            
     member _.Bind(condition, nextFunc) = (>>=) <| condition <| nextFunc
     member _.Using x = x
     member _.Return x = x
@@ -106,49 +107,34 @@ let IGetApi =
                       return ()
                   }   
       *)
-      getCenikValues =
+      getCenikValues =  //moznost vyberu mezi Json/XML ci db
           fun getCenikValues ->
               async
                   {                   
                     let getNewCenikValues: GetCenikValues =                        
                         match verifyCenikValues getCenikValues with                
-                        | Ok () -> insertOrUpdateNew getCenikValues.V001 getCenikValues.V002 getCenikValues.V003                                                  
-                                                     getCenikValues.V004 getCenikValues.V005 getCenikValues.V006
-                                                     getCenikValues.V007 getCenikValues.V008 getCenikValues.V009
-                                   serialize getCenikValues "jsonCenikValues.xml"  //TODO try with   //ponechat serializaci kvuli aktualizaci xml                           
+                        | Ok () -> insertOrUpdateNew getCenikValues  //db   
+                                   serialize getCenikValues "jsonCenikValues.xml"  //TODO try with   //aji pri db ponechat serializaci kvuli aktualizaci xml                           
                                    {
-                                       V001 = getCenikValues.V001; V002 = getCenikValues.V002;
-                                       V003 = getCenikValues.V003; V004 = getCenikValues.V004;
-                                       V005 = getCenikValues.V005; V006 = getCenikValues.V006;
-                                       V007 = getCenikValues.V007; V008 = getCenikValues.V008;
-                                       V009 = getCenikValues.V009
-                                   }
-                                  
-                        | _    ->
-                                   {
-                                       V001 = String.Empty; V002 = String.Empty;
-                                       V003 = String.Empty; V004 = String.Empty;
-                                       V005 = String.Empty; V006 = String.Empty;
-                                       V007 = String.Empty; V008 = String.Empty;
-                                       V009 = String.Empty
-                                   }     
+                                       V001 = getCenikValues.V001; V002 = getCenikValues.V002;  V003 = getCenikValues.V003;
+                                       V004 = getCenikValues.V004;  V005 = getCenikValues.V005; V006 = getCenikValues.V006;
+                                       V007 = getCenikValues.V007; V008 = getCenikValues.V008; V009 = getCenikValues.V009                                       
+                                   }                                  
+                        | _    ->  GetCenikValues.Default
                     return getNewCenikValues
                   }
 
-      sendOldCenikValues =
+      sendOldCenikValues = //moznost vyberu mezi Json/XML ci db
           fun _ ->
               async
                   {
-                     //ponechat kopirovani kvuli aktualizaci xml 
+                     //aji pri db ponechat kopirovani kvuli aktualizaci xml 
                      copyFiles 
                      <| "jsonCenikValues.xml"
                      <| "jsonCenikValuesBackUp.xml"
-                     let newDb = selectNewValues () 
-                                        
-                     insertOrUpdateOld newDb.V001 newDb.V002 newDb.V003
-                                       newDb.V004 newDb.V005 newDb.V006
-                                       newDb.V007 newDb.V008 newDb.V009
-                     
+                     let newDb = selectNewValues ()
+                     insertOrUpdateOld newDb //eqv vyse uvedeneho kopirovani
+
                      //let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
                      let dbSendOldCenikValues = selectOldValues () 
                       
@@ -156,7 +142,7 @@ let IGetApi =
                      return dbSendOldCenikValues
                   } 
 
-      sendDeserialisedCenikValues =
+      sendDeserialisedCenikValues = //moznost vyberu mezi Json/XML ci db
          fun _ ->
              async
                  {

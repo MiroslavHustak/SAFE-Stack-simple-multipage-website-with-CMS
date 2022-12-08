@@ -8,6 +8,12 @@ type GetCenikValues =
         V004: string; V005: string; V006: string;
         V007: string; V008: string; V009: string
     }
+    static member Default = //fixed values
+        {
+           V001 = "300"; V002 = "300"; V003 = "2 200";
+           V004 = "250"; V005 = "230"; V006 = "400";
+           V007 = "600"; V008 = "450"; V009 = "450"
+        }        
 
 type GetKontaktValues =
     {

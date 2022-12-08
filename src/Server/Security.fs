@@ -12,8 +12,6 @@ open System.Security.Cryptography
 open SharedTypes
 open PasswordGenerator
 
-
-
 //  Learn about JWT https://jwt.io/introduction/
 //  This module uses the JOSE-JWT library https://github.com/dvsekhvalnov/jose-jwt
 let private createRandomKey() =

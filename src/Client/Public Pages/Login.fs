@@ -48,6 +48,7 @@ module Login =
     let private getLoginApi = api()
 
     let init id : Model * Cmd<Msg> =
+
         let model = {
                         User = FirstTimeRunAnonymous
                         InputUsr = String.Empty
