@@ -71,8 +71,8 @@ module Login =
         | GetLoginResults value -> 
             let model =           
                 match value with
-                | SharedApi.UsernameOrPasswordIncorrect -> { model with User = ApplicationUser.Anonymous} //potrebne pro na konci modulu uvedeny kod
-                | SharedApi.LoggedIn user               -> { model with User = ApplicationUser.LoggedIn user} //potrebne pro na konci modulu uvedeny kod    
+                | SharedApi.UsernameOrPasswordIncorrect -> { model with User = ApplicationUser.Anonymous } //potrebne pro na konci modulu uvedeny kod
+                | SharedApi.LoggedIn user               -> { model with User = ApplicationUser.LoggedIn user } //potrebne pro na konci modulu uvedeny kod    
             model, Cmd.ofMsg (LoginCompleted value), NoOp
 
         | LoginCompleted session -> model, Cmd.none, SignedIn session

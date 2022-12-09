@@ -202,31 +202,23 @@ let private setRoute (optRoute: RouterM.Route option) model =
 
 let init (location: RouterM.Route option) =
 
+    let initialLinkAndLinkNameValues =
+        {
+            V001 = String.Empty; V002 = String.Empty; V003 = String.Empty;
+            V004 = String.Empty; V005 = String.Empty; V006 = String.Empty
+            V001n = String.Empty; V002n = String.Empty; V003n = String.Empty;
+            V004n = String.Empty; V005n = String.Empty; V006n = "Facebook"
+        }
+
     setRoute location
         {
             ActivePage = Page.NotFound 
             CurrentRoute = None
-
             User = Anonymous
-            user = { Username = ""; AccessToken = SharedApi.AccessToken ""}
-
-            Session = None
-          
-            LinkAndLinkNameValues =
-                {
-                    V001 = ""; V002 = ""; V003 = "";
-                    V004 = ""; V005 = ""; V006 = ""
-                    V001n = ""; V002n = ""; V003n = "";
-                    V004n = ""; V005n = ""; V006n = "Facebook"
-                }
-
-            LinkAndLinkNameInputValues =
-                {
-                    V001 = ""; V002 = ""; V003 = "";
-                    V004 = ""; V005 = ""; V006 = ""
-                    V001n = ""; V002n = ""; V003n = "";
-                    V004n = ""; V005n = ""; V006n = "Facebook"
-                }
+            user = { Username = String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
+            Session = None          
+            LinkAndLinkNameValues = initialLinkAndLinkNameValues   
+            LinkAndLinkNameInputValues = initialLinkAndLinkNameValues
         }    
 
 let update (msg: Msg) (model: Model) =

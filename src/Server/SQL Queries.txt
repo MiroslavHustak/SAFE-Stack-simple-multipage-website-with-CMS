@@ -21,7 +21,7 @@ CREATE TABLE KONTAKT (
     KontaktValuesV005 varchar(255),
     KontaktValuesV006 varchar(255),
     KontaktValuesV007 varchar(255)     
-); 
+);
 
 CREATE TABLE LINK (
     Id int NOT NULL PRIMARY KEY,

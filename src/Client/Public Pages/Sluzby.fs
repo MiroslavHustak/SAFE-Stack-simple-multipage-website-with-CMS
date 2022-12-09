@@ -28,11 +28,11 @@ let view (model: Model) (dispatch: Msg -> unit) links =
 
     let sluzbyRecord =
        {
-         Home = prop.className "normal"
-         Sluzby = prop.className "current"
-         Cenik = prop.className "normal"
-         Nenajdete = prop.className "normal"
-         Kontakt = prop.className "normal"
+           Home = prop.className "normal"
+           Sluzby = prop.className "current"
+           Cenik = prop.className "normal"
+           Nenajdete = prop.className "normal"
+           Kontakt = prop.className "normal"
        }
 
     layout <| contentSluzby() <| sluzbyRecord <| links

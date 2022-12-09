@@ -1,5 +1,7 @@
 module Kontakt
 
+open System
+
 open Elmish
 open Feliz
 open Fable.Remoting.Client
@@ -27,22 +29,19 @@ let sendDeserialisedKontaktValues =
     |> Remoting.buildProxy<IGetApi>
 
 let init id : Model * Cmd<Msg> =
-    let model =
-      {
-        KontaktValues =
-            {
-                V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = "" ; V006 = "";
-                V007 = ""
-            }
-        KontaktInputValues =
-            {
-                V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = ""; V006 = "";
-                V007 = ""
-            }      
-        Id = id
-      }
+
+    let initialKontaktValues =
+        {
+            V001 = String.Empty; V002 = String.Empty; V003 = String.Empty;
+            V004 = String.Empty; V005 = String.Empty; V006 = String.Empty;
+            V007 = String.Empty
+        }
+    let model =        
+        {
+            KontaktValues = initialKontaktValues        
+            KontaktInputValues = initialKontaktValues 
+            Id = id
+        }
     model, Cmd.ofMsg AskServerForKontaktValues
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
@@ -54,9 +53,9 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
              model, cmd            
         | GetKontaktValues value -> { model with KontaktValues =
                                                   {
-                                                    V001 = value.V001; V002 = value.V002; V003 = value.V003;
-                                                    V004 = value.V004; V005 = value.V005; V006 = value.V006;
-                                                    V007 = value.V007
+                                                      V001 = value.V001; V002 = value.V002; V003 = value.V003;
+                                                      V004 = value.V004; V005 = value.V005; V006 = value.V006;
+                                                      V007 = value.V007
                                                   }
                                     }, Cmd.none    
  
@@ -64,11 +63,11 @@ let view (model: Model) (dispatch: Msg -> unit) links =
     
     let kontaktRecord =
        {
-         Home = prop.className "normal"
-         Sluzby = prop.className "normal"
-         Cenik = prop.className "normal"
-         Nenajdete = prop.className "normal"
-         Kontakt = prop.className "current"
+           Home = prop.className "normal"
+           Sluzby = prop.className "normal"
+           Cenik = prop.className "normal"
+           Nenajdete = prop.className "normal"
+           Kontakt = prop.className "current"
        }
 
     let kontaktHtml =

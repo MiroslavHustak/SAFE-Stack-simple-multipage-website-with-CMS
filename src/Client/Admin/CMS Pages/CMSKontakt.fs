@@ -46,29 +46,27 @@ let getKontaktValuesApi =
     |> Remoting.buildProxy<IGetApi>
 
 let init id : Model * Cmd<Msg> =
-    let model = {
-        KontaktValues =
-            {
-                V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = ""; V006 = "";
-                V007 = ""
-            }
-        OldKontaktValues =
-            {
-                V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = ""; V006 = "";
-                V007 = "" 
-            }
-        V001Input = ""
-        V002Input = ""
-        V003Input = ""
-        V004Input = ""
-        V005Input = ""
-        V006Input = ""
-        V007Input = ""       
-        Id = id
-        DelayMsg = String.Empty
-      }
+
+    let initialKontaktValues =
+        {
+            V001 = String.Empty; V002 = String.Empty; V003 = String.Empty;
+            V004 = String.Empty; V005 = String.Empty; V006 = String.Empty;
+            V007 = String.Empty
+        }
+    let model =
+        {
+            KontaktValues = initialKontaktValues           
+            OldKontaktValues = initialKontaktValues          
+            V001Input = String.Empty
+            V002Input = String.Empty
+            V003Input = String.Empty
+            V004Input = String.Empty
+            V005Input = String.Empty
+            V006Input = String.Empty
+            V007Input = String.Empty       
+            Id = id
+            DelayMsg = String.Empty
+        }
     model, Cmd.ofMsg SendOldKontaktValuesToServer
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =

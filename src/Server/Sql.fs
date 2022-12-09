@@ -5,7 +5,6 @@ open System.Data.SqlClient
 
 open Connection
 open SharedTypes
-open Microsoft.FSharp.Quotations
 
 //**************** Sql query strings *****************
 let private queryCreateDatabase = "CREATE DATABASE nterapieLocal" //nelze pro connStringSomee
@@ -15,9 +14,10 @@ let private queryExists id = sprintf "%s%s%s" "SELECT Id FROM CENIK WHERE EXISTS
 let private querySelect id = sprintf "%s%s" "SELECT * FROM CENIK WHERE Id = " id
 
 let private queryUpdate id = sprintf "%s%s" "UPDATE CENIK
-                                             SET ValueState = @valState, CenikValuesV001 = @val01, CenikValuesV002 = @val02,
-                                                 CenikValuesV003 = @val03, CenikValuesV004 = @val04, CenikValuesV005 = @val05,
-                                                 CenikValuesV006 = @val06, CenikValuesV007 = @val07, CenikValuesV008 = @val08, CenikValuesV009 = @val09
+                                             SET ValueState = @valState,
+                                                 CenikValuesV001 = @val01, CenikValuesV002 = @val02, CenikValuesV003 = @val03,
+                                                 CenikValuesV004 = @val04, CenikValuesV005 = @val05, CenikValuesV006 = @val06,
+                                                 CenikValuesV007 = @val07, CenikValuesV008 = @val08, CenikValuesV009 = @val09
                                              WHERE Id = " id
 
 let private queryCreateTable = "
@@ -96,13 +96,13 @@ let private insertOrUpdate connection valState idInt (getCenikValues: GetCenikVa
                 newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
                 cmdInsert.ExecuteNonQuery() |> ignore       
 
-let private selectValues connection idInt =
+let private selectValues connection valState idInt =
 
     let whatIs(x: obj) =
         match x with
         | :? string as str -> str  //aby nedoslo k nerizene chybe behem runtime
         | _                -> //error4 "error 4 - x :?> string"   //TODO                           
-                              x :?> string
+                              String.Empty //whatever of the string type
     let result = 
         let idString = string idInt
 
@@ -111,12 +111,11 @@ let private selectValues connection idInt =
         use cmdSelect = new SqlCommand(querySelect idString, connection)
 
         //**************** Read values from DB *****************
-        let reader =
-            let e = "error"
-            match cmdExists.ExecuteScalar() |> Option.ofObj with //cmdExists.ExecuteScalar() |> Option.ofObj
+        let reader =            
+            match cmdExists.ExecuteScalar() |> Option.ofObj with 
             | Some _ -> cmdSelect.ExecuteReader() 
-            | None   -> //insertOrUpdateOld e e e e e e e e e e //TODO
-                        cmdSelect.ExecuteReader()
+            | None   -> insertOrUpdate connection valState idInt GetCenikValues.Default
+                        cmdSelect.ExecuteReader() //whatever of the particular type
 
         //seq { while reader.Read() do yield { //filling in a record } } |> Seq.head 
         Seq.initInfinite (fun _ -> reader.Read())
@@ -174,17 +173,20 @@ let insertOrUpdateOld newDbCenikValues = //new vales transpiled into old values
 let selectDeserValues () =
     let connection = new SqlConnection(connStringLocal) 
     connection.Open()
+    let valState = "new"
     let idInt = 2 //Primary Key for new value state
-    selectValues connection idInt   
+    selectValues connection valState idInt   
 
 let selectNewValues () =
     let connection = new SqlConnection(connStringLocal) 
-    connection.Open()    
+    connection.Open()
+    let valState = "new"
     let idInt = 2 //Primary Key for new value state
-    selectValues connection idInt //TODO  try with
+    selectValues connection valState idInt //TODO  try with
 
 let selectOldValues () =
     let connection = new SqlConnection(connStringLocal) 
-    connection.Open()       
+    connection.Open()
+    let valState = "old"
     let idInt = 3 //Primary Key for old value state
-    selectValues connection idInt 
+    selectValues connection valState idInt 

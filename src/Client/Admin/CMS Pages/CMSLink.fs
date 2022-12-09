@@ -56,36 +56,33 @@ let getLinkAndLinkNameValuesApi =
     |> Remoting.buildProxy<IGetApi>
 
 let init id : Model * Cmd<Msg> =
-    let model = {
-        LinkAndLinkNameValues =
-            {
-                V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = ""; V006 = ""
-                V001n = ""; V002n = ""; V003n = "";
-                V004n = ""; V005n = ""; V006n = "Facebook"
-            }
-        OldLinkAndLinkNameValues =
-            {
-                V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = ""; V006 = ""
-                V001n = ""; V002n = ""; V003n = "";
-                V004n = ""; V005n = ""; V006n = "Facebook"
-            }      
-        V001LinkInput = ""
-        V002LinkInput = ""
-        V003LinkInput = ""
-        V004LinkInput = ""
-        V005LinkInput = ""
-        V006LinkInput = ""       
-        V001LinkNameInput = ""
-        V002LinkNameInput = ""
-        V003LinkNameInput = ""
-        V004LinkNameInput = ""
-        V005LinkNameInput = ""
-        V006LinkNameInput = "Facebook"           
-        Id = id
-        DelayMsg = String.Empty
-      }
+
+    let initialLinkAndLinkNameValues =
+        {
+            V001 = String.Empty; V002 = String.Empty; V003 = String.Empty;
+            V004 = String.Empty; V005 = String.Empty; V006 = String.Empty
+            V001n = String.Empty; V002n = String.Empty; V003n = String.Empty;
+            V004n = String.Empty; V005n = String.Empty; V006n = "Facebook"
+        }
+    let model =
+        {
+            LinkAndLinkNameValues = initialLinkAndLinkNameValues           
+            OldLinkAndLinkNameValues = initialLinkAndLinkNameValues           
+            V001LinkInput = String.Empty
+            V002LinkInput = String.Empty
+            V003LinkInput = String.Empty
+            V004LinkInput = String.Empty
+            V005LinkInput = String.Empty
+            V006LinkInput = String.Empty       
+            V001LinkNameInput = String.Empty
+            V002LinkNameInput = String.Empty
+            V003LinkNameInput = String.Empty
+            V004LinkNameInput = String.Empty
+            V005LinkNameInput = String.Empty
+            V006LinkNameInput = "Facebook"           
+            Id = id
+            DelayMsg = String.Empty
+        }
     model, Cmd.ofMsg SendOldLinkAndLinkNameValuesToServer
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =

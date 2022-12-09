@@ -5,6 +5,7 @@ open System.IO
 open System.Data.SqlClient
 
 open Saturn
+open Dapper.FSharp
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 
@@ -264,8 +265,8 @@ let app =
             use_gzip
         }
 
-
 [<EntryPoint>]
 let main _ =
+    Dapper.FSharp.OptionTypes.register()
     run app    
     0

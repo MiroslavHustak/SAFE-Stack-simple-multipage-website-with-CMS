@@ -27,20 +27,11 @@ let sendDeserialisedCenikValues =
     |> Remoting.buildProxy<IGetApi>
 
 let init id : Model * Cmd<Msg> =
+
     let model =
       {
-        CenikValues =
-            {
-                V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = "" ; V006 = "";
-                V007 = ""; V008 = ""; V009 = ""
-            }
-        CenikInputValues =
-            {
-                V001 = ""; V002 = ""; V003 = "";
-                V004 = ""; V005 = ""; V006 = "";
-                V007 = ""; V008 = ""; V009 = ""
-            }      
+        CenikValues = GetCenikValues.Default           
+        CenikInputValues = GetCenikValues.Default            
         Id = id
       }
     model, Cmd.ofMsg AskServerForCenikValues
@@ -54,9 +45,9 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
              model, cmd            
         | GetCenikValues value -> { model with CenikValues =
                                                   {
-                                                    V001 = value.V001; V002 = value.V002; V003 = value.V003;
-                                                    V004 = value.V004; V005 = value.V005; V006 = value.V006;
-                                                    V007 = value.V007; V008 = value.V008; V009 = value.V009
+                                                      V001 = value.V001; V002 = value.V002; V003 = value.V003;
+                                                      V004 = value.V004; V005 = value.V005; V006 = value.V006;
+                                                      V007 = value.V007; V008 = value.V008; V009 = value.V009
                                                   }
                                   }, Cmd.none    
  
@@ -64,11 +55,11 @@ let view (model: Model) (dispatch: Msg -> unit) links =
     
     let cenikRecord =
        {
-         Home = prop.className "normal"
-         Sluzby = prop.className "normal"
-         Cenik = prop.className "current"
-         Nenajdete = prop.className "normal"
-         Kontakt = prop.className "normal"
+           Home = prop.className "normal"
+           Sluzby = prop.className "normal"
+           Cenik = prop.className "current"
+           Nenajdete = prop.className "normal"
+           Kontakt = prop.className "normal"
        }
 
     let cenikHtml =

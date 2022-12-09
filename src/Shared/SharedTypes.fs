@@ -22,6 +22,18 @@ type GetKontaktValues =
         V007: string
     }
 
+type Kontakt =
+    {
+        Id: int
+        KontaktValuesV001: string 
+        KontaktValuesV002: string 
+        KontaktValuesV003: string 
+        KontaktValuesV004: string 
+        KontaktValuesV005: string 
+        KontaktValuesV006: string 
+        KontaktValuesV007: string    
+    }
+
 type GetLinkAndLinkNameValues =
     {
         V001: string; V002: string; V003: string;
