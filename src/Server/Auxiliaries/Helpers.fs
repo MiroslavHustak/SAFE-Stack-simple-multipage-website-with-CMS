@@ -29,45 +29,45 @@ open ROP_Functions
              | TryParserInt.Int i -> f Some i
              | _                  -> None     
 
-    //Vsechny serializace dat povinne do trywith bloku (a jeste overit Option.ofObj, kdyby nahodou tam byl nullable typ) 
+    //TODO All serialisation => try with (+ Option.ofObj if necessary) 
     module Serialisation = 
 
          let serialize record xmlFile = 
             
              let filepath = Path.GetFullPath(xmlFile) 
-                            //|> Option.ofObj 
-                           // |> optionToGenerics "čtení cesty k souboru json.xml" "Path.GetFullPath()"
+                            |> Option.ofObj 
+                            |> optionToGenerics2 "Chyba při čtení cesty k souboru json.xml" String.Empty
 
              let xmlSerializer = new DataContractSerializer(typedefof<string>)          
-                                // |> Option.ofObj 
-                                // |> optionToGenerics "při tvorbě nové instance" "DataContractSerializer()"
+                                 |> Option.ofObj 
+                                 |> optionToGenerics2 "Chyba při serializaci" (new DataContractSerializer(typedefof<string>))
              use stream = File.Create(filepath)   
              xmlSerializer.WriteObject(stream, JsonConvert.SerializeObject(record))            
 
-    //Vsechny deserializace dat povinne do trywith bloku (a jeste overit Option.ofObj, kdyby nahodou tam byl nullable typ)  
+    //TODO All deserialisation => try with (+ Option.ofObj if necessary) 
     module Deserialisation =       
               
        let deserialize xmlFile = 
            
            let filepath = Path.GetFullPath(xmlFile) 
-                         // |> Option.ofObj 
-                         // |> optionToGenerics (sprintf "čtení cesty k souboru souboru %s" xmlFile) "Path.GetFullPath()"
+                          |> Option.ofObj 
+                          |> optionToGenerics2 (sprintf "%s%s" "Chyba při čtení cesty k souboru " xmlFile) String.Empty //TODO
           
            let jsonString() = 
 
                let xmlSerializer = new DataContractSerializer(typedefof<string>) 
-                                  // |> Option.ofObj 
-                                  // |> optionToGenerics "při tvorbě nové instance" "DataContractSerializer()"
+                                   |> Option.ofObj 
+                                   |> optionToGenerics2 "Chyba při serializaci" (new DataContractSerializer(typedefof<string>))
                let fileStream = File.ReadAllBytes(filepath)
-                               // |> Option.ofObj 
-                                //|> optionToGenerics (sprintf "čtení dat ze souboru %s" xmlFile) "File.ReadAllBytes()"
+                                |> Option.ofObj 
+                                |> optionToGenerics2 (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile) [||] //TODO
                use memoryStream = new MemoryStream(fileStream) 
                let resultObj = xmlSerializer.ReadObject(memoryStream)  
-                               //|> Option.ofObj 
-                              // |> optionToGenerics (sprintf "čtení dat ze souboru %s" xmlFile) "xmlSerializer.ReadObject()"      
+                               |> Option.ofObj 
+                               |> optionToGenerics2 (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile) ()  //TODO  
                let resultString = unbox resultObj  
-                                //  |> Option.ofObj 
-                                 // |> optionToGenerics "downcasting" "(unbox resultObj)"      
+                                  |> Option.ofObj 
+                                  |> optionToGenerics2 (sprintf "%s%s" "Chyba při čtení dat ze souboru (unboxing) " xmlFile) String.Empty //TODO     
                let jsonString = JsonConvert.DeserializeObject<'a>(resultString) 
                jsonString
            
@@ -82,17 +82,17 @@ open ROP_Functions
                                                                     
           let perform x =                                    
               let sourceFilepath = Path.GetFullPath(source) 
-                                   //|> Option.ofObj 
-                                   //|> optionToGenerics (sprintf "čtení cesty k souboru %s" source)  "Path.GetFullPath()"
+                                   |> Option.ofObj 
+                                   |> optionToGenerics2 (sprintf "%s%s" "Chyba při čtení cesty k souboru " source) String.Empty //TODO
               let destinFilepath = Path.GetFullPath(destination) 
-                                  // |> Option.ofObj 
-                                  // |> optionToGenerics (sprintf "čtení cesty k souboru %s" destination)  "Path.GetFullPath()"
+                                   |> Option.ofObj 
+                                   |> optionToGenerics2 (sprintf "%s%s" "Chyba při čtení cesty k souboru " source) String.Empty //TODO
                     
               let fInfodat: FileInfo = new FileInfo(sourceFilepath)  
               match fInfodat.Exists with 
               | true  -> File.Copy(sourceFilepath, destinFilepath, true)             
               | false -> failwith (sprintf "Soubor %s nenalezen" source)
-          tryWith perform (fun x -> ()) (fun ex -> failwith) |> deconstructor4 ()                 
+          tryWith perform (fun x -> ()) (fun ex -> failwith) |> deconstructor4 () //TODO                
     (*       
     System.IO.File provides static members related to working with files, whereas System.IO.FileInfo represents a specific file and contains non-static members for working with that file.          
     Because all File methods are static, it might be more efficient to use a File method rather than a corresponding FileInfo instance method if you want to perform only one action. All File methods 

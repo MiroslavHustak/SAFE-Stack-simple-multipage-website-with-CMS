@@ -1,4 +1,4 @@
-module SQLQueries
+module SqlQueries
 
 let queryCreateDatabase = "CREATE DATABASE nterapieLocal" //nelze pro connStringSomee
 let queryDeleteAll = "DELETE FROM CENIK" //Deleting all data from the relevant table

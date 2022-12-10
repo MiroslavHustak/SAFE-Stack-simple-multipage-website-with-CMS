@@ -8,7 +8,7 @@ open Dapper.FSharp.MSSQL
 open System.Data.SqlClient
 
 
-open SQLQueries
+open SqlQueries
 open Connection
 open SharedTypes
 
@@ -16,7 +16,10 @@ open SharedTypes
 let private table = table'<GetCenikValues> "CENIK"
 
 //**************** Sql queries - inner functions  *****************
-let private insertOrUpdate (connection: SqlConnection) (getCenikValues: GetCenikValues) = //TODO trywith
+let insertOrUpdate (getCenikValues: GetCenikValues) = //TODO trywith
+
+    use connection = new SqlConnection(connStringLocal) 
+    connection.Open()  
 
     let idInt = getCenikValues.Id //idInt = Primary Key for new/old/fixed value state
                
@@ -46,7 +49,10 @@ let private insertOrUpdate (connection: SqlConnection) (getCenikValues: GetCenik
     | Some _ -> cmdUpdate().Wait() |> ignore                      
     | None   -> cmdInsert().Wait() |> ignore             
     
-let private selectValues (connection: SqlConnection) idInt =
+let selectValues idInt =
+
+    use connection = new SqlConnection(connStringLocal) 
+    connection.Open()
 
     //**************** SqlCommands ***************** 
     //plain Dapper
@@ -62,33 +68,20 @@ let private selectValues (connection: SqlConnection) idInt =
                 } |> connection.SelectAsync<GetCenikValues>       
 
         //**************** Execute commands with business logic (read values from DB) *****************
-        //match cmdExists.ExecuteScalar() |> Option.ofObj with
         match cmdExistsDapper |> Option.ofObj with 
         | Some _ -> cmdSelect() 
-        | None   -> insertOrUpdate connection GetCenikValues.Default
+        | None   -> insertOrUpdate GetCenikValues.Default
                     cmdSelect() 
     reader.Wait()
 
     match reader.IsCompletedSuccessfully with
-    | true  -> reader.Result |> Seq.head             
+    | true  -> reader.Result
+               |> Option.ofObj
+               |> function
+                   | Some value -> value |> Seq.head
+                   | None       -> GetCenikValues.Default
+                           
     | false -> GetCenikValues.Default
-              
-
-//**************** Sql queries - executions *****************
-//TODO  vsecko try with
-
-let insertOrUpdateUniversal dbCenikValues=
-    use connection = new SqlConnection(connStringLocal) 
-    connection.Open()  
-    insertOrUpdate connection dbCenikValues
-
-let selectValuesUniversal idInt =
-    use connection = new SqlConnection(connStringLocal) 
-    connection.Open()
-    selectValues connection idInt
-
- 
-
 
 
 

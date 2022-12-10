@@ -278,7 +278,7 @@ let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameVal
                             prop.title "Smashicons"
                             prop.text "Smashicons"
                         ]
-                        Html.text " and downloaded from "
+                        Html.text " that were downloaded from "
                         Html.a [
                             prop.href "https://www.flaticon.com/"
                             prop.title "Flaticon"

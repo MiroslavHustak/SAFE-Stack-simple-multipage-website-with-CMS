@@ -1,8 +1,8 @@
 /// Provides functions for encoding and decoding Json web tokens
 module Security
 
-//zatim nevyuzivano //TODO -> implement the code
-//kod prevzat z vyukovych stranek SAFE Stack
+//TODO implement the code
+//This code taken from the learning pages for SAFE Stack
 
 open System
 open System.IO

@@ -3,7 +3,7 @@ module Sql
 open System
 open System.Data.SqlClient
 
-open SQLQueries
+open SqlQueries
 open Connection
 open SharedTypes
 
@@ -20,7 +20,10 @@ use cmdDelete = new SqlCommand(queryDelete idString, connection)
 *)  
 
 //**************** Sql queries - inner functions  *****************
-let private insertOrUpdate connection (getCenikValues: GetCenikValues) = //TODO trywith
+let insertOrUpdate (getCenikValues: GetCenikValues) = //TODO trywith
+
+    use connection = new SqlConnection(connStringLocal) 
+    connection.Open()  
 
     let idInt = getCenikValues.Id //idInt = Primary Key for new/old/fixed value state
     let valState = getCenikValues.ValueState
@@ -48,15 +51,18 @@ let private insertOrUpdate connection (getCenikValues: GetCenikValues) = //TODO 
                 newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
                 cmdInsert.ExecuteNonQuery() |> ignore       
 
-let private selectValues connection idInt =
+let selectValues idInt =
 
-    let whatIs(x: obj) =
+    use connection = new SqlConnection(connStringLocal) 
+    connection.Open()  
+
+    let whatIs (x: obj) =
         match x with
         | :? string as str -> str  //aby nedoslo k nerizene chybe behem runtime
         | _                -> //error4 "error 4 - x :?> string"   //TODO            
                               String.Empty //whatever of the string type
 
-    let whatIsInt(x: obj) =
+    let whatIsInt (x: obj) =
         match x with
         | :? int as i -> i 
         | _           -> //error4 "error 4 - x :?> int"   //TODO            
@@ -73,10 +79,9 @@ let private selectValues connection idInt =
         let reader =            
             match cmdExists.ExecuteScalar() |> Option.ofObj with 
             | Some _ -> cmdSelect.ExecuteReader() 
-            | None   -> insertOrUpdate connection GetCenikValues.Default 
+            | None   -> insertOrUpdate GetCenikValues.Default 
                         cmdSelect.ExecuteReader() 
 
-        //seq { while reader.Read() do yield { //filling in a record } } |> Seq.head 
         Seq.initInfinite (fun _ -> reader.Read())
         |> Seq.takeWhile ((=) true) 
         |> Seq.collect (fun _ ->  
@@ -97,45 +102,5 @@ let private selectValues connection idInt =
                                             V009 = whatIs reader.["V009"]
                                         }
                                     } 
-                        ) |> Seq.head
-    connection.Close()
-    connection.Dispose()
+                       ) |> Seq.head
     getValues
-
-//**************** Sql queries - executions *****************
-  //TODO  vsecko try with
-let insertOrUpdateFixed dbCenikValues = 
-    let connection = new SqlConnection(connStringLocal) 
-    connection.Open()   
-    insertOrUpdate connection dbCenikValues
-    connection.Close()
-    connection.Dispose()
-
-let insertOrUpdateNew dbCenikValues = 
-    let connection = new SqlConnection(connStringLocal) 
-    connection.Open()  
-    insertOrUpdate connection dbCenikValues    
-    connection.Close()
-    connection.Dispose()
-
-let insertOrUpdateOld dbCenikValues = //new vales transpiled into old values
-    let connection = new SqlConnection(connStringLocal) 
-    connection.Open()  
-    insertOrUpdate connection dbCenikValues
-    connection.Close()
-    connection.Dispose()
-
-let selectDeserValues idInt =
-    let connection = new SqlConnection(connStringLocal) 
-    connection.Open()   
-    selectValues connection idInt   
-
-let selectNewValues idInt =
-    let connection = new SqlConnection(connStringLocal) 
-    connection.Open()  
-    selectValues connection idInt //TODO  try with
-
-let selectOldValues idInt  =
-    let connection = new SqlConnection(connStringLocal) 
-    connection.Open()  
-    selectValues connection idInt 

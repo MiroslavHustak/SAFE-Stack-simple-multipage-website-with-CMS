@@ -25,40 +25,23 @@ let deconstructor2 =
     | Success x  -> x                                                   
     | Failure ex -> true
 
-let deconstructor3 title message y =  
-    function
-    | Success x  -> x                                                   
-    | Failure ex -> error6 <| title <| message ex
-                    y
-
 let deconstructor4 y =  
     function
     | Success x  -> x                                                   
-    | Failure ex -> error4 ex
+    | Failure ex -> error4 ex |> ignore //TODO remove ignore and create some action
                     y
- (* 
-let optionToArraySort str1 str2 x = 
-    function
-    | Some value -> Array.sort (Array.ofSeq (value)) 
-    | None       -> error3 str1 str2      
 
-let optionToGenerics str1 str2 x = 
-    match x with 
-    | Some value -> value 
-    | None       -> error3 str1 str2 |> Array.head
-*)
-
-let optionToDirectoryInfo str (x: DirectoryInfo option) = 
+let optionToString str x = 
     match x with 
     | Some value -> value
-    | None       -> error4 str //ukonci program
-                    new DirectoryInfo(String.Empty) //whatever of DirectoryInfo type
+    | None       -> error4 str
 
 let optionToGenerics2 str x = 
     function
     | Some value -> value
-    | None       -> error4 str                                   
-                    x //whatever of the particular type   
+    | None       -> error4 str |> ignore //TODO remove ignore and create some action                                 
+                    x //whatever of the particular type 
+                    
                                       
                     
 

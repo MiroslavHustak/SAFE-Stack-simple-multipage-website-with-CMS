@@ -12,8 +12,8 @@ open Fable.Remoting.Giraffe
 open Shared
 open SharedTypes
 
-//open Sql   //plain SQL    //uncomment to test plain SQL
-open Dapper  //Dapper.FSharp  //uncomment to test Dapper.FSharp 
+open Sql   //uncomment to test plain SQL (and, at the same time, comment out "open Dapper")
+//open Dapper  //uncomment to test Dapper.FSharp (and, at the same time, comment out "open QSql")
 
 open Security
 
@@ -63,24 +63,23 @@ let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult
             return result
         }
     
- //TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem
+  //TODO validation upon request from the user 
 let private verifyCenikValues (cenikValues: GetCenikValues) =
     match SharedCenikValues.isValid () with
     | () -> Ok ()        
     // | _  -> Error "" 
 
-//TODO pripadne pouziti validTokenreby klienta /Tokenltovat s klientem
+ //TODO validation upon request from the user 
 let private verifyKontaktValues (kontaktValues: GetKontaktValues) =
    match SharedCenikValues.isValid () with
    | () -> Ok ()        
    // | _  -> Error ""
 
-//TODO pripadne pouziti validace dle potreby klienta //TODO konzultovat s klientem
+//TODO validation upon request from the user 
 let private verifyLinkAndLinkNameValues (linkValues: GetLinkAndLinkNameValues) =
    match SharedLinkAndLinkNameValues.isValid () with
    | () -> Ok ()        
    // | _  -> Error ""
-
 
 let IGetApi =
     {
@@ -96,7 +95,7 @@ let IGetApi =
                   {       
                       match File.Exists(Path.GetFullPath("securityToken.txt")) with
                       | false -> return Seq.empty  //TODO error+reseni
-                      | true  -> //StreamReader taky nejak nechtel fungovat                              
+                      | true  -> //StreamReader taky nechtel fungovat, takze cteme data jinak                              
                                  match File.ReadAllLines("securityToken.txt") |> Option.ofObj with
                                  | Some value -> return (value |> Seq.ofArray) 
                                  | None       -> return Seq.empty  //TODO error+reseni                           
@@ -110,30 +109,25 @@ let IGetApi =
                       return ()
                   }   
       *)
-      getCenikValues =  //moznost vyberu mezi Json/XML ci db
+      getCenikValues =  //moznost vyberu mezi Json/XML ci DB
           fun getCenikValues ->
               async
                   {                   
                     let getNewCenikValues: GetCenikValues =                        
                         match verifyCenikValues getCenikValues with                
                         | Ok () ->
+                                   let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" } 
                                    //************* plain SQL or Dapper.FSharp ******************** 
-                                   //insertOrUpdateNew { getCenikValues with Id = 2; ValueState = "new" }
-                                   insertOrUpdateUniversal { getCenikValues with Id = 2; ValueState = "new" }  
+                                   insertOrUpdate dbNewCenikValues
 
                                    //************* Json/XML ******************** 
-                                   serialize getCenikValues "jsonCenikValues.xml"  //TODO try with   //aji pri db ponechat serializaci kvuli aktualizaci xml                           
-                                   {
-                                       Id = 2; ValueState = "new";
-                                       V001 = getCenikValues.V001; V002 = getCenikValues.V002; V003 = getCenikValues.V003;
-                                       V004 = getCenikValues.V004; V005 = getCenikValues.V005; V006 = getCenikValues.V006;
-                                       V007 = getCenikValues.V007; V008 = getCenikValues.V008; V009 = getCenikValues.V009                                       
-                                   }                                  
+                                   serialize dbNewCenikValues "jsonCenikValues.xml"  //TODO try with   //aji pri testovani db ponechat serializaci kvuli aktualizaci xml  
+                                   dbNewCenikValues
                         | _    ->  GetCenikValues.Default
                     return getNewCenikValues
                   }
 
-      sendOldCenikValues = //moznost vyberu mezi Json/XML ci db
+      sendOldCenikValues = //moznost vyberu mezi Json/XML ci DB
           fun _ ->
               async
                   {
@@ -143,34 +137,30 @@ let IGetApi =
                      <| "jsonCenikValues.xml"
                      <| "jsonCenikValuesBackUp.xml"
 
-                      //let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
-                      //return sendOldCenikValues
+                     //let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
+                     //return sendOldCenikValues
 
-                     //************* plain SQL or Dapper.FSharp ********************
+                     //************* plain SQL or Dapper.FSharp ********************                     
                      let IdNew = 2
                      let IdOld = 3
-                     //let newGetCenikValuesDb = selectNewValues IdNew
-                     //insertOrUpdateOld { newGetCenikValuesDb with Id = IdOld; ValueState = "old" }//eqv vyse uvedeneho kopirovani                    
-                     //let dbSendOldCenikValues = selectOldValues IdOld         
-                     let newGetCenikValuesDb = selectValuesUniversal IdNew
-                     insertOrUpdateUniversal { newGetCenikValuesDb with Id = IdOld; ValueState = "old" }//eqv vyse uvedeneho kopirovani                    
-                     let dbSendOldCenikValues = selectValuesUniversal IdOld                  
+                     let newGetCenikValuesDb = selectValues IdNew
+                     insertOrUpdate { newGetCenikValuesDb with Id = IdOld; ValueState = "old" }//eqv vyse uvedeneho kopirovani                    
+                     let dbSendOldCenikValues = selectValues IdOld                  
                      
-                     return dbSendOldCenikValues
+                     return dbSendOldCenikValues                     
                   } 
 
-      sendDeserialisedCenikValues = //moznost vyberu mezi Json/XML ci db
+      sendDeserialisedCenikValues = //moznost vyberu mezi Json/XML ci DB
          fun _ ->
              async
                  {
                     //************* Json/XML ********************
                     //let sendCenikValues = deserialize "jsonCenikValues.xml" //TODO try with
-                     //return sendCenikValues
+                    //return sendCenikValues
 
                     //************* plain SQL or Dapper.FSharp ********************
                     let IdNew = 2
-                    let dbSendCenikValues = selectValuesUniversal IdNew
-                    // let dbSendCenikValues = selectDeserValues IdNew
+                    let dbSendCenikValues = selectValues IdNew
 
                     return dbSendCenikValues
                  }
@@ -182,20 +172,8 @@ let IGetApi =
                     let getNewKontaktValues: GetKontaktValues = 
                         match verifyKontaktValues getKontaktValues with                
                         | Ok () -> serialize getKontaktValues "jsonKontaktValues.xml"  //TODO try with
-                                   {
-                                       V001 = getKontaktValues.V001; V002 = getKontaktValues.V002;
-                                       V003 = getKontaktValues.V003; V004 = getKontaktValues.V004;
-                                       V005 = getKontaktValues.V005; V006 = getKontaktValues.V006;
-                                       V007 = getKontaktValues.V007 
-                                   }
-                        | _     ->
-                                   {
-                                       V001 = String.Empty; V002 = String.Empty;
-                                       V003 = String.Empty; V004 = String.Empty;
-                                       V005 = String.Empty; V006 = String.Empty;
-                                       V007 = String.Empty
-                                   }
-
+                        | _     -> ()                                   
+                        getKontaktValues
                     return getNewKontaktValues
                   }
 
@@ -225,25 +203,9 @@ let IGetApi =
                   {
                     let getNewLinkAndLinkNameValues: GetLinkAndLinkNameValues = 
                         match verifyLinkAndLinkNameValues getLinkAndLinkNameValues with                
-                        | Ok () -> serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"  //TODO try with
-                                   {
-                                       V001 = getLinkAndLinkNameValues.V001; V002 = getLinkAndLinkNameValues.V002;
-                                       V003 = getLinkAndLinkNameValues.V003; V004 = getLinkAndLinkNameValues.V004;
-                                       V005 = getLinkAndLinkNameValues.V005; V006 = getLinkAndLinkNameValues.V006
-                                       V001n = getLinkAndLinkNameValues.V001n; V002n = getLinkAndLinkNameValues.V002n;
-                                       V003n = getLinkAndLinkNameValues.V003n; V004n = getLinkAndLinkNameValues.V004n;
-                                       V005n = getLinkAndLinkNameValues.V005n; V006n = "Facebook"
-                                   }
-                        | _     ->
-                                   {
-                                       V001 = String.Empty; V002 = String.Empty;
-                                       V003 = String.Empty; V004 = String.Empty;
-                                       V005 = String.Empty; V006 = String.Empty
-                                       V001n = String.Empty; V002n = String.Empty;
-                                       V003n = String.Empty; V004n = String.Empty;
-                                       V005n = String.Empty; V006n = "Facebook"
-                                   }
-
+                        | Ok () -> serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"  //TODO try with                                  
+                        | _     -> ()
+                        getLinkAndLinkNameValues
                     return getNewLinkAndLinkNameValues
                   }
            
@@ -275,7 +237,7 @@ let webApp =
     |> Remoting.buildHttpHandler
 
 let app =
-    insertOrUpdateUniversal GetCenikValues.Default
+    insertOrUpdate GetCenikValues.Default
     application
         {
             use_router webApp
