@@ -15,6 +15,8 @@ type Model =
     {
         CenikValues: GetCenikValues
         OldCenikValues: GetCenikValues
+        //IdInput: int
+        //ValueStateInput: string
         V001Input: string
         V002Input: string
         V003Input: string
@@ -59,7 +61,9 @@ let init id : Model * Cmd<Msg> =
     let model =
         {
             CenikValues = GetCenikValues.Default           
-            OldCenikValues = GetCenikValues.Default       
+            OldCenikValues = GetCenikValues.Default
+            //IdInput = 1
+            //ValueStateInput = "fixed"
             V001Input = String.Empty
             V002Input = String.Empty
             V003Input = String.Empty
@@ -99,12 +103,13 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | SendCenikValuesToServer ->
         try
             try
-                let buttonClickEvent:GetCenikValues =
-                    let input current old =
+                let buttonClickEvent:GetCenikValues =                   
+                    let input current old =                  
                         match String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current) with
                         | true  -> old
                         | false -> current 
                     SharedCenikValues.create //GetCenikValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
+                    <| GetCenikValues.Default.Id <| GetCenikValues.Default.ValueState //whatever Id and Value State
                     <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
                     <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
                     <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
@@ -141,6 +146,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
             model with
                        CenikValues =
                           {
+                              Id = valueNew.Id; ValueState = valueNew.ValueState;
                               V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
                               V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
                               V007 = valueNew.V007; V008 = valueNew.V008; V009 = valueNew.V009
@@ -152,6 +158,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
             model with
                        OldCenikValues =
                           {
+                              Id = valueOld.Id; ValueState = valueOld.ValueState;
                               V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
                               V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
                               V007 = valueOld.V007; V008 = valueOld.V008; V009 = valueOld.V009

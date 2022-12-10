@@ -259,7 +259,13 @@ let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameVal
                             prop.target "_blank"
                             prop.text "Elmish"
                                ]
-                        Html.text " and F#." 
+                        Html.text " and "
+                        Html.a [
+                            prop.href "https://fsharp.org"
+                            prop.target "_blank"
+                            prop.text "F#"
+                               ]
+                        Html.text "." 
                     ]
                 ]
                 Html.div [

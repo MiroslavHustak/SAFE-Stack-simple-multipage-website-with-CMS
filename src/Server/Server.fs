@@ -12,7 +12,9 @@ open Fable.Remoting.Giraffe
 open Shared
 open SharedTypes
 
-open Sql
+//open Sql   //plain SQL    //uncomment to test plain SQL
+open Dapper  //Dapper.FSharp  //uncomment to test Dapper.FSharp 
+
 open Security
 
 open Connection
@@ -114,11 +116,17 @@ let IGetApi =
                   {                   
                     let getNewCenikValues: GetCenikValues =                        
                         match verifyCenikValues getCenikValues with                
-                        | Ok () -> insertOrUpdateNew getCenikValues  //db   
+                        | Ok () ->
+                                   //************* plain SQL or Dapper.FSharp ******************** 
+                                   //insertOrUpdateNew { getCenikValues with Id = 2; ValueState = "new" }
+                                   insertOrUpdateUniversal { getCenikValues with Id = 2; ValueState = "new" }  
+
+                                   //************* Json/XML ******************** 
                                    serialize getCenikValues "jsonCenikValues.xml"  //TODO try with   //aji pri db ponechat serializaci kvuli aktualizaci xml                           
                                    {
-                                       V001 = getCenikValues.V001; V002 = getCenikValues.V002;  V003 = getCenikValues.V003;
-                                       V004 = getCenikValues.V004;  V005 = getCenikValues.V005; V006 = getCenikValues.V006;
+                                       Id = 2; ValueState = "new";
+                                       V001 = getCenikValues.V001; V002 = getCenikValues.V002; V003 = getCenikValues.V003;
+                                       V004 = getCenikValues.V004; V005 = getCenikValues.V005; V006 = getCenikValues.V006;
                                        V007 = getCenikValues.V007; V008 = getCenikValues.V008; V009 = getCenikValues.V009                                       
                                    }                                  
                         | _    ->  GetCenikValues.Default
@@ -129,17 +137,25 @@ let IGetApi =
           fun _ ->
               async
                   {
-                     //aji pri db ponechat kopirovani kvuli aktualizaci xml 
+                     //************* Json/XML ********************
+                     //aji pri testovani db ponechat kopirovani kvuli aktualizaci xml 
                      copyFiles 
                      <| "jsonCenikValues.xml"
                      <| "jsonCenikValuesBackUp.xml"
-                     let newDb = selectNewValues ()
-                     insertOrUpdateOld newDb //eqv vyse uvedeneho kopirovani
 
-                     //let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
-                     let dbSendOldCenikValues = selectOldValues () 
-                      
-                     //return sendOldCenikValues
+                      //let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
+                      //return sendOldCenikValues
+
+                     //************* plain SQL or Dapper.FSharp ********************
+                     let IdNew = 2
+                     let IdOld = 3
+                     //let newGetCenikValuesDb = selectNewValues IdNew
+                     //insertOrUpdateOld { newGetCenikValuesDb with Id = IdOld; ValueState = "old" }//eqv vyse uvedeneho kopirovani                    
+                     //let dbSendOldCenikValues = selectOldValues IdOld         
+                     let newGetCenikValuesDb = selectValuesUniversal IdNew
+                     insertOrUpdateUniversal { newGetCenikValuesDb with Id = IdOld; ValueState = "old" }//eqv vyse uvedeneho kopirovani                    
+                     let dbSendOldCenikValues = selectValuesUniversal IdOld                  
+                     
                      return dbSendOldCenikValues
                   } 
 
@@ -147,12 +163,15 @@ let IGetApi =
          fun _ ->
              async
                  {
-                    //vzpomen si na problem s records s odlisnymi fields :-)
+                    //************* Json/XML ********************
                     //let sendCenikValues = deserialize "jsonCenikValues.xml" //TODO try with
+                     //return sendCenikValues
 
-                    let dbSendCenikValues = selectDeserValues ()
-                     
-                    //return sendCenikValues
+                    //************* plain SQL or Dapper.FSharp ********************
+                    let IdNew = 2
+                    let dbSendCenikValues = selectValuesUniversal IdNew
+                    // let dbSendCenikValues = selectDeserValues IdNew
+
                     return dbSendCenikValues
                  }
 
@@ -256,7 +275,7 @@ let webApp =
     |> Remoting.buildHttpHandler
 
 let app =
-    insertOrUpdateFixed ()
+    insertOrUpdateUniversal GetCenikValues.Default
     application
         {
             use_router webApp
@@ -266,7 +285,7 @@ let app =
         }
 
 [<EntryPoint>]
-let main _ =
+let main _ =   
     Dapper.FSharp.OptionTypes.register()
     run app    
     0

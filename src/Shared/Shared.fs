@@ -18,8 +18,9 @@ module SharedCenikValues =
         
     let isValid param = ()   //TODO pripadne pouziti validace dle potreby klienta 
         
-    let create v001 v002 v003 v004 v005 v006 v007 v008 v009 =
+    let create id valState v001 v002 v003 v004 v005 v006 v007 v008 v009 =
         {
+            Id = id; ValueState = valState;
             V001 = v001; V002 = v002; V003 = v003;
             V004 = v004; V005 = v005; V006 = v006;
             V007 = v007; V008 = v008; V009 = v009
@@ -29,6 +30,7 @@ module SharedDeserialisedCenikValues =
    
     let create (cenikInputValues: GetCenikValues) =
         {
+            Id = cenikInputValues.Id; ValueState = cenikInputValues.ValueState;
             V001 = cenikInputValues.V001; V002 = cenikInputValues.V002; V003 = cenikInputValues.V003
             V004 = cenikInputValues.V004; V005 = cenikInputValues.V005; V006 = cenikInputValues.V006
             V007 = cenikInputValues.V007; V008 = cenikInputValues.V008; V009 = cenikInputValues.V009

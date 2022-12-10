@@ -4,12 +4,14 @@ type LoginInfo = { Username: string; Password: string }
 
 type GetCenikValues =
     {
+        Id: int; ValueState: string;
         V001: string; V002: string; V003: string;
         V004: string; V005: string; V006: string;
         V007: string; V008: string; V009: string
     }
     static member Default = //fixed values
         {
+           Id = 1; ValueState = "fixed";
            V001 = "300"; V002 = "300"; V003 = "2 200";
            V004 = "250"; V005 = "230"; V006 = "400";
            V007 = "600"; V008 = "450"; V009 = "450"
@@ -20,18 +22,6 @@ type GetKontaktValues =
         V001: string; V002: string; V003: string;
         V004: string; V005: string; V006: string;
         V007: string
-    }
-
-type Kontakt =
-    {
-        Id: int
-        KontaktValuesV001: string 
-        KontaktValuesV002: string 
-        KontaktValuesV003: string 
-        KontaktValuesV004: string 
-        KontaktValuesV005: string 
-        KontaktValuesV006: string 
-        KontaktValuesV007: string    
     }
 
 type GetLinkAndLinkNameValues =
