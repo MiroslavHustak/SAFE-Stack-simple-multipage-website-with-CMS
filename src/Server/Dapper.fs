@@ -7,7 +7,6 @@ open FSharp.Control
 open Dapper.FSharp.MSSQL
 open System.Data.SqlClient
 
-
 open SqlQueries
 open Connection
 open SharedTypes
@@ -46,8 +45,8 @@ let insertOrUpdate (getCenikValues: GetCenikValues) = //TODO trywith
 
     //**************** Execute commands with business logic *****************
     match cmdExistsDapper |> Option.ofObj with
-    | Some _ -> cmdUpdate().Wait() |> ignore                      
-    | None   -> cmdInsert().Wait() |> ignore             
+    | Some _ -> cmdUpdate().GetAwaiter().GetResult() |> ignore                      
+    | None   -> cmdInsert().GetAwaiter().GetResult() |> ignore             
     
 let selectValues idInt =
 
@@ -57,33 +56,29 @@ let selectValues idInt =
     //**************** SqlCommands ***************** 
     //plain Dapper
     let cmdExistsDapper = connection.ExecuteScalar(queryExists(string idInt))
-    
-    let reader =
-        //Dapper.FSharp
-        let cmdSelect() =
-            select
-                {
-                    for p in table do                            
-                        where (p.Id = idInt)
-                } |> connection.SelectAsync<GetCenikValues>       
 
-        //**************** Execute commands with business logic (read values from DB) *****************
-        match cmdExistsDapper |> Option.ofObj with 
-        | Some _ -> cmdSelect() 
-        | None   -> insertOrUpdate GetCenikValues.Default
-                    cmdSelect() 
-    reader.Wait()
+     //Dapper.FSharp
+    let cmdSelect() =       
+        task
+            {
+                let! values =
+                    select
+                        {
+                            for p in table do                            
+                                where (p.Id = idInt)
+                        } |> connection.SelectAsync<GetCenikValues>
+                        
+                match values |> Option.ofObj with
+                | Some values -> return Seq.head values
+                | None        -> return GetCenikValues.Default  
+            }
 
-    match reader.IsCompletedSuccessfully with
-    | true  -> reader.Result
-               |> Option.ofObj
-               |> function
-                   | Some value -> value |> Seq.head
-                   | None       -> GetCenikValues.Default
-                           
-    | false -> GetCenikValues.Default
+    match cmdExistsDapper |> Option.ofObj with 
+    | Some _ -> cmdSelect().GetAwaiter().GetResult() 
+    | None   -> insertOrUpdate GetCenikValues.Default
+                cmdSelect().GetAwaiter().GetResult()     
 
-
-
-
-
+    (*
+      Result and RunSynchronously block the thread pool
+      CPU is idle waiting for them to return
+    *)

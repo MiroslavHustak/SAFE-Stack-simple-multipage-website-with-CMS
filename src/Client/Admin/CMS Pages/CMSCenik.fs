@@ -15,8 +15,6 @@ type Model =
     {
         CenikValues: GetCenikValues
         OldCenikValues: GetCenikValues
-        //IdInput: int
-        //ValueStateInput: string
         V001Input: string
         V002Input: string
         V003Input: string
@@ -62,8 +60,6 @@ let init id : Model * Cmd<Msg> =
         {
             CenikValues = GetCenikValues.Default           
             OldCenikValues = GetCenikValues.Default
-            //IdInput = 1
-            //ValueStateInput = "fixed"
             V001Input = String.Empty
             V002Input = String.Empty
             V003Input = String.Empty
@@ -117,23 +113,18 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
 
                 let delayedCmd (dispatch: Msg -> unit): unit =                           
                     let delayedDispatch: Async<unit> =
-                        //pattern matching je workaround quli tomu, ze okamzik ulozeni starych a novych hodnot nemusi byt v mnou pozadovanem poradi
                         async
-                            {
-                                do! Async.Sleep 100
-                                let! hardwork1 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer }) //prvni pruchod
-                                let result = hardwork1
-                                match model.CenikValues = model.OldCenikValues with //ostatni pruchody
-                                | true  -> let! hardwork2 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
-                                           let result = hardwork2                                         
-                                           dispatch AsyncWorkIsComplete
-                                | false -> do! Async.Sleep 666
-                                           let! hardwork2 = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
-                                           let result = hardwork2
-                                           do! Async.Sleep 666
+                            {   
+                                do! Async.Sleep 1000 //see the Elmish Book
+                                let! _ = Async.StartChild (async { return dispatch SendOldCenikValuesToServer }) //first run
+                                //Pattern matching is a workaround due to the fact that the moment old and values are saved does not necessarily have to be in my required order.
+                                match model.CenikValues = model.OldCenikValues with //second run
+                                | true  -> dispatch AsyncWorkIsComplete          
+                                | false -> do! Async.Sleep 1000
+                                           let! _ = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
                                            dispatch AsyncWorkIsComplete      
                             }                                    
-                    Async.StartImmediate delayedDispatch                                                            
+                    Async.StartImmediate delayedDispatch
                 let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
                 { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
             finally

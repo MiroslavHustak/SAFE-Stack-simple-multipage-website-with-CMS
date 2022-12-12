@@ -12,8 +12,8 @@ open Fable.Remoting.Giraffe
 open Shared
 open SharedTypes
 
-open Sql   //uncomment to test plain SQL (and, at the same time, comment out "open Dapper")
-//open Dapper  //uncomment to test Dapper.FSharp (and, at the same time, comment out "open QSql")
+//open Sql   //uncomment to test plain SQL (and, at the same time, comment out "open Dapper")
+open Dapper  //uncomment to test Dapper.FSharp (and, at the same time, comment out "open QSql")
 
 open Security
 
@@ -118,7 +118,7 @@ let IGetApi =
                         | Ok () ->
                                    let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" } 
                                    //************* plain SQL or Dapper.FSharp ******************** 
-                                   insertOrUpdate dbNewCenikValues
+                                   insertOrUpdate dbNewCenikValues //TODO try with
 
                                    //************* Json/XML ******************** 
                                    serialize dbNewCenikValues "jsonCenikValues.xml"  //TODO try with   //aji pri testovani db ponechat serializaci kvuli aktualizaci xml  
@@ -128,7 +128,7 @@ let IGetApi =
                   }
 
       sendOldCenikValues = //moznost vyberu mezi Json/XML ci DB
-          fun _ ->
+          fun _ -> 
               async
                   {
                      //************* Json/XML ********************
@@ -143,9 +143,9 @@ let IGetApi =
                      //************* plain SQL or Dapper.FSharp ********************                     
                      let IdNew = 2
                      let IdOld = 3
-                     let newGetCenikValuesDb = selectValues IdNew
-                     insertOrUpdate { newGetCenikValuesDb with Id = IdOld; ValueState = "old" }//eqv vyse uvedeneho kopirovani                    
-                     let dbSendOldCenikValues = selectValues IdOld                  
+                     let newGetCenikValuesDb = selectValues IdNew //TODO try with
+                     insertOrUpdate { newGetCenikValuesDb with Id = IdOld; ValueState = "old" }//eqv vyse uvedeneho kopirovani  //TODO try with                   
+                     let dbSendOldCenikValues = selectValues IdOld  //TODO try with                
                      
                      return dbSendOldCenikValues                     
                   } 
@@ -160,7 +160,7 @@ let IGetApi =
 
                     //************* plain SQL or Dapper.FSharp ********************
                     let IdNew = 2
-                    let dbSendCenikValues = selectValues IdNew
+                    let dbSendCenikValues = selectValues IdNew //TODO try with
 
                     return dbSendCenikValues
                  }

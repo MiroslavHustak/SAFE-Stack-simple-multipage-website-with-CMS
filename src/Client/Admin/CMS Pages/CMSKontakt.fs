@@ -104,18 +104,13 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                     let delayedDispatch: Async<unit> =
                         async
                             {
-                                //komentar viz CenikCMS
-                                do! Async.Sleep 100
-                                let! hardwork1 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
-                                let result = hardwork1
+                                //see comments in CenikCMS.fs
+                                do! Async.Sleep 1000
+                                let! _ = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
                                 match model.KontaktValues = model.OldKontaktValues with
-                                | true  -> let! hardwork2 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
-                                           let result = hardwork2
-                                           dispatch AsyncWorkIsComplete
-                                | false -> do! Async.Sleep 666
-                                           let! hardwork2 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
-                                           let result = hardwork2
-                                           do! Async.Sleep 666
+                                | true  -> dispatch AsyncWorkIsComplete
+                                | false -> do! Async.Sleep 1000
+                                           let! _ = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
                                            dispatch AsyncWorkIsComplete 
                             }                                      
                     Async.StartImmediate delayedDispatch                                                            

@@ -10,4 +10,3 @@ type User =
 type LoginResult =
     | UsernameOrPasswordIncorrect
     | LoggedIn of User
-
