@@ -115,14 +115,10 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                     let delayedDispatch: Async<unit> =
                         async
                             {   
+                                let! completor = Async.StartChild (async { return dispatch SendOldCenikValuesToServer } ) 
+                                let! result = completor
                                 do! Async.Sleep 1000 //see the Elmish Book
-                                let! _ = Async.StartChild (async { return dispatch SendOldCenikValuesToServer }) //first run
-                                //Pattern matching is a workaround due to the fact that the moment old and values are saved does not necessarily have to be in my required order.
-                                match model.CenikValues = model.OldCenikValues with //second run
-                                | true  -> dispatch AsyncWorkIsComplete          
-                                | false -> do! Async.Sleep 1000
-                                           let! _ = Async.StartChild (async { return dispatch SendOldCenikValuesToServer })
-                                           dispatch AsyncWorkIsComplete      
+                                dispatch AsyncWorkIsComplete 
                             }                                    
                     Async.StartImmediate delayedDispatch
                 let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              

@@ -66,7 +66,7 @@ let selectValues idInt =
                         {
                             for p in table do                            
                                 where (p.Id = idInt)
-                        } |> connection.SelectAsync<GetCenikValues>
+                        } |> connection.SelectAsync<GetCenikValues> //Dapper.FSharp creators rendered the resulting type as task
                         
                 match values |> Option.ofObj with
                 | Some values -> return Seq.head values
@@ -74,11 +74,13 @@ let selectValues idInt =
             }
 
     match cmdExistsDapper |> Option.ofObj with 
-    | Some _ -> cmdSelect().GetAwaiter().GetResult() 
+    | Some _ -> cmdSelect().GetAwaiter().GetResult() //Gets to be done here, but if not, transfer the task up the code
     | None   -> insertOrUpdate GetCenikValues.Default
-                cmdSelect().GetAwaiter().GetResult()     
+                cmdSelect().GetAwaiter().GetResult() //Gets to be done here, but if not, transfer the task up the code    
 
     (*
       Result and RunSynchronously block the thread pool
       CPU is idle waiting for them to return
+      *************************************************
+      Using task expressions is preferred when interoperating extensively with .NET libraries that create or consume .NET tasks.
     *)

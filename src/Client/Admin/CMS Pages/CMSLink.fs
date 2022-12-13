@@ -127,14 +127,10 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                     let delayedDispatch: Async<unit> =
                         async
                             {
-                                //see comments in CenikCMS.fs
+                                let! completor = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
+                                let! result = completor
                                 do! Async.Sleep 1000
-                                let! _ = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })                               
-                                match model.LinkAndLinkNameValues = model.OldLinkAndLinkNameValues with
-                                | true  -> dispatch AsyncWorkIsComplete    
-                                | false -> do! Async.Sleep 1000
-                                           let! _ = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
-                                           dispatch AsyncWorkIsComplete      
+                                dispatch AsyncWorkIsComplete
                             }                                   
                     Async.StartImmediate delayedDispatch                                                            
                 let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
