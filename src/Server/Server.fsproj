@@ -6,6 +6,7 @@
     <FSharpPreferNetFrameworkTools>True</FSharpPreferNetFrameworkTools>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Router.fs" />
     <None Include="paket.references" />
     <Content Include="SQL Queries.txt" />
     <Compile Include="Auxiliaries\Connection.fs" />

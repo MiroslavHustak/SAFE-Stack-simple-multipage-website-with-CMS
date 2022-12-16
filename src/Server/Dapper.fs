@@ -66,17 +66,18 @@ let selectValues idInt =
                         {
                             for p in table do                            
                                 where (p.Id = idInt)
-                        } |> connection.SelectAsync<GetCenikValues> //Dapper.FSharp creators rendered the resulting type as task
+                        } |> connection.SelectAsync<GetCenikValues> //Dapper.FSharp creators rendered the resulting type as a task
                         
                 match values |> Option.ofObj with
                 | Some values -> return Seq.head values
                 | None        -> return GetCenikValues.Default  
             }
 
+    //**************** Execute commands with business logic *****************
     match cmdExistsDapper |> Option.ofObj with 
-    | Some _ -> cmdSelect().GetAwaiter().GetResult() //Gets to be done here, but if not, transfer the task up the code
+    | Some _ -> cmdSelect().GetAwaiter().GetResult() //Gets to be done here, but in cases where not, transfer the task up the code
     | None   -> insertOrUpdate GetCenikValues.Default
-                cmdSelect().GetAwaiter().GetResult() //Gets to be done here, but if not, transfer the task up the code    
+                cmdSelect().GetAwaiter().GetResult() //Gets to be done here, but in cases where not, transfer the task up the code
 
     (*
       Result and RunSynchronously block the thread pool

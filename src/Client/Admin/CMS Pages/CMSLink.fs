@@ -110,7 +110,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | SendLinkAndLinkNameValuesToServer ->
         try
             try
-                let buttonClickEvent:GetLinkAndLinkNameValues =   //GetLinkAndLinkNameValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit                                     
+                let buttonClickEvent:GetLinkAndLinkNameValues =   //see remark in CMSCenik.fs
                     let input current old =
                         match String.IsNullOrEmpty(current) with //String.IsNullOrWhiteSpace(current) ||
                         | true  -> old
@@ -121,7 +121,9 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                     <| input model.V001LinkNameInput model.OldLinkAndLinkNameValues.V001n <| input model.V002LinkNameInput model.OldLinkAndLinkNameValues.V002n <| input model.V003LinkNameInput model.OldLinkAndLinkNameValues.V003n 
                     <| input model.V004LinkNameInput model.OldLinkAndLinkNameValues.V004n <| input model.V005LinkNameInput model.OldLinkAndLinkNameValues.V005n <| input model.V006LinkNameInput model.OldLinkAndLinkNameValues.V006n
 
-                let cmd = Cmd.OfAsync.perform getLinkAndLinkNameValuesApi.getLinkAndLinkNameValues buttonClickEvent GetLinkAndLinkNameValues
+                //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
+                let cmd = Cmd.OfAsyncImmediate.perform getLinkAndLinkNameValuesApi.getLinkAndLinkNameValues buttonClickEvent GetLinkAndLinkNameValues
+                let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }    
 
                 let delayedCmd (dispatch: Msg -> unit): unit =                                                  
                     let delayedDispatch: Async<unit> =
@@ -133,8 +135,8 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                                 dispatch AsyncWorkIsComplete
                             }                                   
                     Async.StartImmediate delayedDispatch                                                            
-                let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
-                { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
+                                                         
+                { model with DelayMsg = "Probíhá načítání..." }, cmd2 cmd delayedCmd        
             finally
             ()   
         with

@@ -94,24 +94,26 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                         match String.IsNullOrEmpty(current) with
                         | true  -> old
                         | false -> current 
-                    SharedKontaktValues.create //GetKontaktValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
+                    SharedKontaktValues.create //see remark in CMSCenik.fs
                     <| input model.V001Input model.OldKontaktValues.V001 <| input model.V002Input model.OldKontaktValues.V002 <| input model.V003Input model.OldKontaktValues.V003 
                     <| input model.V004Input model.OldKontaktValues.V004 <| input model.V005Input model.OldKontaktValues.V005 <| input model.V006Input model.OldKontaktValues.V006
                     <| input model.V007Input model.OldKontaktValues.V007 
-                let cmd = Cmd.OfAsync.perform getKontaktValuesApi.getKontaktValues buttonClickEvent GetKontaktValues
+
+                //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
+                let cmd = Cmd.OfAsyncImmediate.perform getKontaktValuesApi.getKontaktValues buttonClickEvent GetKontaktValues
+                let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }
 
                 let delayedCmd (dispatch: Msg -> unit): unit =                                                  
                     let delayedDispatch: Async<unit> =
                         async
                             {
-                                let! completor1 = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
-                                let! result1 = completor1
+                                let! completor = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
+                                let! result = completor
                                 do! Async.Sleep 1000
                                 dispatch AsyncWorkIsComplete
                             }                                      
-                    Async.StartImmediate delayedDispatch                                                            
-                let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
-                { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
+                    Async.StartImmediate delayedDispatch      
+                { model with DelayMsg = "Probíhá načítání..." }, cmd2 cmd delayedCmd        
             finally
             ()   
         with

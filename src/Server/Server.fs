@@ -12,8 +12,8 @@ open Fable.Remoting.Giraffe
 open Shared
 open SharedTypes
 
-//open Sql   //uncomment to test plain SQL (and, at the same time, comment out "open Dapper")
-open Dapper  //uncomment to test Dapper.FSharp (and, at the same time, comment out "open QSql")
+open Sql   //uncomment to test plain SQL (and, at the same time, comment out "open Dapper")
+//open Dapper  //uncomment to test Dapper.FSharp (and, at the same time, comment out "open QSql")
 
 open Security
 
@@ -116,23 +116,25 @@ let IGetApi =
                     let getNewCenikValues: GetCenikValues =                        
                         match verifyCenikValues getCenikValues with                
                         | Ok () ->
-                                   let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" } 
+                                   let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" }
+
                                    //************* plain SQL or Dapper.FSharp ******************** 
                                    insertOrUpdate dbNewCenikValues //TODO try with
 
                                    //************* Json/XML ******************** 
-                                   serialize dbNewCenikValues "jsonCenikValues.xml"  //TODO try with   //aji pri testovani db ponechat serializaci kvuli aktualizaci xml  
+                                   serialize dbNewCenikValues "jsonCenikValues.xml"  //TODO try with   //leave it here despite using db in order to update xml
+                                   
                                    dbNewCenikValues
                         | _    ->  GetCenikValues.Default
                     return getNewCenikValues
                   }
 
-      sendOldCenikValues = //moznost vyberu mezi Json/XML ci DB
+      sendOldCenikValues = //choose between db and Json/XML
           fun _ -> 
               async
                   {
                      //************* Json/XML ********************
-                     //aji pri testovani db ponechat kopirovani kvuli aktualizaci xml 
+                     //leave it here despite using db in order to update xml   
                      copyFiles 
                      <| "jsonCenikValues.xml"
                      <| "jsonCenikValuesBackUp.xml"
@@ -144,13 +146,13 @@ let IGetApi =
                      let IdNew = 2
                      let IdOld = 3
                      let newGetCenikValuesDb = selectValues IdNew //TODO try with
-                     insertOrUpdate { newGetCenikValuesDb with Id = IdOld; ValueState = "old" }//eqv vyse uvedeneho kopirovani  //TODO try with                   
+                     insertOrUpdate { newGetCenikValuesDb with Id = IdOld; ValueState = "old" }//eqv of the aforementioned copying  //TODO try with                   
                      let dbSendOldCenikValues = selectValues IdOld  //TODO try with                
                      
                      return dbSendOldCenikValues                     
                   } 
 
-      sendDeserialisedCenikValues = //moznost vyberu mezi Json/XML ci DB
+      sendDeserialisedCenikValues = //choose between db and Json/XML
          fun _ ->
              async
                  {

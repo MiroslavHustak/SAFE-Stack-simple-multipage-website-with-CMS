@@ -10,7 +10,7 @@ open System
 
 open Elmish
 open Fable.React
-open Feliz.Router //zatim nevyuzito, moznost pouziti Cmd.Navigation
+open Feliz.Router//Cmd.Navigation //not used in this solution 
 open Fable.Remoting.Client
 
 open Shared
@@ -89,7 +89,7 @@ let private setRoute (optRoute: RouterM.Route option) model =
             | None       -> Anonymous
 
         {
-            model with CurrentRoute = optRoute //currentRoute //neni treba, User = applicationUser se v patter matching postara o spravny routing
+            model with CurrentRoute = optRoute //currentRoute //Not necessary as User = applicationUser in pattern matching will take care of the correct routing
                                       User = applicationUser                                                                                                                              
         }    
     
@@ -107,15 +107,15 @@ let private setRoute (optRoute: RouterM.Route option) model =
         | Composite a -> a
     *)
 
-    //test zkraceneho match pro deconstruction single case DU
+    //testing match for the deconstruction of a single case DU
     let accessToken = match model.user.AccessToken with SharedApi.AccessToken value -> value
                       
-    //test pro deconstruction single case DU
+    //testing the deconstruction of a single case DU
     let unwrap (SharedApi.AccessToken x) = x
     let accessToken = unwrap model.user.AccessToken
 
-    //v pripade vlozeni do rozcestniku je treba jednou tady v setRoute dat dalsi parametry do RouterM.Route.CMSRozcestnik cmsRozcestnikId (druhy rozcestnik)
-    //a pak jeste to same z loginu (prvni rozcestnik) 
+    //In case CMS Rozcestnik is used, include other potential parameters for RouterM.Route.CMSRozcestnik cmsRozcestnikId into setRoute (second CMSRozcestnik call)
+    //and repeat the same for the first CMSRozcestnik call from Login 
     
     match optRoute with
     | None ->
@@ -163,7 +163,7 @@ let private setRoute (optRoute: RouterM.Route option) model =
         | LoggedIn user  ->
                    let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.init cmsRozcestnikId 
                    { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd
-         //FirstTimeRunAnonymous je moc dluhe, takze podrzitko...
+         //FirstTimeRunAnonymous is a long string, that is why a placeholder is used instead :-)
         | _     -> let (homeModel, homeCmd) = Home.init () //or Login.init      
                    { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues                  
                      
@@ -297,13 +297,13 @@ let view (model: Model) (dispatch: Dispatch<Msg>) =
     | Page.Cenik cenikModel -> Cenik.view cenikModel (CenikMsg >> dispatch) model.LinkAndLinkNameValues 
     | Page.Nenajdete nenajdeteModel -> Nenajdete.view nenajdeteModel (NenajdeteMsg >> dispatch) model.LinkAndLinkNameValues 
     | Page.Kontakt kontaktModel -> Kontakt.view kontaktModel (KontaktMsg >> dispatch) model.LinkAndLinkNameValues
-    | Page.Maintenance maintenanceModel -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch) //zatim nevyuzito
+    | Page.Maintenance maintenanceModel -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch) //not used yet
     | Page.Login loginModel ->  Login.view loginModel (LoginMsg >> dispatch)                              
     | Page.CMSRozcestnik cmsRozcestnikModel -> CMSRozcestnik.view cmsRozcestnikModel (CMSRozcestnikMsg >> dispatch)  
     | Page.CMSCenik cmsCenikModel -> CMSCenik.view cmsCenikModel (CMSCenikMsg >> dispatch) 
     | Page.CMSKontakt cmsKontaktModel -> CMSKontakt.view cmsKontaktModel (CMSKontaktMsg >> dispatch) 
     | Page.CMSLink cmsLinkModel -> CMSLink.view cmsLinkModel (CMSLinkMsg >> dispatch)
-   // | Page.Logout homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues //zatim nevyuzito
+   // | Page.Logout homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues //not used yet
 
 open Elmish.UrlParser
 open Elmish.Navigation

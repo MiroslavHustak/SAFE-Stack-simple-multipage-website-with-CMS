@@ -10,6 +10,7 @@ open FSharp.Control
 
 open Shared
 open SharedTypes
+open System.Threading
 
 type Model =
     {
@@ -74,7 +75,6 @@ let init id : Model * Cmd<Msg> =
         }
     model, Cmd.ofMsg SendOldCenikValuesToServer
 
-
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with
     //SetInput takhle nelze - viz poznamka ve view
@@ -91,7 +91,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     
     | SendOldCenikValuesToServer ->   
         let loadEvent = SharedDeserialisedCenikValues.create model.OldCenikValues
-        let cmd = Cmd.OfAsync.perform getCenikValuesApi.sendOldCenikValues loadEvent GetOldCenikValues
+        let cmd = Cmd.OfAsync.perform getCenikValuesApi.sendOldCenikValues loadEvent GetOldCenikValues  //TODO try with
         model, cmd
 
     | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
@@ -104,29 +104,31 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                         match String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current) with
                         | true  -> old
                         | false -> current 
-                    SharedCenikValues.create //GetCenikValues a posilani prazdnych hodnot ponechano quli jednotnosti na Server a v Shared, jinak staci unit
+                    SharedCenikValues.create //unit type would suffice but sending GetCenikValues and empty values to the server preserved in order to use existing code on Server and Shared 
                     <| GetCenikValues.Default.Id <| GetCenikValues.Default.ValueState //whatever Id and Value State
                     <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
                     <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
                     <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
-                let cmd = Cmd.OfAsync.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues
 
-                let delayedCmd (dispatch: Msg -> unit): unit =                           
-                    let delayedDispatch: Async<unit> =
+                //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
+                let cmd = Cmd.OfAsyncImmediate.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues 
+                let cmd2 (cmd: Cmd<Msg>) delayedCmd = Cmd.batch <| seq { cmd; Cmd.ofSub delayedCmd }               
+
+                let delayedCmd (dispatch: Msg -> unit): unit =                    
+                    let delayedDispatch: Async<unit> =                      
                         async
-                            {   
+                            {
                                 let! completor = Async.StartChild (async { return dispatch SendOldCenikValuesToServer } ) 
                                 let! result = completor
                                 do! Async.Sleep 1000 //see the Elmish Book
-                                dispatch AsyncWorkIsComplete 
-                            }                                    
+                                dispatch AsyncWorkIsComplete           
+                            }
                     Async.StartImmediate delayedDispatch
-                let cmd1 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }                                              
-                { model with DelayMsg = "Probíhá načítání..." }, cmd1 cmd delayedCmd        
+                { model with DelayMsg = "Probíhá načítání ... " }, cmd2 cmd delayedCmd  //cmd shall be performed first, delayedCmd shall be performed second; hence Cmd.OfAsyncImmediate instead of Cmd.OfAsync         
             finally
             ()   
         with
-        | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot." }, Cmd.none   
+        | ex -> { model with DelayMsg = sprintf "Nedošlo k načtení hodnot. Popis chyby: %s " (string ex) }, Cmd.none   
 
     | GetCenikValues valueNew ->
         {
