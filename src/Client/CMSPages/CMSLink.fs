@@ -29,6 +29,7 @@ type Model =
         V006LinkNameInput: string
         Id: int
         DelayMsg: string
+        ErrorMsg: string
     }
 
 type Msg =
@@ -56,18 +57,11 @@ let getLinkAndLinkNameValuesApi =
     |> Remoting.buildProxy<IGetApi>
 
 let init id : Model * Cmd<Msg> =
-
-    let initialLinkAndLinkNameValues =
-        {
-            V001 = String.Empty; V002 = String.Empty; V003 = String.Empty;
-            V004 = String.Empty; V005 = String.Empty; V006 = String.Empty
-            V001n = String.Empty; V002n = String.Empty; V003n = String.Empty;
-            V004n = String.Empty; V005n = String.Empty; V006n = "Facebook"
-        }
+    
     let model =
         {
-            LinkAndLinkNameValues = initialLinkAndLinkNameValues           
-            OldLinkAndLinkNameValues = initialLinkAndLinkNameValues           
+            LinkAndLinkNameValues = GetLinkAndLinkNameValues.Default           
+            OldLinkAndLinkNameValues = GetLinkAndLinkNameValues.Default           
             V001LinkInput = String.Empty
             V002LinkInput = String.Empty
             V003LinkInput = String.Empty
@@ -82,6 +76,7 @@ let init id : Model * Cmd<Msg> =
             V006LinkNameInput = "Facebook"           
             Id = id
             DelayMsg = String.Empty
+            ErrorMsg = String.Empty
         }
     model, Cmd.ofMsg SendOldLinkAndLinkNameValuesToServer
 
@@ -112,7 +107,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
             try
                 let buttonClickEvent:GetLinkAndLinkNameValues =   //see remark in CMSCenik.fs
                     let input current old =
-                        match String.IsNullOrEmpty(current) with //String.IsNullOrWhiteSpace(current) ||
+                        match String.IsNullOrEmpty(current) with //String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current)
                         | true  -> old
                         | false -> current 
                     SharedLinkAndLinkNameValues.create
@@ -136,11 +131,11 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                             }                                   
                     Async.StartImmediate delayedDispatch                                                            
                                                          
-                { model with DelayMsg = "Probíhá načítání..." }, cmd2 cmd delayedCmd        
+                { model with DelayMsg = "Probíhá načítání..."; ErrorMsg = String.Empty }, cmd2 cmd delayedCmd        
             finally
             ()   
         with
-        | ex -> { model with DelayMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
+        | ex -> { model with ErrorMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
 
     | GetLinkAndLinkNameValues valueNew ->
         {
@@ -150,8 +145,10 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                               V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
                               V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
                               V001n = valueNew.V001n; V002n = valueNew.V002n; V003n = valueNew.V003n;
-                              V004n = valueNew.V004n; V005n = valueNew.V005n; V006n = "Facebook"
+                              V004n = valueNew.V004n; V005n = valueNew.V005n; V006n = "Facebook";
+                              Msgs = valueNew.Msgs
                           }
+                       ErrorMsg = sprintf "%s %s %s" valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3  
         },  Cmd.none
 
     | GetOldLinkAndLinkNameValues valueOld ->
@@ -162,13 +159,22 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
                                 V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
                                 V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
                                 V001n = valueOld.V001n; V002n = valueOld.V002n; V003n = valueOld.V003n;
-                                V004n = valueOld.V004n; V005n = valueOld.V005n; V006n = "Facebook"
+                                V004n = valueOld.V004n; V005n = valueOld.V005n; V006n = "Facebook";
+                                Msgs = valueOld.Msgs
                             }
+                        ErrorMsg = sprintf "%s %s %s" valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3
         },  Cmd.none
    
-let view (model: Model) (dispatch: Msg -> unit) = 
+let view (model: Model) (dispatch: Msg -> unit) =
 
-    let completeContent() = 
+    let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
+
+    let completeContent() =
+
+        match not (String.IsNullOrEmpty(model.ErrorMsg) || String.IsNullOrWhiteSpace(model.ErrorMsg)) with
+        | true  -> Browser.Dom.window.alert(model.ErrorMsg)
+        | false -> ()
+
         Html.html [
             prop.xmlns "http://www.w3.org/1999/xhtml"
             prop.children [
@@ -245,20 +251,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                             ]                                                                             
                                             Html.tr [
                                                 prop.children [
-                                                    yield! [
-                                                        for item in 1..3 do Html.td []    
-                                                    ]                                
-                                               
-                                                    (*
-                                                    //zkusebni kod
-                                                    //let myList = [ Html.td []; Html.td []; Html.td []; Html.td []; Html.td [] ]
-                                                    let myList = [ Html.text "001"; Html.text "002"; Html.text "003"; Html.text "004"; Html.text "005" ]
-                                                    yield! [
-                                                        for item in myList do
-                                                            Html.text ", "
-                                                            item
-                                                    ] |> List.tail //quli carky, kera je prvni
-                                                    *) 
+                                                    yield! td 3      
                                                 ]
                                             ]                                        
                                             Html.tr [
@@ -456,9 +449,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                         style.height(15)  
                                                     ] 
                                                 prop.children [
-                                                    yield! [
-                                                        for item in 1..3 do Html.td []    
-                                                    ]                                                                                                                 
+                                                    yield! td 3                                                                                                  
                                                 ]
                                             ]        
                                             Html.tr [
@@ -516,8 +507,7 @@ let view (model: Model) (dispatch: Msg -> unit) =
                                                                 ]                                                                                                                
                                                         ]
                                                     Html.td []
-                                                    Html.td []
-                                                                                                                                        
+                                                    Html.td []                                                                         
                                                 ]
                                             ]            
                                             Html.tr [

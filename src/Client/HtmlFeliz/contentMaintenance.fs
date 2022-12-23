@@ -2,7 +2,7 @@ module ContentMaintenance
 
 open Feliz
 
-//zatim nevyuzivano
+//not in use 
 
 let contentMaintenance() =
 

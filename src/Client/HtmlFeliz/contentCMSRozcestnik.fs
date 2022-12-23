@@ -2,7 +2,7 @@ module ContentCMSRozcestnik
 
 open Feliz
 
-//kompletni konvertovany html kod, zde se nepouziva layout
+//complete html/Feliz code (no layout)
 let contentCMSRozcestnik returnButtonDiv = 
 
     Html.html [
@@ -161,9 +161,7 @@ let contentCMSRozcestnik returnButtonDiv =
                                                                         Html.br []
                                                                         returnButtonDiv
                                                                         (*
-                                                                        Html.div [                                                                            
-                                                                            
-                                                                            
+                                                                        Html.div [                                                                                 
                                                                             Html.button [                                                                           
                                                                                 prop.text "Log-off"
                                                                                 prop.id "Button2"                                                                           
@@ -177,8 +175,7 @@ let contentCMSRozcestnik returnButtonDiv =
                                                                                       style.color.blue
                                                                                       style.fontFamily "sans-serif"
                                                                                     ]
-                                                                            ]
-                                                                            
+                                                                            ]                                                                            
                                                                         ]
                                                                         *)
                                                                     ]

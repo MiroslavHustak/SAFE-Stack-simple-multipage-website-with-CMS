@@ -1,5 +1,7 @@
 module Home
 
+open System
+
 open Feliz
 open Elmish
 open Fable.Remoting.Client
@@ -11,14 +13,19 @@ open ContentHome
 
 type Model =
     {        
-      Dummy: unit      
+        Dummy: unit
+        ErrorMsg: string
     }
 
 type Msg =
     | DummyMsgText   
 
 let init () : Model * Cmd<Msg> =
-    let model = { Dummy = () } 
+    let model =
+        {
+            Dummy = ()
+            ErrorMsg = String.Empty
+        } 
     model, Cmd.none
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none

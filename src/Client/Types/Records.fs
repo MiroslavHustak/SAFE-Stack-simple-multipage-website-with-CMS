@@ -1,7 +1,10 @@
 namespace Records
 
+open System
+
 open Feliz
 
+[<Struct>]
 type MyCssClass =
     {
         Home: IReactProperty
@@ -10,6 +13,3 @@ type MyCssClass =
         Nenajdete: IReactProperty
         Kontakt: IReactProperty
     }
-
-
-

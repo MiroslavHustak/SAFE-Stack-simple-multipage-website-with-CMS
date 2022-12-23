@@ -20,6 +20,35 @@
     <script src="/Scripts/piroBox.1_2_min.js" type="text/javascript"></script>
     <script src="/Scripts/jquery-3.3.1.js" type="text/javascript"></script>
 </head>
+
+<!--
+Html.div [
+    Html.a [
+        prop.className ""
+        prop.href "#openModal1"
+        prop.text "Some link"
+    ]
+]
+Html.div [
+    prop.className "modalDialog"
+    prop.id "openModal1"
+    prop.children [
+        Html.div [
+            prop.classes [ "ce_text"; "popup" ]
+            prop.children [
+                Html.a [
+                    prop.className "close"
+                    prop.href "#close"
+                    prop.title "Close"
+                    prop.text "X"
+                ]
+                Html.h2 "Some header"
+                Html.text Some text"
+            ]
+        ]
+    ]
+]
+-->
 <body>
     <form action="" method="post">
         <div id="wrap">

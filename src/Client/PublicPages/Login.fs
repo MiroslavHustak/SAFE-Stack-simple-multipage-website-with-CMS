@@ -143,7 +143,7 @@ module Login =
                     prop.children [
                         Html.input [
                             prop.type' "submit"
-                            prop.value "Logout a návrat na webové stránky" //prvni rozcestnik
+                            prop.value "Logout a návrat na webové stránky" //first "rozcestnik" 
                             prop.id "Button2"
                             prop.onClick (fun _ -> dispatch Logout)
                             prop.style
@@ -168,7 +168,7 @@ module Login =
             <| inputElementUsr 
             <| inputElementPsw  
             <| (errorMsg1, errorMsg2)
-            <| false //zneviditelneni
+            <| false //related to hiding
             <| (dispatch: Msg -> unit)
 
         let fnFirstRun() =
@@ -177,13 +177,13 @@ module Login =
             <| inputElementUsr 
             <| inputElementPsw                    
             <| (String.Empty, String.Empty)
-            <| true //zneviditelneni
+            <| true //related to hiding
             <| (dispatch: Msg -> unit)
 
         match model.User with      
         | Anonymous             -> fnError()
         | FirstTimeRunAnonymous -> fnFirstRun()
-        | LoggedIn user         -> contentCMSRozcestnik returnButtonDiv //prvni rozcestnik
+        | LoggedIn user         -> contentCMSRozcestnik returnButtonDiv //first "rozcestnik" 
 
                    
 //Redundant code - for learning purposes only!!!

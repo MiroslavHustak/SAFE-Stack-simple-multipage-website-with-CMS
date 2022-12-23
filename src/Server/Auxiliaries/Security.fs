@@ -9,7 +9,6 @@ open System.IO
 open System.Text
 open Newtonsoft.Json
 open System.Security.Cryptography
-open SharedTypes
 open PasswordGenerator
 
 //  Learn about JWT https://jwt.io/introduction/

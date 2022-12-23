@@ -34,7 +34,7 @@ let update (msg: Msg) (model: Model): Model * Cmd<Msg> =
 
 let view (model: Model) (dispatch: Msg -> unit) =
 
-    //druhy rozcestnik
+    //second "rozcestnik" 
     let returnButtonDiv =
          Html.div [            
             Html.form [
@@ -42,9 +42,9 @@ let view (model: Model) (dispatch: Msg -> unit) =
                 prop.children [
                     Html.input [
                         prop.type' "submit"
-                        prop.value "Logout a návrat na webové stránky" //druhy rozcestnik
+                        prop.value "Logout a návrat na webové stránky" //second "rozcestnik" 
                         prop.id "Button2"
-                        prop.onClick (fun _ -> dispatch Dummy) //v Main.fs je Session = None pro druhy rozcestnik
+                        prop.onClick (fun _ -> dispatch Dummy) //Main.fs contains "Session = None" for the second "rozcestnik"
                         prop.style
                             [
                               style.width(300)

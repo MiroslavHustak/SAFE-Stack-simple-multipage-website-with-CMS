@@ -2,7 +2,9 @@ module ContentLogin
 
 open Feliz
 
-//kompletni konvertovany html kod, zde se nepouziva layout
+let private br n = ( [ 1..n ] |> List.map (fun _ -> Html.br []) |> List.ofSeq ) |> List.map (fun item -> item)
+
+//complete html/Feliz code (no layout)
 let contentLogin submitInput inputElementUsr inputElementPsw (errorMsg: string*string) hiddenValue dispatch = 
 
     Html.html [
@@ -51,8 +53,7 @@ let contentLogin submitInput inputElementUsr inputElementPsw (errorMsg: string*s
                                         Html.div [
                                             prop.id "content"
                                             prop.children [
-                                                Html.br []
-                                                Html.br []
+                                                yield! br 2
                                                 Html.table [                                                                                            
                                                     prop.style
                                                         [
@@ -71,8 +72,7 @@ let contentLogin submitInput inputElementUsr inputElementPsw (errorMsg: string*s
                                                                     Html.div [
                                                                         prop.id "apple"
                                                                         prop.children [
-                                                                            Html.br []
-                                                                            Html.br []
+                                                                            yield! br 2
                                                                             Html.img [
                                                                                 prop.style
                                                                                     [
@@ -85,13 +85,7 @@ let contentLogin submitInput inputElementUsr inputElementPsw (errorMsg: string*s
                                                                                 prop.width 80
                                                                                 prop.height 80
                                                                             ]
-                                                                            Html.br []
-                                                                            Html.script [
-                                                                                //prop.src "/Scripts/apple.js" //nepomoze...     
-                                                                                //prop.type' "text/javascript"                                                                               
-                                                                            ]
-                                                                            Html.br []
-                                                                            Html.br []
+                                                                            yield! br 3
                                                                         ]
                                                                     ]
                                                                 ]

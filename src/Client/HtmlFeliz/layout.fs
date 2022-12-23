@@ -1,5 +1,7 @@
 module Layout
 
+open System
+
 open Elmish
 open Feliz
 
@@ -7,6 +9,12 @@ open Records
 open SharedTypes
 
 let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameValues) =
+
+    let errorMsg = sprintf "%s %s %s" links.Msgs.Msg1 links.Msgs.Msg2 links.Msgs.Msg3
+
+    match not (String.IsNullOrEmpty(errorMsg) || String.IsNullOrWhiteSpace(errorMsg)) with
+    | true  -> Browser.Dom.window.alert(errorMsg)
+    | false -> ()
 
     Html.div [
         Html.div [
@@ -218,7 +226,7 @@ let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameVal
                     prop.children [
                         Html.text "Copyright © 2018 Hana Nováková | "
                         Html.a [
-                            prop.href "http://www.iwebsitetemplate.com"
+                            prop.href "http://www.templatemo.com"
                             prop.target "_blank"
                             prop.text "Website Templates"
                         ]
@@ -302,7 +310,7 @@ let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameVal
                             prop.title "F#/Elmish code"
                             prop.text "F#/Elmish code"
                         ]   
-                        Html.text " for routing by "
+                        Html.text " for client-side routing by "
                         Html.a [
                             prop.href "https://stackoverflow.com/users/2911775/maxime-mangel"
                             prop.target "_blank"

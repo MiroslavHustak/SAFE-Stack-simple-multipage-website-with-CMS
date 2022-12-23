@@ -3,44 +3,33 @@ module ROP_Functions
 open System
 open System.IO
 
-open Errors
 open DiscriminatedUnions
 
-let tryWith f1 f2 x = //x se ne vzdy pouziva, ale z duvodu jednotnosti ponechano 
+open SharedTypes
+
+let tryWith f1 f2 s = 
     try
         try          
-           f1 x |> Success
+           f1 s |> Success
         finally
-           f2 x
+           f2 s 
     with
-    | ex -> Failure ex.Message  
+    | ex -> Failure (sprintf"%s: %s" s ex.Message)
 
 let deconstructor1 =  
     function
-    | Success x  -> x, String.Empty                                                   
-    | Failure ex -> Array.empty, ex 
+    | Success x  -> String.Empty                                                   
+    | Failure ex -> ex 
 
-let deconstructor2 =  
+let deconstructor2 a =  
     function
-    | Success x  -> x                                                   
-    | Failure ex -> true
+    | Success x  -> x, String.Empty                                                    
+    | Failure ex -> a, ex
 
-let deconstructor4 y =  
-    function
-    | Success x  -> x                                                   
-    | Failure ex -> error4 ex |> ignore //TODO remove ignore and create some action
-                    y
-
-let optionToString str x = 
-    match x with 
-    | Some value -> value
-    | None       -> error4 str
-
-let optionToGenerics2 str x = 
+let optionToFailwith str = 
     function
     | Some value -> value
-    | None       -> error4 str |> ignore //TODO remove ignore and create some action                                 
-                    x //whatever of the particular type 
+    | None       -> failwith str  
                     
                                       
                     

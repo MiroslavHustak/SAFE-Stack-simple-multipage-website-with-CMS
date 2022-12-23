@@ -4,6 +4,6 @@ open Feliz
 open Shared
 
 let contentCenik() = ()
-    //quli velkemu poctu parametru premisteno do Cenik.fs
+//moved to Cenik.fs due to a large number of parameters
 
     

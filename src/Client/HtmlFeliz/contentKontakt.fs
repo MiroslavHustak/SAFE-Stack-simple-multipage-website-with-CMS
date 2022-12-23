@@ -3,4 +3,4 @@ module ContentKontakt
 open Feliz
 
 let contentKontakt () = ()
-    //quli velkemu poctu parametru premisteno do Kontakt.fs
+//moved to Kontakt.fs due to a large number of parameters 

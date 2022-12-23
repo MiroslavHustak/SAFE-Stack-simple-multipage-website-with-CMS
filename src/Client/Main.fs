@@ -10,7 +10,7 @@ open System
 
 open Elmish
 open Fable.React
-open Feliz.Router//Cmd.Navigation //not used in this solution 
+open Feliz.Router //Cmd.Navigation //not used in this solution 
 open Fable.Remoting.Client
 
 open Shared
@@ -93,6 +93,13 @@ let private setRoute (optRoute: RouterM.Route option) model =
                                       User = applicationUser                                                                                                                              
         }    
     
+    //testing match for the deconstruction of a single case DU
+    let accessToken = match model.user.AccessToken with SharedApi.AccessToken value -> value
+                      
+    //testing the deconstruction of a single case DU
+    let unwrap (SharedApi.AccessToken x) = x
+    let accessToken = unwrap model.user.AccessToken
+
     (*
         //What's happening here is that F# allows you to deconstruct function arguments inline using arbitrarily complex pattern matching.
         //This is often mentioned when introducing single case DU's, but it's rarely followed to the conclusion, which leads
@@ -107,16 +114,6 @@ let private setRoute (optRoute: RouterM.Route option) model =
         | Composite a -> a
     *)
 
-    //testing match for the deconstruction of a single case DU
-    let accessToken = match model.user.AccessToken with SharedApi.AccessToken value -> value
-                      
-    //testing the deconstruction of a single case DU
-    let unwrap (SharedApi.AccessToken x) = x
-    let accessToken = unwrap model.user.AccessToken
-
-    //In case CMS Rozcestnik is used, include other potential parameters for RouterM.Route.CMSRozcestnik cmsRozcestnikId into setRoute (second CMSRozcestnik call)
-    //and repeat the same for the first CMSRozcestnik call from Login 
-    
     match optRoute with
     | None ->
         { model with ActivePage = Page.NotFound }, Cmd.none
@@ -145,12 +142,12 @@ let private setRoute (optRoute: RouterM.Route option) model =
         let (loginModel, loginCmd) = Login.init loginId
         { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd 
 
-    //zatim nevyuzito
+    //not in use
     | Some (RouterM.Route.Logout) ->
         let (homeModel, homeCmd) = Home.init () //or Login.init
         { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
-    //zatim nevyuzito
+    //not in use
     | Some (RouterM.Route.Maintenance) ->
         let (maintenanceModel, maintenanceCmd) = Maintenance.init ()
         { model with ActivePage = Page.Maintenance maintenanceModel }, Cmd.map MaintenanceMsg maintenanceCmd 
@@ -201,15 +198,7 @@ let private setRoute (optRoute: RouterM.Route option) model =
                    { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues
 
 let init (location: RouterM.Route option) =
-
-    let initialLinkAndLinkNameValues =
-        {
-            V001 = String.Empty; V002 = String.Empty; V003 = String.Empty;
-            V004 = String.Empty; V005 = String.Empty; V006 = String.Empty
-            V001n = String.Empty; V002n = String.Empty; V003n = String.Empty;
-            V004n = String.Empty; V005n = String.Empty; V006n = "Facebook"
-        }
-
+        
     setRoute location
         {
             ActivePage = Page.NotFound 
@@ -217,8 +206,8 @@ let init (location: RouterM.Route option) =
             User = Anonymous
             user = { Username = String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
             Session = None          
-            LinkAndLinkNameValues = initialLinkAndLinkNameValues   
-            LinkAndLinkNameInputValues = initialLinkAndLinkNameValues
+            LinkAndLinkNameValues = GetLinkAndLinkNameValues.Default   
+            LinkAndLinkNameInputValues = GetLinkAndLinkNameValues.Default
         }    
 
 let update (msg: Msg) (model: Model) =
@@ -270,7 +259,7 @@ let update (msg: Msg) (model: Model) =
         let (cmsLinkModel, cmsLinkCmd) = CMSLink.update cmsLinkMsg cmsLinkModel 
         { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
                                                                   
-         //potrebujeme aktivovat hodnoty uz pri spusteni public stranek        
+         //LinkAndLinkNameValues need to be activated during the first download of any page        
     | _, AskServerForLinkAndLinkNameValues ->
             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.LinkAndLinkNameInputValues
             let cmd = Cmd.OfAsync.perform sendDeserialisedLinkAndLinkNameValuesApi.sendDeserialisedLinkAndLinkNameValues loadEvent GetLinkAndLinkNameValues
@@ -282,7 +271,8 @@ let update (msg: Msg) (model: Model) =
                                                                                     V004 = value.V004; V005 = value.V005; V006 = value.V006;
                                                                                     V001n = value.V001n; V002n = value.V002n; V003n = value.V003n;
                                                                                     V004n = value.V004n; V005n = value.V005n; V006n = value.V006n;
-                                                                                }
+                                                                                    Msgs = value.Msgs 
+                                                                                }                                                       
                                            }, Cmd.none
                                             
     | _, msg -> model, Cmd.none
@@ -297,13 +287,13 @@ let view (model: Model) (dispatch: Dispatch<Msg>) =
     | Page.Cenik cenikModel -> Cenik.view cenikModel (CenikMsg >> dispatch) model.LinkAndLinkNameValues 
     | Page.Nenajdete nenajdeteModel -> Nenajdete.view nenajdeteModel (NenajdeteMsg >> dispatch) model.LinkAndLinkNameValues 
     | Page.Kontakt kontaktModel -> Kontakt.view kontaktModel (KontaktMsg >> dispatch) model.LinkAndLinkNameValues
-    | Page.Maintenance maintenanceModel -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch) //not used yet
+    | Page.Maintenance maintenanceModel -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch) //not in use
     | Page.Login loginModel ->  Login.view loginModel (LoginMsg >> dispatch)                              
     | Page.CMSRozcestnik cmsRozcestnikModel -> CMSRozcestnik.view cmsRozcestnikModel (CMSRozcestnikMsg >> dispatch)  
     | Page.CMSCenik cmsCenikModel -> CMSCenik.view cmsCenikModel (CMSCenikMsg >> dispatch) 
     | Page.CMSKontakt cmsKontaktModel -> CMSKontakt.view cmsKontaktModel (CMSKontaktMsg >> dispatch) 
     | Page.CMSLink cmsLinkModel -> CMSLink.view cmsLinkModel (CMSLinkMsg >> dispatch)
-   // | Page.Logout homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues //not used yet
+   // | Page.Logout homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues //not in use
 
 open Elmish.UrlParser
 open Elmish.Navigation

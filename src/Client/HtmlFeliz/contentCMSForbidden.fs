@@ -2,9 +2,9 @@ module ContentCMSForbidden
 
 open Feliz
 
-//zatim nevyuzivano
+//not in use 
 
-//kompletni konvertovany html kod, zde se nepouziva layout
+//complete html/Feliz code (no layout)
 let contentCMSForbidden() = 
 
     Html.html [

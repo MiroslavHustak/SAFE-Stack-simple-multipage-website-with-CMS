@@ -3,5 +3,5 @@ module ContentCMSKontakt
 open Feliz
 
 let contentCMSKontakt() = ()
-//quli velkemu poctu parametru premisteno do CMSKontakt.fs
+//moved to CMSKontakt.fs due to a large number of parameters 
 

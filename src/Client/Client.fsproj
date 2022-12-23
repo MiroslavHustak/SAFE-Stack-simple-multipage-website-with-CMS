@@ -5,9 +5,6 @@
         <DefineConstants>FABLE_COMPILER</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
-      <EmbeddedResource Remove="Admin\Login\**" />
-    </ItemGroup>
-    <ItemGroup>
         <None Include="paket.references" />
         <None Include="output\Shared\Shared.js" />
         <None Include="output\Shared\Shared.js.map" />
@@ -171,17 +168,17 @@
         <Compile Include="HtmlFeliz\contentCenik.fs" />       
         <Compile Include="HtmlFeliz\contentSluzby.fs" />       
         <Compile Include="HtmlFeliz\contentHome.fs" />       
-        <Compile Include="Public Pages\Maintenance.fs" />       
-        <Compile Include="Public Pages\Login.fs" />       
-        <Compile Include="Public Pages\Kontakt.fs" />       
-        <Compile Include="Public Pages\Nenajdete.fs" />       
-        <Compile Include="Public Pages\Cenik.fs" />       
-        <Compile Include="Public Pages\Sluzby.fs" />       
-        <Compile Include="Public Pages\Home.fs" />       
-        <Compile Include="Admin\CMS Pages\CMSLink.fs" />       
-        <Compile Include="Admin\CMS Pages\CMSKontakt.fs" />       
-        <Compile Include="Admin\CMS Pages\CMSCenik.fs" />       
-        <Compile Include="Admin\CMS Pages\CMSRozcestnik.fs" />
+        <Compile Include="PublicPages\Maintenance.fs" />       
+        <Compile Include="PublicPages\Login.fs" />       
+        <Compile Include="PublicPages\Kontakt.fs" />       
+        <Compile Include="PublicPages\Nenajdete.fs" />       
+        <Compile Include="PublicPages\Cenik.fs" />       
+        <Compile Include="PublicPages\Sluzby.fs" />       
+        <Compile Include="PublicPages\Home.fs" />       
+        <Compile Include="CMSPages\CMSLink.fs" />       
+        <Compile Include="CMSPages\CMSKontakt.fs" />       
+        <Compile Include="CMSPages\CMSCenik.fs" />       
+        <Compile Include="CMSPages\CMSRozcestnik.fs" />
         <Compile Include="Main.fs" />
         <None Include="index.html" />
     </ItemGroup>
@@ -193,6 +190,8 @@
       <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />     
       <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />     
       <PackageReference Include="System.Text.Json" Version="6.0.3" />
+      <PackageReference Include="FSharp.Core" Version="6.0.7" />
+      <PackageReference Remove="FSharp.Core" Version="6.0.3" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Shared\Shared.fsproj" />

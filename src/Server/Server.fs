@@ -12,10 +12,10 @@ open Fable.Remoting.Giraffe
 open Shared
 open SharedTypes
 
-open Sql   //uncomment to test plain SQL (and, at the same time, comment out "open Dapper")
+open Sql       //uncomment to test plain SQL (and, at the same time, comment out "open Dapper")
 //open Dapper  //uncomment to test Dapper.FSharp (and, at the same time, comment out "open QSql")
 
-open Security
+open Crypto.Pbkdf2
 
 open Connection
 open ROP_Functions
@@ -34,57 +34,76 @@ type private MyPatternBuilder = MyPatternBuilder with
     member _.Using x = x
     member _.Return x = x
 
-let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>   
+let private isValidLogin inputUsrString inputPswString = not (String.IsNullOrWhiteSpace inputUsrString || String.IsNullOrWhiteSpace inputPswString)
+let private isValidCenik param = ()   //TODO validation upon request from the user 
+let private isValidKontakt param = () //TODO validation upon request from the user 
+let private isValidLink param = ()    //TODO validation upon request from the user 
 
+let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>
+
+    (*
     MyPatternBuilder    
         {  
             let! _ = SharedLoginValues.isValid login.Username login.Password
+            let! _ = login.Username = "q" && login.Password = "q"                
+            return SharedApi.LoggedIn { Username = login.Username; AccessToken = SharedApi.AccessToken "Dummy" }
+        } 
+    *)
+
+    //containing redundant code for learning purposes
+    MyPatternBuilder    
+        {  
+            let! _ = isValidLogin login.Username login.Password
             let securityTokenFile = Path.GetFullPath("securityToken.txt")
                                     |> Option.ofObj
                                     |> function
                                         | Some value -> value
-                                        | None       -> //TODO 
-                                                        String.Empty 
+                                        | None       -> //TODO some action only in case you decide to use saved accessToken
+                                                        String.Empty           
+           
             let! _ = login.Username = "q" && login.Password = "q" 
+
+            //TODO trywith only in case you decide to use the saved accessToken
             let result =                
-                let accessToken = string <| System.Guid.NewGuid() //encodeJwt securityToken //TODO
+                let accessToken = string <| System.Guid.NewGuid() //encodeJwt securityToken //TODO only in case you decide to use saved accessToken
                 //********************************************************************************
                 let mySeq = seq { login.Username; accessToken }
-                use sw = new StreamWriter(Path.GetFullPath(securityTokenFile)) //TODO vse do trywith
+                use sw = new StreamWriter(Path.GetFullPath(securityTokenFile)) 
                          |> Option.ofObj
                          |> function
                              | Some value -> value
-                             | None       -> //TODO
+                             | None       -> //TODO some action only in case you decide to use accessToken
                                              new StreamWriter(Path.GetFullPath(securityTokenFile)) 
-                mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) //TODO vse do trywith
-                //vyse uvedeny kod pro ukladani na server (puvodne workaround) ponechan pro pripadne pristi pouziti
-                //**********************************************************************************
+                mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
+                //code with saved accessToken (originally a workaround) left for potential exploitation in the future
+
+                //*********************************************************************************************
                 SharedApi.LoggedIn { Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             return result
         }
     
   //TODO validation upon request from the user 
 let private verifyCenikValues (cenikValues: GetCenikValues) =
-    match SharedCenikValues.isValid () with
+    match isValidCenik () with
     | () -> Ok ()        
-    // | _  -> Error "" 
+    // | _  -> //Error "" 
 
  //TODO validation upon request from the user 
 let private verifyKontaktValues (kontaktValues: GetKontaktValues) =
-   match SharedCenikValues.isValid () with
+   match isValidKontakt () with
    | () -> Ok ()        
    // | _  -> Error ""
 
 //TODO validation upon request from the user 
 let private verifyLinkAndLinkNameValues (linkValues: GetLinkAndLinkNameValues) =
-   match SharedLinkAndLinkNameValues.isValid () with
+   match isValidLink () with
    | () -> Ok ()        
    // | _  -> Error ""
 
 let IGetApi =
     {
-      login =
-          fun login -> async { return (verifyLogin login) }          
+        login =
+            fun login -> async { return (verifyLogin login) }          
      (*
       getSecurityTokenFile = //TODO try with
           fun getSecurityTokenFile -> async { return File.Exists(Path.GetFullPath("securityToken.txt")) }             
@@ -94,11 +113,12 @@ let IGetApi =
               async
                   {       
                       match File.Exists(Path.GetFullPath("securityToken.txt")) with
-                      | false -> return Seq.empty  //TODO error+reseni
-                      | true  -> //StreamReader taky nechtel fungovat, takze cteme data jinak                              
+                      | false -> //TODO error + some action
+                                 return Seq.empty  
+                      | true  -> //StreamReader refused to work here, thar is why File.ReadAllLines was used                              
                                  match File.ReadAllLines("securityToken.txt") |> Option.ofObj with
                                  | Some value -> return (value |> Seq.ofArray) 
-                                 | None       -> return Seq.empty  //TODO error+reseni                           
+                                 | None       -> return Seq.empty  //TODO error + some action                        
                   }        
       
       deleteSecurityTokenFile =
@@ -109,127 +129,173 @@ let IGetApi =
                       return ()
                   }   
       *)
-      getCenikValues =  //moznost vyberu mezi Json/XML ci DB
-          fun getCenikValues ->
-              async
-                  {                   
-                    let getNewCenikValues: GetCenikValues =                        
-                        match verifyCenikValues getCenikValues with                
-                        | Ok () ->
-                                   let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" }
+        getCenikValues =  //choose between Json/XML and DB
+            fun getCenikValues ->
+                async
+                    {                   
+                        let getNewCenikValues: GetCenikValues =                        
+                            match verifyCenikValues getCenikValues with                
+                            | Ok () ->
+                                      let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" }
 
-                                   //************* plain SQL or Dapper.FSharp ******************** 
-                                   insertOrUpdate dbNewCenikValues //TODO try with
+                                      //************* plain SQL or Dapper.FSharp ********************                                                                         
+                                      let exnSql = insertOrUpdate dbNewCenikValues
 
-                                   //************* Json/XML ******************** 
-                                   serialize dbNewCenikValues "jsonCenikValues.xml"  //TODO try with   //leave it here despite using db in order to update xml
+                                      //************* Json/XML ********************
+                                      let serializeNow x =
+                                          //failwith "Simulated exception2" 
+                                          serialize dbNewCenikValues "jsonCenikValues.xml"  //leave it here despite using db in order to update xml                                
+                                      let exnJson = (serializeNow, (fun x -> ()), "Error2") |||> tryWith |> deconstructor1
+
+                                      //************* For both DB and Json/XML ********************
+                                      { dbNewCenikValues with Msgs = { Messages.Default with Msg1 = exnSql; Msg2 = exnJson } }
                                    
-                                   dbNewCenikValues
-                        | _    ->  GetCenikValues.Default
-                    return getNewCenikValues
+                            | _    -> GetCenikValues.Default
+                      return getNewCenikValues
                   }
 
-      sendOldCenikValues = //choose between db and Json/XML
-          fun _ -> 
-              async
+        sendOldCenikValues = //choose between db and Json/XML
+            fun _ -> 
+                async
+                    {
+                      //************* Json/XML ********************
+                      //leave it here despite using db in order to update xml
+                        let copyFilesNow x =
+                           //failwith "Simulated exception3" 
+                           copyFiles 
+                           <| "jsonCenikValues.xml"
+                           <| "jsonCenikValuesBackUp.xml"
+                        let exnJson1 = (copyFilesNow, (fun x -> ()), "Error3") |||> tryWith |> deconstructor1
+
+                        (*
+                        let sendOldCenikValuesNow x =
+                           //failwith "Simulated exception4" 
+                            deserialize "jsonCenikValuesBackUp.xml"
+                        let (sendOldCenikValues, exnJson2) = (sendOldCenikValuesNow, (fun x -> ()), "Error4") |||> tryWith |> deconstructor2 GetCenikValues.Default
+                        return { sendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }
+                        *)
+
+                        //************* plain SQL or Dapper.FSharp ********************                     
+                        let IdNew = 2
+                        let IdOld = 3
+                                                                    
+                        let (dbGetNewCenikValues, exnSql2) = selectValues IdNew                                         
+                        let exnSql = insertOrUpdate { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }//eqv of the aforementioned copying 
+                        let (dbSendOldCenikValues, exnSql3) = selectValues IdOld
+
+                        return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnSql2; Msg3 = exnSql3 } }                    
+                    }
+
+        sendDeserialisedCenikValues = //choose between db and Json/XML
+           fun _ ->
+               async
+                   {
+                       //************* Json/XML ********************                   
+                       (*
+                       let sendCenikValuesNow x =
+                           //failwith "Simulated exception8" 
+                           deserialize "jsonCenikValues.xml" 
+                       let (sendCenikValues, exnJson1) = (sendCenikValuesNow, (fun x -> ()), "Error8") |||> tryWith |> deconstructor2
+                       return { sendCenikValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }
+                       *)
+
+                       //************* plain SQL or Dapper.FSharp ********************
+                       let IdNew = 2
+                    
+                       let (dbSendCenikValues, exnSql1) = selectValues IdNew
+
+                       return { dbSendCenikValues with Msgs = { Messages.Default with Msg1 = exnSql1 } }
+                   }
+
+        getKontaktValues =
+            fun getKontaktValues ->
+                async
+                    {
+                        let getNewKontaktValues: GetKontaktValues = 
+                            match verifyKontaktValues getKontaktValues with
+                            | Ok () ->                                  
+                                       let serializeNow x =
+                                          //failwith "Simulated exception10" 
+                                          serialize getKontaktValues "jsonKontaktValues.xml"                            
+                                       let exnJson = (serializeNow, (fun x -> ()), "Error10") |||> tryWith |> deconstructor1
+                                       { getKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson } }                                   
+                            | _     -> GetKontaktValues.Default    
+                        return getNewKontaktValues
+                    }
+
+        sendOldKontaktValues =
+            fun _ ->
+                async
+                    {
+                        let copyFilesNow x =
+                            //failwith "Simulated exception11" 
+                            copyFiles 
+                            <| "jsonKontaktValues.xml"
+                            <| "jsonKontaktValuesBackUp.xml"
+                        let exnJson1 = (copyFilesNow, (fun x -> ()), "Error11") |||> tryWith |> deconstructor1
+                    
+                        let sendOldKontaktValuesNow x =
+                            //failwith "Simulated exception12" 
+                            deserialize "jsonKontaktValuesBackUp.xml"
+                        let (sendOldKontaktValues, exnJson2) = (sendOldKontaktValuesNow, (fun x -> ()), "Error12") |||> tryWith |> deconstructor2 GetKontaktValues.Default
+                        return { sendOldKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }                 
+                    } 
+
+        sendDeserialisedKontaktValues =
+            fun _ ->
+                async
+                    {                  
+                        let sendKontaktValuesNow x =
+                            //failwith "Simulated exception13" 
+                            deserialize "jsonKontaktValues.xml" 
+                        let (sendKontaktValues, exnJson1) = (sendKontaktValuesNow, (fun x -> ()), "Error13") |||> tryWith |> deconstructor2 GetKontaktValues.Default
+                        return { sendKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }                   
+                    }
+
+        getLinkAndLinkNameValues =
+           fun getLinkAndLinkNameValues ->
+               async
                   {
-                     //************* Json/XML ********************
-                     //leave it here despite using db in order to update xml   
-                     copyFiles 
-                     <| "jsonCenikValues.xml"
-                     <| "jsonCenikValuesBackUp.xml"
-
-                     //let sendOldCenikValues = deserialize "jsonCenikValuesBackUp.xml" //TODO try with
-                     //return sendOldCenikValues
-
-                     //************* plain SQL or Dapper.FSharp ********************                     
-                     let IdNew = 2
-                     let IdOld = 3
-                     let newGetCenikValuesDb = selectValues IdNew //TODO try with
-                     insertOrUpdate { newGetCenikValuesDb with Id = IdOld; ValueState = "old" }//eqv of the aforementioned copying  //TODO try with                   
-                     let dbSendOldCenikValues = selectValues IdOld  //TODO try with                
-                     
-                     return dbSendOldCenikValues                     
-                  } 
-
-      sendDeserialisedCenikValues = //choose between db and Json/XML
-         fun _ ->
-             async
-                 {
-                    //************* Json/XML ********************
-                    //let sendCenikValues = deserialize "jsonCenikValues.xml" //TODO try with
-                    //return sendCenikValues
-
-                    //************* plain SQL or Dapper.FSharp ********************
-                    let IdNew = 2
-                    let dbSendCenikValues = selectValues IdNew //TODO try with
-
-                    return dbSendCenikValues
-                 }
-
-      getKontaktValues =
-          fun getKontaktValues ->
-              async
-                  {
-                    let getNewKontaktValues: GetKontaktValues = 
-                        match verifyKontaktValues getKontaktValues with                
-                        | Ok () -> serialize getKontaktValues "jsonKontaktValues.xml"  //TODO try with
-                        | _     -> ()                                   
-                        getKontaktValues
-                    return getNewKontaktValues
-                  }
-
-      sendOldKontaktValues =
-         fun _ ->
-             async
-                 {
-                    copyFiles 
-                    <| "jsonKontaktValues.xml"
-                    <| "jsonKontaktValuesBackUp.xml"
-
-                    let sendOldKontaktValues = deserialize "jsonKontaktValuesBackUp.xml" //TODO try with
-                    return sendOldKontaktValues
-                 } 
-
-      sendDeserialisedKontaktValues =
-          fun _ ->
-             async
-                {
-                    let sendKontaktValues = deserialize "jsonKontaktValues.xml" //TODO try with
-                    return sendKontaktValues
-                }
-
-      getLinkAndLinkNameValues =
-          fun getLinkAndLinkNameValues ->
-              async
-                  {
-                    let getNewLinkAndLinkNameValues: GetLinkAndLinkNameValues = 
-                        match verifyLinkAndLinkNameValues getLinkAndLinkNameValues with                
-                        | Ok () -> serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"  //TODO try with                                  
-                        | _     -> ()
-                        getLinkAndLinkNameValues
+                     let getNewLinkAndLinkNameValues: GetLinkAndLinkNameValues = 
+                         match verifyLinkAndLinkNameValues getLinkAndLinkNameValues with
+                         | Ok () ->
+                                    let serializeNow x =
+                                        //failwith "Simulated exception14" 
+                                        serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"                             
+                                    let exnJson = (serializeNow, (fun x -> ()), "Error14") |||> tryWith |> deconstructor1
+                                    { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
+                         | _     -> GetLinkAndLinkNameValues.Default                        
                     return getNewLinkAndLinkNameValues
                   }
            
-      sendOldLinkAndLinkNameValues =
-          fun _ ->
-              async
-                  {
-                    copyFiles 
-                    <| "jsonLinkAndLinkNameValues.xml"
-                    <| "jsonLinkAndLinkNameValuesBackUp.xml"
+        sendOldLinkAndLinkNameValues =
+            fun _ ->
+               async
+                   {
+                       let copyFilesNow x =
+                              //failwith "Simulated exception15" 
+                           copyFiles 
+                           <| "jsonLinkAndLinkNameValues.xml"
+                           <| "jsonLinkAndLinkNameValuesBackUp.xml"
+                       let exnJson1 = (copyFilesNow, (fun x -> ()), "Error15") |||> tryWith |> deconstructor1
+                      
+                       let sendOldLinkAndLinkNameValuesNow x =
+                           //failwith "Simulated exception16" 
+                           deserialize "jsonLinkAndLinkNameValuesBackUp.xml" 
+                       let (sendOldLinkAndLinkNameValues, exnJson2) = (sendOldLinkAndLinkNameValuesNow, (fun x -> ()), "Error16") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
+                       return { sendOldLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }  
+                   } 
 
-                    let sendOldLinkAndLinkNameValues = deserialize "jsonLinkAndLinkNameValuesBackUp.xml" //TODO try with
-                    return sendOldLinkAndLinkNameValues
-                  } 
-
-      sendDeserialisedLinkAndLinkNameValues =
-          fun _ ->
-              async
-                  {
-                    let sendLinkAndLinkNameValues = deserialize "jsonLinkandLinkNameValues.xml" //TODO try with
-                    return sendLinkAndLinkNameValues
-                  }
+        sendDeserialisedLinkAndLinkNameValues =
+           fun _ ->
+               async
+                   {
+                       let sendLinkAndLinkNameValuesNow x =
+                           //failwith "Simulated exception17" 
+                           deserialize "jsonLinkandLinkNameValues.xml"  
+                       let (sendLinkAndLinkNameValues, exnJson1) = (sendLinkAndLinkNameValuesNow, (fun x -> ()), "Error17") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
+                       return { sendLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }  
+                   }
     }
 
 let webApp =
@@ -239,7 +305,7 @@ let webApp =
     |> Remoting.buildHttpHandler
 
 let app =
-    insertOrUpdate GetCenikValues.Default
+    //insertOrUpdate GetCenikValues.Default |> ignore //Not necessary, GetCenikValues.Default everywhere takes care in cases when data in db are not available
     application
         {
             use_router webApp

@@ -1,6 +1,6 @@
 module SqlQueries
 
-let queryCreateDatabase = "CREATE DATABASE nterapieLocal" //nelze pro connStringSomee
+let queryCreateDatabase = "CREATE DATABASE nterapieLocal" //not possible for connStringSomee
 let queryDeleteAll = "DELETE FROM CENIK" //Deleting all data from the relevant table
 let queryDelete id = sprintf "%s%s" "DELETE FROM CENIK WHERE Id = " id 
 let queryExists id = sprintf "%s%s%s" "SELECT Id FROM CENIK WHERE EXISTS (SELECT Id FROM CENIK WHERE CENIK.Id = " id ")"

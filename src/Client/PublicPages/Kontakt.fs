@@ -15,7 +15,8 @@ open Records
 type Model =
     {
         KontaktValues: GetKontaktValues
-        KontaktInputValues: GetKontaktValues       
+        KontaktInputValues: GetKontaktValues
+        ErrorMsg: string
         Id: int
     }
 
@@ -29,17 +30,12 @@ let sendDeserialisedKontaktValues =
     |> Remoting.buildProxy<IGetApi>
 
 let init id : Model * Cmd<Msg> =
-
-    let initialKontaktValues =
-        {
-            V001 = String.Empty; V002 = String.Empty; V003 = String.Empty;
-            V004 = String.Empty; V005 = String.Empty; V006 = String.Empty;
-            V007 = String.Empty
-        }
+       
     let model =        
         {
-            KontaktValues = initialKontaktValues        
-            KontaktInputValues = initialKontaktValues 
+            KontaktValues = GetKontaktValues.Default        
+            KontaktInputValues = GetKontaktValues.Default
+            ErrorMsg = String.Empty
             Id = id
         }
     model, Cmd.ofMsg AskServerForKontaktValues
@@ -52,11 +48,12 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
              let cmd = Cmd.OfAsync.perform sendDeserialisedKontaktValues.sendDeserialisedKontaktValues loadEvent GetKontaktValues
              model, cmd            
         | GetKontaktValues value -> { model with KontaktValues =
-                                                  {
-                                                      V001 = value.V001; V002 = value.V002; V003 = value.V003;
-                                                      V004 = value.V004; V005 = value.V005; V006 = value.V006;
-                                                      V007 = value.V007
-                                                  }
+                                                    {
+                                                        V001 = value.V001; V002 = value.V002; V003 = value.V003;
+                                                        V004 = value.V004; V005 = value.V005; V006 = value.V006;
+                                                        V007 = value.V007; Msgs = value.Msgs 
+                                                    }
+                                                 ErrorMsg = sprintf "%s %s %s" value.Msgs.Msg1 value.Msgs.Msg2 value.Msgs.Msg3
                                     }, Cmd.none    
  
 let view (model: Model) (dispatch: Msg -> unit) links =
@@ -71,6 +68,10 @@ let view (model: Model) (dispatch: Msg -> unit) links =
        }
 
     let kontaktHtml =
+
+        match not (String.IsNullOrEmpty(model.ErrorMsg) || String.IsNullOrWhiteSpace(model.ErrorMsg)) with
+        | true  -> Browser.Dom.window.alert(model.ErrorMsg)
+        | false -> ()
     
         Html.div [
             prop.id "templatemo_content"

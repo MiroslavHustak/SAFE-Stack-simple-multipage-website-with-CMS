@@ -3,6 +3,6 @@ module ContentCMSCenik
 open Feliz
 
 let contentCMSCenik() = ()
-//quli velkemu poctu parametru premisteno do CMSCenik.fs
+//moved to CMSCenik.fs due to a large number of parameters  
 
 
