@@ -1,9 +1,10 @@
-module ContentCenik
+namespace HtmlFeliz
 
 open Feliz
-open Shared
 
-let contentCenik() = ()
-//moved to Cenik.fs due to a large number of parameters
+module ContentCenik = 
+
+    let contentCenik() = ()
+    //moved to Cenik.fs due to a large number of parameters
 
     

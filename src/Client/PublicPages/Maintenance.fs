@@ -1,26 +1,28 @@
-module Maintenance
+namespace PublicPages
 
 open Feliz
 open Elmish
 open Fable.Remoting.Client
 
-open ContentMaintenance
+open HtmlFeliz.ContentMaintenance
 
-type Model =
-    {        
-      Dummy: unit      
-    }
+module Maintenance = 
 
-type Msg =
-    | DummyMsgText   
+    type Model =
+        {        
+          Dummy: unit      
+        }
 
-let init () : Model * Cmd<Msg> =
-    let model = { Dummy = () } 
-    model, Cmd.none
+    type Msg =
+        | DummyMsgText   
 
-let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =  model, Cmd.none
+    let init () : Model * Cmd<Msg> =
+        let model = { Dummy = () } 
+        model, Cmd.none
 
-let view (model: Model) (dispatch: Msg -> unit) = contentMaintenance()
+    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =  model, Cmd.none
+
+    let view (model: Model) (dispatch: Msg -> unit) = contentMaintenance()
 
 
     

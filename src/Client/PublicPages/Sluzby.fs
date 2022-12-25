@@ -1,4 +1,4 @@
-module Sluzby
+namespace PublicPages
 
 open Feliz
 open Elmish
@@ -6,34 +6,36 @@ open Fable.Remoting.Client
 
 open Shared
 
-open Layout
-open Records
-open ContentSluzby
+open HtmlFeliz.Layout
+open Records.Client
+open HtmlFeliz.ContentSluzby
 
-type Model =
-    {      
-        Id: int       
-    }
+module Sluzby = 
 
-type Msg =
-    | DummyMsg
+    type Model =
+        {      
+            Id: int       
+        }
 
-let init id : Model * Cmd<Msg> =
-    let model = { Id = id }
-    model, Cmd.none
+    type Msg =
+        | DummyMsg
 
-let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =  model, Cmd.none   
+    let init id : Model * Cmd<Msg> =
+        let model = { Id = id }
+        model, Cmd.none
 
-let view (model: Model) (dispatch: Msg -> unit) links =
+    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =  model, Cmd.none   
 
-    let sluzbyRecord =
-       {
-           Home = prop.className "normal"
-           Sluzby = prop.className "current"
-           Cenik = prop.className "normal"
-           Nenajdete = prop.className "normal"
-           Kontakt = prop.className "normal"
-       }
+    let view (model: Model) (dispatch: Msg -> unit) links =
 
-    layout <| contentSluzby() <| sluzbyRecord <| links
+        let sluzbyRecord =
+           {
+               Home = prop.className "normal"
+               Sluzby = prop.className "current"
+               Cenik = prop.className "normal"
+               Nenajdete = prop.className "normal"
+               Kontakt = prop.className "normal"
+           }
+
+        layout <| contentSluzby() <| sluzbyRecord <| links
     

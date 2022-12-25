@@ -1,7 +1,9 @@
-module ContentCMSKontakt
+namespace HtmlFeliz
 
 open Feliz
 
-let contentCMSKontakt() = ()
-//moved to CMSKontakt.fs due to a large number of parameters 
+module ContentCMSKontakt =
+
+    let contentCMSKontakt() = ()
+    //moved to CMSKontakt.fs due to a large number of parameters 
 

@@ -1,4 +1,4 @@
-namespace Records
+namespace Records.Client
 
 open System
 

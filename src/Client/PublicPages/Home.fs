@@ -1,4 +1,4 @@
-module Home
+namespace PublicPages
 
 open System
 
@@ -6,40 +6,42 @@ open Feliz
 open Elmish
 open Fable.Remoting.Client
 
-open Records
+open Records.Client
 
-open Layout
-open ContentHome
+open HtmlFeliz.Layout
+open HtmlFeliz.ContentHome
 
-type Model =
-    {        
-        Dummy: unit
-        ErrorMsg: string
-    }
+module Home = 
 
-type Msg =
-    | DummyMsgText   
+    type Model =
+        {        
+            Dummy: unit
+            ErrorMsg: string
+        }
 
-let init () : Model * Cmd<Msg> =
-    let model =
-        {
-            Dummy = ()
-            ErrorMsg = String.Empty
-        } 
-    model, Cmd.none
+    type Msg =
+        | DummyMsgText   
 
-let update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none
+    let init () : Model * Cmd<Msg> =
+        let model =
+            {
+                Dummy = ()
+                ErrorMsg = String.Empty
+            } 
+        model, Cmd.none
 
-let view (model: Model) (dispatch: Msg -> unit) links =
+    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none
 
-   let homeRecord =
-      {
-          Home = prop.className "current"
-          Sluzby = prop.className "normal"
-          Cenik = prop.className "normal"
-          Nenajdete = prop.className "normal"
-          Kontakt = prop.className "normal"
-      }
+    let view (model: Model) (dispatch: Msg -> unit) links =
 
-   layout <| contentHome() <| homeRecord <| links
+       let homeRecord =
+          {
+              Home = prop.className "current"
+              Sluzby = prop.className "normal"
+              Cenik = prop.className "normal"
+              Nenajdete = prop.className "normal"
+              Kontakt = prop.className "normal"
+          }
+
+       layout <| contentHome() <| homeRecord <| links
    

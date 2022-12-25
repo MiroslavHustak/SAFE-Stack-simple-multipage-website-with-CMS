@@ -1,17 +1,19 @@
+namespace SharedTypes
+
 [<RequireQualifiedAccess>]
-module SharedApi
+module SharedApi = 
 
-[<Struct>]
-type AccessToken = AccessToken of string
+    [<Struct>]
+    type AccessToken = AccessToken of string
 
-[<Struct>]
-type User =
-    {
-        Username : string
-        AccessToken : AccessToken
-    }
+    [<Struct>]
+    type User =
+        {
+            Username : string
+            AccessToken : AccessToken
+        }
 
-[<Struct>]
-type LoginResult =
-    | UsernameOrPasswordIncorrect
-    | LoggedIn of User
+    [<Struct>]
+    type LoginResult =
+        | UsernameOrPasswordIncorrect
+        | LoggedIn of User

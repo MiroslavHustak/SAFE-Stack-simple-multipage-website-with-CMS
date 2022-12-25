@@ -1,10 +1,11 @@
-module Helpers
+namespace Auxiliaries.Helpers
 
 open System
 open System.IO;
 open Newtonsoft.Json
 open System.Runtime.Serialization
-open ROP_Functions
+
+open Auxiliaries.ROP_Functions
 
     module private TryParserInt =
 

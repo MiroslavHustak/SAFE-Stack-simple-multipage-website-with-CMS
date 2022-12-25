@@ -1,4 +1,4 @@
-module DiscriminatedUnions
+namespace DiscriminatedUnions.Server
 
 type Result<'TSuccess,'TFailure> =
    | Success of 'TSuccess
