@@ -1,40 +1,40 @@
 CREATE TABLE CENIK (
     Id int NOT NULL PRIMARY KEY,
     ValueState varchar(255),
-    CenikValuesV001 varchar(255),
-    CenikValuesV002 varchar(255),
-    CenikValuesV003 varchar(255),
-    CenikValuesV004 varchar(255),
-    CenikValuesV005 varchar(255),
-    CenikValuesV006 varchar(255),
-    CenikValuesV007 varchar(255),
-    CenikValuesV008 varchar(255),
-    CenikValuesV009 varchar(255)   
+    V001 varchar(255),
+    V002 varchar(255),
+    V003 varchar(255),
+    V004 varchar(255),
+    V005 varchar(255),
+    V006 varchar(255),
+    V007 varchar(255),
+    V008 varchar(255),
+    V009 varchar(255)   
 );
 
 CREATE TABLE KONTAKT (
     Id int NOT NULL PRIMARY KEY,
-    KontaktValuesV001 varchar(255),
-    KontaktValuesV002 varchar(255),
-    KontaktValuesV003 varchar(255),
-    KontaktValuesV004 varchar(255),
-    KontaktValuesV005 varchar(255),
-    KontaktValuesV006 varchar(255),
-    KontaktValuesV007 varchar(255)     
+    V001 varchar(255),
+    V002 varchar(255),
+    V003 varchar(255),
+    V004 varchar(255),
+    V005 varchar(255),
+    V006 varchar(255),
+    V007 varchar(255)     
 );
 
 CREATE TABLE LINK (
     Id int NOT NULL PRIMARY KEY,
-    LinkAndLinkNameValuesV001 varchar(255),
-    LinkAndLinkNameValuesV002 varchar(255),
-    LinkAndLinkNameValuesV003 varchar(255),
-    LinkAndLinkNameValuesV004 varchar(255),
-    LinkAndLinkNameValuesV005 varchar(255),
-    LinkAndLinkNameValuesV006 varchar(255),
-    LinkAndLinkNameValuesV001n varchar(255), 
-    LinkAndLinkNameValuesV002n varchar(255),
-    LinkAndLinkNameValuesV003n varchar(255),
-    LinkAndLinkNameValuesV004n varchar(255),
-    LinkAndLinkNameValuesV005n varchar(255),
-    LinkAndLinkNameValuesV006n varchar(255)    
+    V001 varchar(255),
+    V002 varchar(255),
+    V003 varchar(255),
+    V004 varchar(255),
+    V005 varchar(255),
+    V006 varchar(255),
+    V001n varchar(255), 
+    V002n varchar(255),
+    V003n varchar(255),
+    V004n varchar(255),
+    V005n varchar(255),
+    V006n varchar(255)    
 ); 

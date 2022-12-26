@@ -130,7 +130,7 @@ module Server =
                           return ()
                       }   
           *)
-            getCenikValues =  //choose between Json/XML and DB
+            getCenikValues =  
                 fun getCenikValues ->
                     async
                         {                   
@@ -141,41 +141,17 @@ module Server =
 
                                           //************* plain SQL or Dapper.FSharp ********************                                                                         
                                           let exnSql = insertOrUpdate dbNewCenikValues
-
-                                          //************* Json/XML ********************
-                                          let serializeNow x =
-                                              //failwith "Simulated exception2" 
-                                              serialize dbNewCenikValues "jsonCenikValues.xml"  //leave it here despite using db in order to update xml                                
-                                          let exnJson = (serializeNow, (fun x -> ()), "Error2") |||> tryWith |> deconstructor1
-
-                                          //************* For both DB and Json/XML ********************
-                                          { dbNewCenikValues with Msgs = { Messages.Default with Msg1 = exnSql; Msg2 = exnJson } }
-                                   
+                                         
+                                          { dbNewCenikValues with Msgs = { Messages.Default with Msg1 = exnSql } }
+                                                                           
                                 | _    -> GetCenikValues.Default
                           return getNewCenikValues
                       }
 
-            sendOldCenikValues = //choose between db and Json/XML
+            sendOldCenikValues = 
                 fun _ -> 
                     async
-                        {
-                          //************* Json/XML ********************
-                          //leave it here despite using db in order to update xml
-                            let copyFilesNow x =
-                               //failwith "Simulated exception3" 
-                               copyFiles 
-                               <| "jsonCenikValues.xml"
-                               <| "jsonCenikValuesBackUp.xml"
-                            let exnJson1 = (copyFilesNow, (fun x -> ()), "Error3") |||> tryWith |> deconstructor1
-
-                            (*
-                            let sendOldCenikValuesNow x =
-                               //failwith "Simulated exception4" 
-                                deserialize "jsonCenikValuesBackUp.xml"
-                            let (sendOldCenikValues, exnJson2) = (sendOldCenikValuesNow, (fun x -> ()), "Error4") |||> tryWith |> deconstructor2 GetCenikValues.Default
-                            return { sendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }
-                            *)
-
+                        {                           
                             //************* plain SQL or Dapper.FSharp ********************                     
                             let IdNew = 2
                             let IdOld = 3
@@ -184,22 +160,14 @@ module Server =
                             let exnSql = insertOrUpdate { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }//eqv of the aforementioned copying 
                             let (dbSendOldCenikValues, exnSql3) = selectValues IdOld
 
-                            return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnSql2; Msg3 = exnSql3 } }                    
+                            return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = ""; Msg2 = exnSql2; Msg3 = exnSql3 } }
+                            //return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnSql2; Msg3 = exnSql3 } }  
                         }
 
-            sendDeserialisedCenikValues = //choose between db and Json/XML
+            sendDeserialisedCenikValues = 
                fun _ ->
                    async
-                       {
-                           //************* Json/XML ********************                   
-                           (*
-                           let sendCenikValuesNow x =
-                               //failwith "Simulated exception8" 
-                               deserialize "jsonCenikValues.xml" 
-                           let (sendCenikValues, exnJson1) = (sendCenikValuesNow, (fun x -> ()), "Error8") |||> tryWith |> deconstructor2
-                           return { sendCenikValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }
-                           *)
-
+                       {                          
                            //************* plain SQL or Dapper.FSharp ********************
                            let IdNew = 2
                     
@@ -208,6 +176,7 @@ module Server =
                            return { dbSendCenikValues with Msgs = { Messages.Default with Msg1 = exnSql1 } }
                        }
 
+             //************* here and downwards Json/XML ********************   
             getKontaktValues =
                 fun getKontaktValues ->
                     async
@@ -274,7 +243,7 @@ module Server =
                    async
                        {
                            let copyFilesNow x =
-                                  //failwith "Simulated exception15" 
+                               //failwith "Simulated exception15" 
                                copyFiles 
                                <| "jsonLinkAndLinkNameValues.xml"
                                <| "jsonLinkAndLinkNameValuesBackUp.xml"
@@ -306,7 +275,7 @@ module Server =
         |> Remoting.buildHttpHandler
 
     let app =
-        //insertOrUpdate GetCenikValues.Default |> ignore //Not necessary, GetCenikValues.Default everywhere takes care in cases when data in db are not available
+        insertOrUpdate GetCenikValues.Default |> ignore //Not necessary, GetCenikValues.Default everywhere takes care in cases when data in db are not available
         application
             {
                 use_router webApp

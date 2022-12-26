@@ -30,7 +30,7 @@ module Dapper =
 
             //failwith "Simulated exception SqlInsertOrUpdate" 
 
-            use connection = new SqlConnection(connStringLocal) 
+            use connection = new SqlConnection(connStringSomee) 
             connection.Open()  
 
             let idInt = getCenikValues.Id //idInt = Primary Key for new/old/fixed value state
@@ -73,7 +73,7 @@ module Dapper =
 
             //failwith "Simulated exception SqlSelectValues"
 
-            use connection = new SqlConnection(connStringLocal) 
+            use connection = new SqlConnection(connStringSomee) 
             connection.Open()
 
             //**************** SqlCommands ***************** 

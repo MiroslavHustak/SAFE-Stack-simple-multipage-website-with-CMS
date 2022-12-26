@@ -32,7 +32,7 @@ module Sql =
 
             //failwith "Simulated exception SqlInsertOrUpdate" 
 
-            use connection = new SqlConnection(connStringLocal) 
+            use connection = new SqlConnection(connStringSomee) //choice between Local and Somee
             connection.Open()  
 
             let idInt = getCenikValues.Id //idInt = Primary Key for new/old/fixed value state
@@ -74,7 +74,7 @@ module Sql =
 
             //failwith "Simulated exception SqlSelectValues"
 
-            use connection = new SqlConnection(connStringLocal) 
+            use connection = new SqlConnection(connStringSomee) 
             connection.Open()  
 
             let whatIs (x: obj) =

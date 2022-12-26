@@ -30,7 +30,7 @@ open Auxiliaries.ROP_Functions
              | TryParserInt.Int i -> f Some i
              | _                  -> None     
 
-    //All serialisation => tryWith to be implemented at another place  
+    //tryWith to be implemented for all serialization at the place of its using 
     module Serialisation = 
 
          let serialize record xmlFile =
@@ -45,7 +45,7 @@ open Auxiliaries.ROP_Functions
              use stream = File.Create(filepath)   
              xmlSerializer.WriteObject(stream, JsonConvert.SerializeObject(record))            
 
-    //All deserialisation => tryWith to be implemented at another place  
+    //tryWith to be implemented for all deserialization at the place of its using 
     module Deserialisation =       
               
        let deserialize xmlFile = 
@@ -77,7 +77,7 @@ open Auxiliaries.ROP_Functions
            | true  -> jsonString()              
            | false -> failwith (sprintf "Soubor %s nenalezen" xmlFile) 
 
-    module CopyingFiles =     
+    module CopyingFiles =  //trywith transferred to Server.fs      
         
        let copyFiles source destination =
                                                                     
@@ -94,8 +94,7 @@ open Auxiliaries.ROP_Functions
               | true  -> File.Copy(sourceFilepath, destinFilepath, true)             
               | false -> failwith (sprintf "Soubor %s nenalezen" source)
 
-          perform ()    
-          //tryWith perform (fun x -> ()) (fun ex -> failwith) |> deconstructor4 () //trywith transferred to Server.fs              
+          perform ()   
     (*       
     System.IO.File provides static members related to working with files, whereas System.IO.FileInfo represents a specific file and contains non-static members for working with that file.          
     Because all File methods are static, it might be more efficient to use a File method rather than a corresponding FileInfo instance method if you want to perform only one action. All File methods 
