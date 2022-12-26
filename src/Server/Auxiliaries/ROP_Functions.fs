@@ -1,4 +1,4 @@
-namespace Auxiliaries
+namespace Auxiliaries.Server
 
 open System
 open System.IO

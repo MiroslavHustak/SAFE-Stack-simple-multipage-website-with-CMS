@@ -109,7 +109,7 @@ module CMSLink =
                 try
                     let buttonClickEvent:GetLinkAndLinkNameValues =   //see remark in CMSCenik.fs
                         let input current old =
-                            match String.IsNullOrEmpty(current) with //String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current)
+                            match current = String.Empty with //String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current)
                             | true  -> old
                             | false -> current 
                         SharedLinkAndLinkNameValues.create

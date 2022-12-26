@@ -10,7 +10,7 @@ open FSharp.Control
 
 open Shared
 open SharedTypes
-open System.Threading
+open Auxiliaries.Client.SpaceChecker
 
 module CMSCenik = 
 
@@ -100,7 +100,7 @@ module CMSCenik =
                 try
                     let buttonClickEvent:GetCenikValues =                   
                         let input current old =                  
-                            match String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current) with
+                            match strContainsOnlySpace current || current = String.Empty with
                             | true  -> old
                             | false -> current 
                         SharedCenikValues.create //Unit type would suffice, nevertheless sending GetCenikValues and empty values to the server preserved in order to use the existing code on Server and Shared 

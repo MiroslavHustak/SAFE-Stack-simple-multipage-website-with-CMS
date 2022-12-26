@@ -15,11 +15,11 @@ open SharedTypes
 open DbAccess.Sql       //uncomment to test plain SQL (and, at the same time, comment out "open DbAccess.Dapper")
 //open DbAccess.Dapper  //uncomment to test Dapper.FSharp (and, at the same time, comment out "open DbAccess.Sql")
 
-open Auxiliaries.Connection
-open Auxiliaries.ROP_Functions
-open Auxiliaries.Helpers.CopyingFiles
-open Auxiliaries.Helpers.Serialisation
-open Auxiliaries.Helpers.Deserialisation
+open Auxiliaries.Server.Connection
+open Auxiliaries.Server.CopyingFiles
+open Auxiliaries.Server.ROP_Functions
+open Auxiliaries.Server.Serialisation
+open Auxiliaries.Server.Deserialisation
 
 module Server = 
 
@@ -275,7 +275,7 @@ module Server =
         |> Remoting.buildHttpHandler
 
     let app =
-        insertOrUpdate GetCenikValues.Default |> ignore //Not necessary, GetCenikValues.Default everywhere takes care in cases when data in db are not available
+        insertOrUpdate GetCenikValues.Default |> ignore 
         application
             {
                 use_router webApp

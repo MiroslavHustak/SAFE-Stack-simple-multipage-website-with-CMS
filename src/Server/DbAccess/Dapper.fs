@@ -9,10 +9,10 @@ open System.Data.SqlClient
 
 open SharedTypes
 open Queries.SqlQueries
-open Auxiliaries.Connection
-open Auxiliaries.ROP_Functions
-open Auxiliaries.DapperHelper
 open DiscriminatedUnions.Server
+open Auxiliaries.Server.Connection
+open Auxiliaries.Server.ROP_Functions
+open Auxiliaries.Server.DapperHelper
 
 module Dapper = 
 

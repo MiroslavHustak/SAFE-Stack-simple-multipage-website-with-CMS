@@ -4,10 +4,8 @@ open Elmish
 open Feliz
 open Fable.Remoting.Client
 
-open Shared
-
-open HtmlFeliz.Layout
 open Records.Client
+open HtmlFeliz.Layout
 open HtmlFeliz.ContentNenajdete
 
 module Nenajdete = 

@@ -1,4 +1,4 @@
-namespace Auxiliaries
+namespace Auxiliaries.Server
 
 open SharedTypes
 

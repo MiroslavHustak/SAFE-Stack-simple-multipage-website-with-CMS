@@ -5,9 +5,9 @@ open System.Data.SqlClient
 
 open SharedTypes
 open Queries.SqlQueries
-open Auxiliaries.Connection
-open Auxiliaries.ROP_Functions
 open DiscriminatedUnions.Server
+open Auxiliaries.Server.Connection
+open Auxiliaries.Server.ROP_Functions
 
 //SQL type providers did not work in this app
 

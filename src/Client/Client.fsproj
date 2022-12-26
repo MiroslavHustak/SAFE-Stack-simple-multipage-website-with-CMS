@@ -155,6 +155,7 @@
         <Content Include="public\Content\images\under-maintenance.jpg" />
         <Content Include="public\Content\images\Uvodni foto.png" />
         <Compile Include="Types\Records.fs" />
+        <Compile Include="Auxiliaries\Helpers.fs" />
         <Compile Include="Routing\Router.fs" />       
         <Compile Include="HtmlFeliz\layout.fs" />       
         <Compile Include="HtmlFeliz\contentMaintenance.fs" />       

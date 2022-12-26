@@ -9,8 +9,9 @@ open Fable.Remoting.Client
 open Shared
 open SharedTypes
 
-open HtmlFeliz.Layout
 open Records.Client
+open HtmlFeliz.Layout
+open Auxiliaries.Client.SpaceChecker
 
 module Cenik = 
 
@@ -73,9 +74,7 @@ module Cenik =
 
         let cenikHtml =
 
-            match not (String.IsNullOrEmpty(model.ErrorMsg) || String.IsNullOrWhiteSpace(model.ErrorMsg)) with
-            | true  -> Browser.Dom.window.alert(model.ErrorMsg)
-            | false -> ()
+            javaScriptMessage model.ErrorMsg
 
             Html.div [
                 prop.method "get"

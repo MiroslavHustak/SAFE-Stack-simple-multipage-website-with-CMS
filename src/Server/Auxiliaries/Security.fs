@@ -1,6 +1,6 @@
 /// Provides functions for encoding and decoding Json web tokens
 
-namespace Auxiliaries.Security
+namespace Auxiliaries.Server
 
 open System
 open System.IO

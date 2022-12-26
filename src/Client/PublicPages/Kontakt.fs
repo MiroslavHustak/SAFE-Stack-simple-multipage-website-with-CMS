@@ -9,9 +9,9 @@ open Fable.Remoting.Client
 open Shared
 open SharedTypes
 
-open HtmlFeliz.Layout
 open Records.Client
-open PublicPages
+open HtmlFeliz.Layout
+open Auxiliaries.Client.SpaceChecker
 
 module Kontakt =
 
@@ -72,9 +72,7 @@ module Kontakt =
 
         let kontaktHtml =
 
-            match not (String.IsNullOrEmpty(model.ErrorMsg) || String.IsNullOrWhiteSpace(model.ErrorMsg)) with
-            | true  -> Browser.Dom.window.alert(model.ErrorMsg)
-            | false -> ()
+            javaScriptMessage model.ErrorMsg
     
             Html.div [
                 prop.id "templatemo_content"

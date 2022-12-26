@@ -89,7 +89,7 @@ module CMSKontakt =
                 try
                     let buttonClickEvent: GetKontaktValues =
                         let input current old =
-                            match String.IsNullOrEmpty(current) with
+                            match current = String.Empty with
                             | true  -> old
                             | false -> current 
                         SharedKontaktValues.create //see remark in CMSCenik.fs

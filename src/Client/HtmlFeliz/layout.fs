@@ -4,8 +4,9 @@ open System
 
 open Feliz
 
-open Records.Client
 open SharedTypes
+open Records.Client
+open Auxiliaries.Client.SpaceChecker
 
 module Layout = 
 
@@ -13,9 +14,7 @@ module Layout =
 
         let errorMsg = sprintf "%s %s %s" links.Msgs.Msg1 links.Msgs.Msg2 links.Msgs.Msg3
 
-        match not (String.IsNullOrEmpty(errorMsg) || String.IsNullOrWhiteSpace(errorMsg)) with
-        | true  -> Browser.Dom.window.alert(errorMsg)
-        | false -> ()
+        javaScriptMessage errorMsg
 
         Html.div [
             Html.div [
