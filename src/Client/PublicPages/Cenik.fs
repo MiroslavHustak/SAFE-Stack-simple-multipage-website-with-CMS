@@ -36,7 +36,7 @@ module Cenik =
 
         let model =
           {
-              CenikValues = GetCenikValues.Default           
+              CenikValues = GetCenikValues.Default       
               CenikInputValues = GetCenikValues.Default
               ErrorMsg = String.Empty
               Id = id

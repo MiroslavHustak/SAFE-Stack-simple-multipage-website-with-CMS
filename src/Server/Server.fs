@@ -101,7 +101,7 @@ module Server =
        | () -> Ok ()        
        // | _  -> Error ""
 
-    let IGetApi =
+    let IGetApi exn =
         {
             login =
                 fun login -> async { return (verifyLogin login) }          
@@ -160,8 +160,7 @@ module Server =
                             let exnSql = insertOrUpdate { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }//eqv of the aforementioned copying 
                             let (dbSendOldCenikValues, exnSql3) = selectValues IdOld
 
-                            return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = ""; Msg2 = exnSql2; Msg3 = exnSql3 } }
-                            //return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnSql2; Msg3 = exnSql3 } }  
+                            return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnSql; Msg2 = exnSql2; Msg3 = exnSql3 } }
                         }
 
             sendDeserialisedCenikValues = 
@@ -173,7 +172,7 @@ module Server =
                     
                            let (dbSendCenikValues, exnSql1) = selectValues IdNew
 
-                           return { dbSendCenikValues with Msgs = { Messages.Default with Msg1 = exnSql1 } }
+                           return { dbSendCenikValues with Msgs = { Messages.Default with Msg1 = exnSql1; Msg2 = exn } }
                        }
 
              //************* here and downwards Json/XML ********************   
@@ -187,7 +186,7 @@ module Server =
                                            let serializeNow x =
                                               //failwith "Simulated exception10" 
                                               serialize getKontaktValues "jsonKontaktValues.xml"                            
-                                           let exnJson = (serializeNow, (fun x -> ()), "Error10") |||> tryWith |> deconstructor1
+                                           let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error10") |||> tryWith |> deconstructor1
                                            { getKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson } }                                   
                                 | _     -> GetKontaktValues.Default    
                             return getNewKontaktValues
@@ -202,12 +201,12 @@ module Server =
                                 copyFiles 
                                 <| "jsonKontaktValues.xml"
                                 <| "jsonKontaktValuesBackUp.xml"
-                            let exnJson1 = (copyFilesNow, (fun x -> ()), "Error11") |||> tryWith |> deconstructor1
+                            let exnJson1 = (copyFilesNow, (fun x -> ()), "Byly dosazeny předchozí hodnoty, neb došlo k této chybě: Error11") |||> tryWith |> deconstructor1
                     
                             let sendOldKontaktValuesNow x =
                                 //failwith "Simulated exception12" 
                                 deserialize "jsonKontaktValuesBackUp.xml"
-                            let (sendOldKontaktValues, exnJson2) = (sendOldKontaktValuesNow, (fun x -> ()), "Error12") |||> tryWith |> deconstructor2 GetKontaktValues.Default
+                            let (sendOldKontaktValues, exnJson2) = (sendOldKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error12") |||> tryWith |> deconstructor2 GetKontaktValues.Default
                             return { sendOldKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }                 
                         } 
 
@@ -218,7 +217,7 @@ module Server =
                             let sendKontaktValuesNow x =
                                 //failwith "Simulated exception13" 
                                 deserialize "jsonKontaktValues.xml" 
-                            let (sendKontaktValues, exnJson1) = (sendKontaktValuesNow, (fun x -> ()), "Error13") |||> tryWith |> deconstructor2 GetKontaktValues.Default
+                            let (sendKontaktValues, exnJson1) = (sendKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error13") |||> tryWith |> deconstructor2 GetKontaktValues.Default
                             return { sendKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }                   
                         }
 
@@ -232,7 +231,7 @@ module Server =
                                         let serializeNow x =
                                             //failwith "Simulated exception14" 
                                             serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"                             
-                                        let exnJson = (serializeNow, (fun x -> ()), "Error14") |||> tryWith |> deconstructor1
+                                        let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error14") |||> tryWith |> deconstructor1
                                         { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
                              | _     -> GetLinkAndLinkNameValues.Default                        
                         return getNewLinkAndLinkNameValues
@@ -247,12 +246,12 @@ module Server =
                                copyFiles 
                                <| "jsonLinkAndLinkNameValues.xml"
                                <| "jsonLinkAndLinkNameValuesBackUp.xml"
-                           let exnJson1 = (copyFilesNow, (fun x -> ()), "Error15") |||> tryWith |> deconstructor1
+                           let exnJson1 = (copyFilesNow, (fun x -> ()), "Byly dosazeny předchozí hodnoty, neb došlo k této chybě: Error15") |||> tryWith |> deconstructor1
                       
                            let sendOldLinkAndLinkNameValuesNow x =
                                //failwith "Simulated exception16" 
                                deserialize "jsonLinkAndLinkNameValuesBackUp.xml" 
-                           let (sendOldLinkAndLinkNameValues, exnJson2) = (sendOldLinkAndLinkNameValuesNow, (fun x -> ()), "Error16") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
+                           let (sendOldLinkAndLinkNameValues, exnJson2) = (sendOldLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error16") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
                            return { sendOldLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }  
                        } 
 
@@ -263,22 +262,22 @@ module Server =
                            let sendLinkAndLinkNameValuesNow x =
                                //failwith "Simulated exception17" 
                                deserialize "jsonLinkandLinkNameValues.xml"  
-                           let (sendLinkAndLinkNameValues, exnJson1) = (sendLinkAndLinkNameValuesNow, (fun x -> ()), "Error17") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
+                           let (sendLinkAndLinkNameValues, exnJson1) = (sendLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error17") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
                            return { sendLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }  
                        }
         }
 
-    let webApp =
+    let webApp exn =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
-        |> Remoting.fromValue IGetApi
+        |> Remoting.fromValue (IGetApi exn)
         |> Remoting.buildHttpHandler
 
     let app =
-        insertOrUpdate GetCenikValues.Default |> ignore 
+        let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
         application
             {
-                use_router webApp
+                use_router (webApp exnSql)
                 memory_cache
                 use_static "public"
                 use_gzip

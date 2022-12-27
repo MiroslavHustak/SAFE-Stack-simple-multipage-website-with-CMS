@@ -62,7 +62,13 @@ module Dapper =
             | None   -> cmdInsert().GetAwaiter().GetResult() |> ignore
 
         let exnSql = (insertOrUpdateNow, (fun x -> ()), "ErrorSql1") |||> tryWith |> deconstructor1
-        exnSql 
+
+        match getCenikValues.Msgs.Msg1 = "First run" with
+        | true when exnSql <> String.Empty  -> sprintf"%s %s" "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k této chybě:" exnSql
+        | true when exnSql = String.Empty   -> String.Empty 
+        | false when exnSql <> String.Empty -> sprintf"%s %s" "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k této chybě:" exnSql
+        | false when exnSql = String.Empty  -> String.Empty
+        | _                                 -> exnSql                                          
     
     let selectValues idInt =
 

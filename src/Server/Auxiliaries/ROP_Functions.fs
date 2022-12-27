@@ -24,7 +24,7 @@ module ROP_Functions =
     let deconstructor2 a =  
         function
         | Success x  -> x, String.Empty                                                    
-        | Failure ex -> a, ex
+        | Failure ex -> a, (sprintf"%s %s" ex "(byly dosazeny defaultní hodnoty).")
 
     let optionToFailwith str = 
         function
