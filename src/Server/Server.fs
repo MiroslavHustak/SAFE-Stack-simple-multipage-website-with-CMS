@@ -20,6 +20,7 @@ open Auxiliaries.Server.CopyingFiles
 open Auxiliaries.Server.ROP_Functions
 open Auxiliaries.Server.Serialisation
 open Auxiliaries.Server.Deserialisation
+open DiscriminatedUnions.Server
 
 module Server = 
 
@@ -86,20 +87,20 @@ module Server =
       //TODO validation upon request from the user 
     let private verifyCenikValues (cenikValues: GetCenikValues) =
         match isValidCenik () with
-        | () -> Ok ()        
-        // | _  -> //Error "" 
+        | () -> Success ()        
+        //| _  -> Failure ()
 
      //TODO validation upon request from the user 
     let private verifyKontaktValues (kontaktValues: GetKontaktValues) =
        match isValidKontakt () with
-       | () -> Ok ()        
-       // | _  -> Error ""
+       | () -> Success ()        
+       //| _  -> Failure ()
 
     //TODO validation upon request from the user 
     let private verifyLinkAndLinkNameValues (linkValues: GetLinkAndLinkNameValues) =
        match isValidLink () with
-       | () -> Ok ()        
-       // | _  -> Error ""
+       | () -> Success ()        
+       //| _  -> Failure ()
 
     let IGetApi exn =
         {
@@ -136,15 +137,15 @@ module Server =
                         {                   
                             let getNewCenikValues: GetCenikValues =                        
                                 match verifyCenikValues getCenikValues with                
-                                | Ok () ->
-                                          let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" }
+                                | Success () ->
+                                              let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" }
 
-                                          //************* plain SQL or Dapper.FSharp ********************                                                                         
-                                          let exnSql = insertOrUpdate dbNewCenikValues
+                                              //************* plain SQL or Dapper.FSharp ********************                                                                         
+                                              let exnSql = insertOrUpdate dbNewCenikValues
                                          
-                                          { dbNewCenikValues with Msgs = { Messages.Default with Msg1 = exnSql } }
+                                              { dbNewCenikValues with Msgs = { Messages.Default with Msg1 = exnSql } }
                                                                            
-                                | _    -> GetCenikValues.Default
+                                | Failure () -> GetCenikValues.Default
                           return getNewCenikValues
                       }
 
@@ -182,13 +183,13 @@ module Server =
                         {
                             let getNewKontaktValues: GetKontaktValues = 
                                 match verifyKontaktValues getKontaktValues with
-                                | Ok () ->                                  
-                                           let serializeNow x =
-                                              //failwith "Simulated exception10" 
-                                              serialize getKontaktValues "jsonKontaktValues.xml"                            
-                                           let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error10") |||> tryWith |> deconstructor1
-                                           { getKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson } }                                   
-                                | _     -> GetKontaktValues.Default    
+                                | Success () ->                                  
+                                               let serializeNow x =
+                                                  //failwith "Simulated exception10" 
+                                                  serialize getKontaktValues "jsonKontaktValues.xml"                            
+                                               let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error10") |||> tryWith |> deconstructor1
+                                               { getKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson } }                                   
+                                | Failure () -> GetKontaktValues.Default    
                             return getNewKontaktValues
                         }
 
@@ -227,13 +228,13 @@ module Server =
                       {
                          let getNewLinkAndLinkNameValues: GetLinkAndLinkNameValues = 
                              match verifyLinkAndLinkNameValues getLinkAndLinkNameValues with
-                             | Ok () ->
-                                        let serializeNow x =
-                                            //failwith "Simulated exception14" 
-                                            serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"                             
-                                        let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error14") |||> tryWith |> deconstructor1
-                                        { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
-                             | _     -> GetLinkAndLinkNameValues.Default                        
+                             | Success () ->
+                                            let serializeNow x =
+                                                //failwith "Simulated exception14" 
+                                                serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"                             
+                                            let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error14") |||> tryWith |> deconstructor1
+                                            { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
+                             | Failure () -> GetLinkAndLinkNameValues.Default                        
                         return getNewLinkAndLinkNameValues
                       }
            

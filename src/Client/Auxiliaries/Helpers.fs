@@ -10,12 +10,6 @@ open System
         let javaScriptMessage errorMsg = 
 
             match not (strContainsOnlySpace errorMsg || errorMsg = String.Empty) with
-                   | true  -> Browser.Dom.window.alert(errorMsg)
-                   | false -> ()
+            | true  -> Browser.Dom.window.alert(errorMsg)
+            | false -> ()
               
-       
-       
-          
-
-
-

@@ -48,7 +48,7 @@ type GetKontaktValues =
         {
             V001 = "Mgr. Hana NOVÁKOVÁ"; V002 = "Nutriční teraupetka"; V003 = "Pohoří 247";
             V004 = "725 26 Ostrava-Krásné Pole"; V005 = "Tel.: 739 421 710"; V006 = "E-mail: nutricniterapie@centrum.cz";
-            V007 = " "; Msgs = Messages.Default
+            V007 = (char)32 |> string; Msgs = Messages.Default
         }
 
 type GetLinkAndLinkNameValues =

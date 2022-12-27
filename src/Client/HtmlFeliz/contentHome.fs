@@ -6,7 +6,6 @@ module ContentHome =
 
     let contentHome () =     
 
-       //render ***********************************
        Html.div [
            prop.id "templatemo_content"
            prop.children [

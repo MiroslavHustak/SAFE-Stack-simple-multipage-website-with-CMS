@@ -4,12 +4,12 @@ open System
 
 open Feliz
 open Elmish
+open FSharp.Control
 open Fable.Remoting.Client
 
 open Shared
 open SharedTypes
-
-open FSharp.Control
+open Auxiliaries.Client.SpaceChecker
 
 module CMSLink = 
 
@@ -173,9 +173,7 @@ module CMSLink =
 
         let completeContent() =
 
-            match not (String.IsNullOrEmpty(model.ErrorMsg) || String.IsNullOrWhiteSpace(model.ErrorMsg)) with
-            | true  -> Browser.Dom.window.alert(model.ErrorMsg)
-            | false -> ()
+            javaScriptMessage model.ErrorMsg
 
             Html.html [
                 prop.xmlns "http://www.w3.org/1999/xhtml"

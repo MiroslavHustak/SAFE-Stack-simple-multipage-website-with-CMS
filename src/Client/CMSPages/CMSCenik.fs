@@ -4,9 +4,8 @@ open System
 
 open Feliz
 open Elmish
-open Fable.Remoting.Client
-
 open FSharp.Control
+open Fable.Remoting.Client
 
 open Shared
 open SharedTypes
@@ -157,17 +156,13 @@ module CMSCenik =
                            ErrorMsg = sprintf "%s %s %s" valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3                      
             },  Cmd.none
 
-
-
     let view (model: Model) (dispatch: Msg -> unit) =
 
         let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
 
         let completeContent() =
 
-            match not (String.IsNullOrEmpty(model.ErrorMsg) || String.IsNullOrWhiteSpace(model.ErrorMsg)) with
-            | true  -> Browser.Dom.window.alert(model.ErrorMsg)
-            | false -> ()
+            javaScriptMessage model.ErrorMsg
 
             Html.html [
                 prop.xmlns "http://www.w3.org/1999/xhtml"
