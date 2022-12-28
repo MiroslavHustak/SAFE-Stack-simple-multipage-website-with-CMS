@@ -134,8 +134,8 @@ module Sql =
                                                         Msgs = Messages.Default
                                                     }
                                                 } 
-                                   ) |> Seq.head
-            
+                                   ) |> Seq.head //well, you surely realise the impact of this purely functional solution :-) => use a "for cycle" when reading from for big databases
+                                                                                      
                 let mySeq = seq { string myRecord.Id; myRecord.ValueState; myRecord.V001; myRecord.V002; myRecord.V003; myRecord.V004; myRecord.V005; myRecord.V006; myRecord.V007; myRecord.V008; myRecord.V009 }
                        
                 match mySeq |> Seq.contains "error" || mySeq |> Seq.contains "-1" with
