@@ -106,8 +106,8 @@ module Sql =
                     match cmdExists.ExecuteScalar() |> Option.ofObj with 
                     | Some _ -> cmdSelect.ExecuteReader()
                     | None   -> let exnSql1 = insertOrUpdate GetCenikValues.Default
-                                Array.set myErrMsg 0 exnSql1 //Error message can be caught only here, not further down the code
-                                match Array.item 0 myErrMsg with
+                                Array.set myErrMsg 0 exnSql1 //Error message can only be caught here, not further down the code
+                                match myErrMsg |> Array.head with
                                 | "" -> Array.set myErrType 0 NotFullDb 
                                 | _  -> Array.set myErrType 0 OtherProblems                             
                                 cmdSelect.ExecuteReader()
@@ -134,7 +134,7 @@ module Sql =
                                                         Msgs = Messages.Default
                                                     }
                                                 } 
-                                   ) |> Seq.head //well, you surely realise the impact of this purely functional solution :-) => use a "for cycle" when reading from for big databases
+                                   ) |> Seq.head //the function only places data to the head of the collection (a function with while does the same)
                                                                                       
                 let mySeq = seq { string myRecord.Id; myRecord.ValueState; myRecord.V001; myRecord.V002; myRecord.V003; myRecord.V004; myRecord.V005; myRecord.V006; myRecord.V007; myRecord.V008; myRecord.V009 }
                        
@@ -147,11 +147,11 @@ module Sql =
  
         let (getValues, exnSql2) = (selectValuesNow, (fun x -> ()), "ErrorSql2") |||> tryWith |> deconstructor2 GetCenikValues.Default
         let exnSql =
-            match Array.item 0 myErrType with
+            match myErrType |> Array.head with
             | NotFullDb -> //Not fully filled db, but InsetUpdate ended with success => ignoring exceptions on condition there are no problems with data reading
-                           match Array.item 1 myErrType with
-                           | ProblemsWithReader -> sprintf "%s %s %s" <| exnSql2 <| Array.item 0 myErrMsg <| Array.item 1 myErrMsg
-                           | OtherProblems      -> sprintf "%s %s %s" <| exnSql2 <| Array.item 0 myErrMsg <| Array.item 1 myErrMsg
+                           match myErrType |> Array.last with
+                           | ProblemsWithReader -> sprintf "%s %s %s" exnSql2 (myErrMsg |> Array.head) (myErrMsg |> Array.last)
+                           | OtherProblems      -> sprintf "%s %s %s" exnSql2 (myErrMsg |> Array.head) (myErrMsg |> Array.last)
                            | _                  -> String.Empty   
-            | _         -> sprintf "%s %s %s" <| exnSql2 <| Array.item 0 myErrMsg <| Array.item 1 myErrMsg
+            | _         -> sprintf "%s %s %s" exnSql2 (myErrMsg |> Array.head) (myErrMsg |> Array.last)
         getValues, exnSql

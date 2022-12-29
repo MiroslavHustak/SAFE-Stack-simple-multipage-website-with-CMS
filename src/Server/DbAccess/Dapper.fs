@@ -107,7 +107,7 @@ module Dapper =
             | Some _ -> cmdSelect().GetAwaiter().GetResult() //Gets to be done here, but in cases where not, transfer the task up the code
             | None   -> let exnSql1 = insertOrUpdate GetCenikValues.Default
                         Array.set myErrMsg 0 exnSql1 //Error message can be caught only here, not further down the code
-                        match Array.item 0 myErrMsg with
+                        match myErrMsg |> Array.head with
                         | "" -> Array.set myErrType 0 NotFullDb 
                         | _  -> Array.set myErrType 0 OtherProblems  
                         cmdSelect().GetAwaiter().GetResult() //Gets to be done here, but in cases where not, transfer the task up the code
@@ -115,12 +115,12 @@ module Dapper =
         let (getValues, exnSql2) = (selectValuesNow, (fun x -> ()), "ErrorSql2") |||> tryWith |> deconstructor2 DapperGetCenikValues.Default
 
         let exnSql =
-            match Array.item 0 myErrType with
+            match myErrType |> Array.head with
             | NotFullDb -> //Not fully filled db, but InsetUpdate ended with success => ignoring exceptions on condition there are no problems with data reading
-                            match Array.item 1 myErrType with
-                            | OtherProblems -> sprintf "%s %s %s" <| exnSql2 <| Array.item 0 myErrMsg <| Array.item 1 myErrMsg
-                            | _             -> String.Empty   
-            | _         -> sprintf "%s %s %s" <| exnSql2 <| Array.item 0 myErrMsg <| Array.item 1 myErrMsg
+                           match myErrType |> Array.last with
+                           | OtherProblems -> sprintf "%s %s %s" exnSql2 (myErrMsg |> Array.head) (myErrMsg |> Array.last)
+                           | _             -> String.Empty   
+            | _         -> sprintf "%s %s %s" exnSql2 (myErrMsg |> Array.head) (myErrMsg |> Array.last)
    
         getCenikValues getValues, exnSql 
 

@@ -27,7 +27,7 @@ module Server =
     let private (>>=) condition nextFunc = 
         match condition with
         | false -> SharedApi.UsernameOrPasswordIncorrect  
-        | true  -> nextFunc() 
+        | true  -> nextFunc()
 
     [<Struct>]
     type private MyPatternBuilder = MyPatternBuilder with            

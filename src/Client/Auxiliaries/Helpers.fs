@@ -8,7 +8,6 @@ open System
             str |> Seq.forall (fun item -> item = (char)32) 
 
         let javaScriptMessage errorMsg = 
-
             match not (strContainsOnlySpace errorMsg || errorMsg = String.Empty) with
             | true  -> Browser.Dom.window.alert(errorMsg)
             | false -> ()
