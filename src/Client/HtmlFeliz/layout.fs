@@ -14,7 +14,7 @@ module Layout =
 
         let errorMsg = sprintf "%s %s %s" links.Msgs.Msg1 links.Msgs.Msg2 links.Msgs.Msg3
 
-        javaScriptMessage errorMsg
+        javaScriptMessageBox errorMsg
 
         Html.div [
             Html.div [

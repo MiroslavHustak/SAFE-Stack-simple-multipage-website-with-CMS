@@ -102,7 +102,7 @@ module Sql =
                 use cmdSelect = new SqlCommand(querySelect idString, connection)
 
                 //**************** Read values from DB *****************
-                let reader =            
+                use reader =            
                     match cmdExists.ExecuteScalar() |> Option.ofObj with 
                     | Some _ -> cmdSelect.ExecuteReader()
                     | None   -> let exnSql1 = insertOrUpdate GetCenikValues.Default
@@ -134,7 +134,7 @@ module Sql =
                                                         Msgs = Messages.Default
                                                     }
                                                 } 
-                                   ) |> Seq.head //the function only places data to the head of the collection (a function with while does the same)
+                                   ) |> Seq.head //the function only places data to the head of the collection (a function with "while" does the same)
                                                                                       
                 let mySeq = seq { string myRecord.Id; myRecord.ValueState; myRecord.V001; myRecord.V002; myRecord.V003; myRecord.V004; myRecord.V005; myRecord.V006; myRecord.V007; myRecord.V008; myRecord.V009 }
                        

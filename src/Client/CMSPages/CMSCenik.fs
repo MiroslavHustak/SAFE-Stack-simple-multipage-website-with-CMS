@@ -156,13 +156,13 @@ module CMSCenik =
                            ErrorMsg = sprintf "%s %s %s" valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3                      
             },  Cmd.none
 
-    let view (model: Model) (dispatch: Msg -> unit) =
-
-        let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
+    let view (model: Model) (dispatch: Msg -> unit) =        
 
         let completeContent() =
 
-            javaScriptMessage model.ErrorMsg
+            let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
+
+            javaScriptMessageBox model.ErrorMsg
 
             Html.html [
                 prop.xmlns "http://www.w3.org/1999/xhtml"
@@ -303,8 +303,8 @@ module CMSCenik =
                                                                     prop.id "001"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldCenikValues.V001 
-                                                                    //String.IsNullOrEmpty() || String.IsNullOrWhiteSpace()
-                                                                    prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch)    
+                                                                    prop.onChange (SetV001Input >> dispatch) 
+                                                                    //prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch)    
                                                                     //nasledujici nelze, bo event nemoze byt takeho typu, bohuzel
                                                                     //prop.onChange (fun (ev: GetCenikValues) ->  SetInput ev.V001 |> dispatch)
                                                                 
@@ -342,8 +342,9 @@ module CMSCenik =
                                                                     prop.type' "text"
                                                                     prop.id "002"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldCenikValues.V002 
-                                                                    prop.onChange (fun (ev: string) -> SetV002Input ev |> dispatch)
+                                                                    prop.placeholder model.OldCenikValues.V002
+                                                                    prop.onChange (SetV002Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV002Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -379,7 +380,8 @@ module CMSCenik =
                                                                     prop.id "003"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldCenikValues.V003 
-                                                                    prop.onChange (fun (ev: string) -> SetV003Input ev |> dispatch)
+                                                                    prop.onChange (SetV003Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV003Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -415,7 +417,8 @@ module CMSCenik =
                                                                     prop.id "004"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldCenikValues.V004
-                                                                    prop.onChange (fun (ev: string) -> SetV004Input ev |> dispatch)
+                                                                    prop.onChange (SetV004Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV004Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -451,7 +454,8 @@ module CMSCenik =
                                                                     prop.id "005"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldCenikValues.V005
-                                                                    prop.onChange (fun (ev: string) -> SetV005Input ev |> dispatch)                                                                                                                   
+                                                                    prop.onChange (SetV005Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV005Input ev |> dispatch)     
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -487,7 +491,8 @@ module CMSCenik =
                                                                     prop.id "006"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldCenikValues.V006
-                                                                    prop.onChange (fun (ev: string) -> SetV006Input ev |> dispatch)                                                                                                                
+                                                                    prop.onChange (SetV006Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV006Input ev |> dispatch)  
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -523,7 +528,8 @@ module CMSCenik =
                                                                     prop.id "007"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldCenikValues.V007
-                                                                    prop.onChange (fun (ev: string) -> SetV007Input ev |> dispatch)
+                                                                    prop.onChange (SetV007Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV007Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -559,7 +565,8 @@ module CMSCenik =
                                                                     prop.id "008"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldCenikValues.V008
-                                                                    prop.onChange (fun (ev: string) -> SetV008Input ev |> dispatch)
+                                                                    prop.onChange (SetV008Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV008Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -595,7 +602,8 @@ module CMSCenik =
                                                                     prop.id "009"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldCenikValues.V009
-                                                                    prop.onChange (fun (ev: string) -> SetV009Input ev |> dispatch)
+                                                                    prop.onChange (SetV009Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV009Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      

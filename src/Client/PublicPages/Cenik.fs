@@ -74,7 +74,7 @@ module Cenik =
 
         let cenikHtml =
 
-            javaScriptMessage model.ErrorMsg
+            javaScriptMessageBox model.ErrorMsg
 
             Html.div [
                 prop.method "get"

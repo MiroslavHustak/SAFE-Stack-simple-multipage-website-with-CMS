@@ -111,7 +111,8 @@ open HtmlFeliz.ContentCMSRozcestnik
                     prop.name "userName"            
                     prop.placeholder "Uživatelské jméno"
                     prop.value model.InputUsr
-                    prop.onChange (fun (ev: string) -> SetUsrInput ev |> dispatch)
+                    // prop.onChange (fun (ev: string) -> SetUsrInput ev |> dispatch)
+                    prop.onChange (SetUsrInput >> dispatch)
                     prop.style
                         [
                           style.width(200)
@@ -127,7 +128,8 @@ open HtmlFeliz.ContentCMSRozcestnik
                      prop.name "passW"
                      prop.placeholder "Heslo"
                      prop.value model.InputPsw
-                     prop.onChange (fun (ev: string) -> SetPswInput ev |> dispatch)  
+                     // prop.onChange (fun (ev: string) -> SetPswInput ev |> dispatch)
+                     prop.onChange (SetPswInput >> dispatch)  
                      prop.style
                          [
                            style.width(200)

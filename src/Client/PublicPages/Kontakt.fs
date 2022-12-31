@@ -72,7 +72,7 @@ module Kontakt =
 
         let kontaktHtml =
 
-            javaScriptMessage model.ErrorMsg
+            javaScriptMessageBox model.ErrorMsg
     
             Html.div [
                 prop.id "templatemo_content"

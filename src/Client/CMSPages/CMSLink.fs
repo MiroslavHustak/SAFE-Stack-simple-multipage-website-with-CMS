@@ -169,11 +169,11 @@ module CMSLink =
    
     let view (model: Model) (dispatch: Msg -> unit) =
 
-        let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
-
         let completeContent() =
 
-            javaScriptMessage model.ErrorMsg
+            let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
+
+            javaScriptMessageBox model.ErrorMsg
 
             Html.html [
                 prop.xmlns "http://www.w3.org/1999/xhtml"
@@ -277,7 +277,8 @@ module CMSLink =
                                                                     prop.id "001a"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V001n 
-                                                                    prop.onChange (fun (ev: string) -> SetV001LinkNameInput ev |> dispatch)                                                       
+                                                                    prop.onChange (SetV001LinkNameInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV001LinkNameInput ev |> dispatch) 
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]
@@ -290,7 +291,8 @@ module CMSLink =
                                                                     prop.id "001b"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V001
-                                                                    prop.onChange (fun (ev: string) -> SetV001LinkInput ev |> dispatch)                                                       
+                                                                    prop.onChange (SetV001LinkInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV001LinkInput ev |> dispatch)    
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]        
@@ -311,7 +313,8 @@ module CMSLink =
                                                                     prop.id "002a"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V002n
-                                                                    prop.onChange (fun (ev: string) -> SetV002LinkNameInput ev |> dispatch)
+                                                                    prop.onChange (SetV002LinkNameInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV002LinkNameInput ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]
@@ -322,7 +325,8 @@ module CMSLink =
                                                                     prop.id "002b"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V002
-                                                                    prop.onChange (fun (ev: string) -> SetV002LinkInput ev |> dispatch)
+                                                                    prop.onChange (SetV002LinkInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV002LinkInput ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -342,7 +346,8 @@ module CMSLink =
                                                                     prop.id "003a"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V003n
-                                                                    prop.onChange (fun (ev: string) -> SetV003LinkNameInput ev |> dispatch)
+                                                                    prop.onChange (SetV003LinkNameInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV003LinkNameInput ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]
@@ -353,7 +358,8 @@ module CMSLink =
                                                                     prop.id "003b"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V003
-                                                                    prop.onChange (fun (ev: string) -> SetV003LinkInput ev |> dispatch)
+                                                                    prop.onChange (SetV003LinkInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV003LinkInput ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -373,7 +379,8 @@ module CMSLink =
                                                                     prop.id "004a"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V004n
-                                                                    prop.onChange (fun (ev: string) -> SetV004LinkNameInput ev |> dispatch)
+                                                                    prop.onChange (SetV004LinkNameInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV004LinkNameInput ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]           
@@ -384,7 +391,8 @@ module CMSLink =
                                                                     prop.id "004b"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V004
-                                                                    prop.onChange (fun (ev: string) -> SetV004LinkInput ev |> dispatch)
+                                                                    prop.onChange (SetV004LinkInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV004LinkInput ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -404,7 +412,8 @@ module CMSLink =
                                                                     prop.id "005a"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V005n
-                                                                    prop.onChange (fun (ev: string) -> SetV005LinkNameInput ev |> dispatch)                                                                                                                   
+                                                                    prop.onChange (SetV005LinkNameInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV005LinkNameInput ev |> dispatch)   
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -415,7 +424,8 @@ module CMSLink =
                                                                     prop.id "005b"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V005
-                                                                    prop.onChange (fun (ev: string) -> SetV005LinkInput ev |> dispatch)                                                                                                                   
+                                                                    prop.onChange (SetV005LinkInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV005LinkInput ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -436,7 +446,8 @@ module CMSLink =
                                                                     prop.id "006"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldLinkAndLinkNameValues.V006
-                                                                    prop.onChange (fun (ev: string) -> SetV006LinkInput ev |> dispatch)                                                                                                                
+                                                                    prop.onChange (SetV006LinkInput >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV006LinkInput ev |> dispatch)  
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -550,11 +561,11 @@ module CMSLink =
                                                                              )
                                                                 prop.style
                                                                     [
-                                                                      style.width(200)
-                                                                      style.fontWeight.bold
-                                                                      style.fontSize(16) //font-size: large
-                                                                      style.color.blue
-                                                                      style.fontFamily "sans-serif"
+                                                                        style.width(200)
+                                                                        style.fontWeight.bold
+                                                                        style.fontSize(16) //font-size: large
+                                                                        style.color.blue
+                                                                        style.fontFamily "sans-serif"
                                                                     ]
                                                             ]
                                                         ]                                                  

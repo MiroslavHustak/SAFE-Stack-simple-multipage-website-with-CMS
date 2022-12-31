@@ -141,13 +141,13 @@ module CMSKontakt =
                            ErrorMsg = sprintf "%s %s %s" valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3  
             },  Cmd.none  
    
-    let view (model: Model) (dispatch: Msg -> unit) =
-
-        let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
+    let view (model: Model) (dispatch: Msg -> unit) =        
 
         let completeContent() =
 
-            javaScriptMessage model.ErrorMsg
+            let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
+
+            javaScriptMessageBox model.ErrorMsg
 
             Html.html [
                 prop.xmlns "http://www.w3.org/1999/xhtml"
@@ -265,7 +265,8 @@ module CMSKontakt =
                                                                     prop.id "001"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldKontaktValues.V001
-                                                                    prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch)                                                       
+                                                                    prop.onChange (SetV001Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch)     
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]                                             
@@ -298,7 +299,8 @@ module CMSKontakt =
                                                                     prop.id "002"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldKontaktValues.V002
-                                                                    prop.onChange (fun (ev: string) -> SetV002Input ev |> dispatch)
+                                                                    prop.onChange (SetV002Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV002Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -331,7 +333,8 @@ module CMSKontakt =
                                                                     prop.id "003"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldKontaktValues.V003
-                                                                    prop.onChange (fun (ev: string) -> SetV003Input ev |> dispatch)
+                                                                    prop.onChange (SetV003Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV003Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -364,7 +367,8 @@ module CMSKontakt =
                                                                     prop.id "004"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldKontaktValues.V004
-                                                                    prop.onChange (fun (ev: string) -> SetV004Input ev |> dispatch)
+                                                                    prop.onChange (SetV004Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV004Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -397,7 +401,8 @@ module CMSKontakt =
                                                                     prop.id "005"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldKontaktValues.V005
-                                                                    prop.onChange (fun (ev: string) -> SetV005Input ev |> dispatch)                                                                                                                   
+                                                                    prop.onChange (SetV005Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV005Input ev |> dispatch) 
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -430,7 +435,8 @@ module CMSKontakt =
                                                                     prop.id "006"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldKontaktValues.V006
-                                                                    prop.onChange (fun (ev: string) -> SetV006Input ev |> dispatch)                                                                                                                
+                                                                    prop.onChange (SetV006Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV006Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -463,7 +469,8 @@ module CMSKontakt =
                                                                     prop.id "007"
                                                                     prop.name ""
                                                                     prop.placeholder model.OldKontaktValues.V007 
-                                                                    prop.onChange (fun (ev: string) -> SetV007Input ev |> dispatch)
+                                                                    prop.onChange (SetV007Input >> dispatch)
+                                                                    //prop.onChange (fun (ev: string) -> SetV007Input ev |> dispatch)
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]      
@@ -487,38 +494,7 @@ module CMSKontakt =
                                                                      Html.text "Použij mezerník pro generování prázdného řádku"
                                                                 ]
                                                         ]    
-                                                        Html.td []
-                                                        Html.td
-                                                            [
-                                                                prop.style
-                                                                    [
-                                                                        style.fontWeight.bold
-                                                                        style.fontSize(14) 
-                                                                        style.color.red
-                                                                        style.fontFamily "sans-serif"
-                                                                    ]
-                                                                prop.children
-                                                                    [                                                            
-                                                                        Html.text model.DelayMsg
-                                                                    ]                                                                                                                
-                                                            ]    
-                                                        Html.td
-                                                            [
-                                                                prop.style
-                                                                    [
-                                                                        style.fontWeight.bold
-                                                                        style.fontSize(14) 
-                                                                        style.color.red
-                                                                        style.fontFamily "sans-serif"
-                                                                    ]
-                                                                prop.children
-                                                                    [                                                            
-                                                                        //Html.text model.ErrorMsg
-                                                                        match not (String.IsNullOrEmpty(model.ErrorMsg) || String.IsNullOrWhiteSpace(model.ErrorMsg)) with
-                                                                        | true  -> Browser.Dom.window.alert(model.ErrorMsg)
-                                                                        | false -> ()
-                                                                    ]                                                                                                                
-                                                            ]                                                   
+                                                        yield! td 3                                     
                                                     ]
                                                 ]                                      
                                                 Html.tr [
