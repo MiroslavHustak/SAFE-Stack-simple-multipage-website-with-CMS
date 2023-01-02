@@ -27,10 +27,10 @@ open HtmlFeliz.ContentCMSRozcestnik
 
         type Model =
             {
-              User: ApplicationUser 
-              InputUsr: string
-              InputPsw: string
-              Id: int
+                User: ApplicationUser 
+                InputUsr: string
+                InputPsw: string
+                Id: int
             }
 
         type Msg =
@@ -41,11 +41,10 @@ open HtmlFeliz.ContentCMSRozcestnik
             | LoginCompleted of SharedApi.LoginResult
             | Logout
 
-        let private api() = Remoting.createApi ()
-                            |> Remoting.withRouteBuilder Route.builder
-                            |> Remoting.buildProxy<IGetApi>
-
-        let private getLoginApi = api()
+        let private getLoginApi =
+            Remoting.createApi ()
+            |> Remoting.withRouteBuilder Route.builder
+            |> Remoting.buildProxy<IGetApi>
 
         let init id : Model * Cmd<Msg> =
 

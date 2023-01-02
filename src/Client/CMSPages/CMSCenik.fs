@@ -297,7 +297,6 @@ module CMSCenik =
                                                         Html.td
                                                             [
                                                                 Html.input [
-                                                                
                                                                     prop.id "content"
                                                                     prop.type' "text"
                                                                     prop.id "001"
@@ -306,8 +305,7 @@ module CMSCenik =
                                                                     prop.onChange (SetV001Input >> dispatch) 
                                                                     //prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch)    
                                                                     //nasledujici nelze, bo event nemoze byt takeho typu, bohuzel
-                                                                    //prop.onChange (fun (ev: GetCenikValues) ->  SetInput ev.V001 |> dispatch)
-                                                                
+                                                                    //prop.onChange (fun (ev: GetCenikValues) ->  SetInput ev.V001 |> dispatch)                                                                
                                                                     prop.autoFocus true
                                                                 ]    
                                                             ]                                             

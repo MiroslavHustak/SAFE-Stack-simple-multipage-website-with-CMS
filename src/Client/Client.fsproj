@@ -154,7 +154,9 @@
         <Content Include="public\Content\images\under-construction.png" />
         <Content Include="public\Content\images\under-maintenance.jpg" />
         <Content Include="public\Content\images\Uvodni foto.png" />
+        <Compile Include="Types\DiscriminatedUnions.fs" />
         <Compile Include="Types\Records.fs" />
+        <Compile Include="Deferred\Deferred.fs" />
         <Compile Include="Auxiliaries\Helpers.fs" />
         <Compile Include="Routing\Router.fs" />       
         <Compile Include="HtmlFeliz\layout.fs" />       

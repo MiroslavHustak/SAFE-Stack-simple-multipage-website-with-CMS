@@ -27,7 +27,7 @@ module Kontakt =
         | AskServerForKontaktValues 
         | GetKontaktValues of GetKontaktValues    
 
-    let sendDeserialisedKontaktValues =
+    let private sendDeserialisedKontaktValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
@@ -48,7 +48,7 @@ module Kontakt =
         match msg with       
             | AskServerForKontaktValues ->
                  let loadEvent = SharedDeserialisedKontaktValues.create model.KontaktInputValues
-                 let cmd = Cmd.OfAsync.perform sendDeserialisedKontaktValues.sendDeserialisedKontaktValues loadEvent GetKontaktValues
+                 let cmd = Cmd.OfAsync.perform sendDeserialisedKontaktValuesApi.sendDeserialisedKontaktValues loadEvent GetKontaktValues
                  model, cmd            
             | GetKontaktValues value -> { model with KontaktValues =
                                                         {

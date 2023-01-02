@@ -68,11 +68,10 @@ module App =
         | AskServerForLinkAndLinkNameValues 
         | GetLinkAndLinkNameValues of GetLinkAndLinkNameValues
 
-    let private api() = Remoting.createApi ()
-                        |> Remoting.withRouteBuilder Route.builder
-                        |> Remoting.buildProxy<IGetApi>
-
-    let private sendDeserialisedLinkAndLinkNameValuesApi = api()
+    let private sendDeserialisedLinkAndLinkNameValuesApi =
+        Remoting.createApi ()
+        |> Remoting.withRouteBuilder Route.builder
+        |> Remoting.buildProxy<IGetApi>
 
     let private cmd1 fn cmd msg = Cmd.batch <| seq { Cmd.map fn cmd; Cmd.ofMsg msg }
     let private cmd2 fn cmd msg msg' = Cmd.batch <| seq { Cmd.map fn cmd; Cmd.ofMsg msg; Cmd.ofMsg msg' }

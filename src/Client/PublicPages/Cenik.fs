@@ -27,7 +27,7 @@ module Cenik =
         | AskServerForCenikValues 
         | GetCenikValues of GetCenikValues    
 
-    let sendDeserialisedCenikValues =
+    let private sendDeserialisedCenikValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
@@ -48,7 +48,7 @@ module Cenik =
         match msg with       
             | AskServerForCenikValues -> 
                  let loadEvent = SharedDeserialisedCenikValues.create model.CenikInputValues
-                 let cmd = Cmd.OfAsync.perform sendDeserialisedCenikValues.sendDeserialisedCenikValues loadEvent GetCenikValues
+                 let cmd = Cmd.OfAsync.perform sendDeserialisedCenikValuesApi.sendDeserialisedCenikValues loadEvent GetCenikValues
                  model, cmd            
             | GetCenikValues value -> { model with CenikValues =
                                                       {
