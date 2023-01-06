@@ -9,7 +9,7 @@ open System
 
 open Elmish
 open Fable.React
-open Feliz.Router //Cmd.Navigation //not used in this solution 
+open Feliz.Router //Cmd.Navigation //not used in this app 
 open Fable.Remoting.Client
 
 open CMSPages
@@ -245,7 +245,7 @@ module App =
 
         | Page.CMSRozcestnik cmsRozcestnikModel, CMSRozcestnikMsg cmsRozcestnikMsg ->
             let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.update cmsRozcestnikMsg cmsRozcestnikModel
-            { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel; Session = None }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd //to None bude pri druhem rozcestniku
+            { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel; Session = None }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd 
 
         | Page.CMSCenik cmsCenikModel, CMSCenikMsg cmsCenikMsg ->
             let (cmsCenikModel, cmsCenikCmd) = CMSCenik.update cmsCenikMsg cmsCenikModel 
@@ -289,7 +289,7 @@ module App =
         | Page.Kontakt kontaktModel -> Kontakt.view kontaktModel (KontaktMsg >> dispatch) model.LinkAndLinkNameValues
         | Page.Maintenance maintenanceModel -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch) //not in use
         | Page.Login loginModel ->  Login.view loginModel (LoginMsg >> dispatch)                              
-        | Page.CMSRozcestnik cmsRozcestnikModel -> CMSRozcestnik.view cmsRozcestnikModel (CMSRozcestnikMsg >> dispatch)  
+        | Page.CMSRozcestnik rozcestnikModel -> CMSRozcestnik.view rozcestnikModel model.user (CMSRozcestnikMsg >> dispatch)  
         | Page.CMSCenik cmsCenikModel -> CMSCenik.view cmsCenikModel (CMSCenikMsg >> dispatch) 
         | Page.CMSKontakt cmsKontaktModel -> CMSKontakt.view cmsKontaktModel (CMSKontaktMsg >> dispatch) 
         | Page.CMSLink cmsLinkModel -> CMSLink.view cmsLinkModel (CMSLinkMsg >> dispatch)
@@ -303,5 +303,3 @@ module App =
     |> Program.toNavigable (parseHash MaximeRouter.Router.routeParser) setRoute
     |> Program.withReactSynchronous "elmish-app"
     |> Program.run
-
-

@@ -33,6 +33,11 @@ open HtmlFeliz.ContentCMSRozcestnik
                 Id: int
             }
 
+        
+        [<RequireQualifiedAccess>]
+        type Page =       
+            | CMSRozcestnik of CMSPages.CMSRozcestnik.Model 
+
         type Msg =
             | SetUsrInput of string
             | SetPswInput of string
@@ -40,6 +45,8 @@ open HtmlFeliz.ContentCMSRozcestnik
             | GetLoginResults of SharedApi.LoginResult
             | LoginCompleted of SharedApi.LoginResult
             | Logout
+            | CMSRozcestnikMsg of CMSPages.CMSRozcestnik.Msg
+            | CMSRozcestnikModel of CMSPages.CMSRozcestnik.Model 
 
         let private getLoginApi =
             Remoting.createApi ()
@@ -76,6 +83,8 @@ open HtmlFeliz.ContentCMSRozcestnik
 
             | LoginCompleted session -> model, Cmd.none, SignedIn session
             | Logout -> model, Cmd.none, NoOp
+            | CMSRozcestnikMsg _ -> model, Cmd.none, NoOp
+            | CMSRozcestnikModel _ -> model, Cmd.none, NoOp
 
         let view (model: Model) (dispatch: Msg -> unit) =
 
@@ -135,32 +144,7 @@ open HtmlFeliz.ContentCMSRozcestnik
                            style.fontFamily "sans-serif"
                          ]
                 ]   
-
-            //prvni rozcestnik    
-            let returnButtonDiv =
-                Html.div [
-                    Html.form [
-                        prop.action (MaximeRouter.Router.toHash (MaximeRouter.Router.Home))
-                        prop.children [
-                            Html.input [
-                                prop.type' "submit"
-                                prop.value "Logout a návrat na webové stránky" //first "rozcestnik" 
-                                prop.id "Button2"
-                                prop.onClick (fun _ -> dispatch Logout)
-                                prop.style
-                                    [
-                                        style.width(300)
-                                        style.height(30)
-                                        style.fontWeight.bold
-                                        style.fontSize(16) 
-                                        style.color.blue
-                                        style.fontFamily "sans-serif"
-                                    ]
-                            ]
-                        ]                   
-                    ]       
-                ]              
-  
+         
           //************************************************************************
 
             let fnError() =
@@ -184,7 +168,7 @@ open HtmlFeliz.ContentCMSRozcestnik
             match model.User with      
             | Anonymous             -> fnError()
             | FirstTimeRunAnonymous -> fnFirstRun()
-            | LoggedIn user         -> contentCMSRozcestnik returnButtonDiv //first "rozcestnik" 
+            | LoggedIn user         -> CMSPages.CMSRozcestnik.view CMSRozcestnikModel user (CMSRozcestnikMsg >> dispatch) //it is not strictly necessary for the model and user to be here, but I left them here to keep things the same
 
                    
     //Redundant code - for learning purposes only!!!

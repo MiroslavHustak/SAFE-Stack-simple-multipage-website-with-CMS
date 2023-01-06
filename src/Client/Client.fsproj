@@ -172,7 +172,6 @@
         <Compile Include="HtmlFeliz\contentSluzby.fs" />       
         <Compile Include="HtmlFeliz\contentHome.fs" />       
         <Compile Include="PublicPages\Maintenance.fs" />       
-        <Compile Include="PublicPages\Login.fs" />       
         <Compile Include="PublicPages\Kontakt.fs" />       
         <Compile Include="PublicPages\Nenajdete.fs" />       
         <Compile Include="PublicPages\Cenik.fs" />       
@@ -181,7 +180,8 @@
         <Compile Include="CMSPages\CMSLink.fs" />       
         <Compile Include="CMSPages\CMSKontakt.fs" />       
         <Compile Include="CMSPages\CMSCenik.fs" />       
-        <Compile Include="CMSPages\CMSRozcestnik.fs" />
+        <Compile Include="CMSPages\CMSRozcestnik.fs" />       
+        <Compile Include="LoginPages\Login.fs" />
         <Compile Include="Main.fs" />
         <None Include="index.html" />
     </ItemGroup>

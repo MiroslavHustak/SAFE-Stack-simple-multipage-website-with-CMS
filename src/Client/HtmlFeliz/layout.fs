@@ -242,7 +242,7 @@ module Layout =
                     Html.div [
                         prop.id "templatemo_footer1"
                         prop.children [
-                            Html.text "This website uses an HTML/CSS template downloaded from "
+                            Html.text "This website is based on an HTML/CSS template downloaded from "
                             Html.a [
                                 prop.href "http://all-free-download.com/free-website-templates/"
                                 prop.target "_blank"

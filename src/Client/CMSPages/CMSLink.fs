@@ -471,8 +471,7 @@ module CMSLink =
                                                     prop.children [    
                                                         Html.td [                                                       
                                                             prop.style
-                                                                [
-                                                                   
+                                                                [                                                                   
                                                                     style.fontFamily "sans-serif"
                                                                     style.fontWeight.bold
                                                                 ]                                                           

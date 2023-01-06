@@ -176,7 +176,7 @@ module Server =
                            return { dbSendCenikValues with Msgs = { Messages.Default with Msg1 = exnSql1; Msg2 = exn } }
                        }
 
-             //************* here and downwards Json/XML ********************   
+             //************* from here downwards Json/XML ********************   
             getKontaktValues =
                 fun getKontaktValues ->
                     async

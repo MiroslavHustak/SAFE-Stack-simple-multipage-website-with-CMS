@@ -35,19 +35,34 @@ module CMSRozcestnik =
         match msg with
         | Dummy -> model, Cmd.none 
 
-    let view (model: Model) (dispatch: Msg -> unit) =
+    let view model (user: SharedApi.User) (dispatch: Msg -> unit) = 
 
-        //second "rozcestnik" 
-        let returnButtonDiv =
+        let userText = sprintf"%s%s" "Uživatel byl právě přihlášen jako : " user.Username
+                
+        let hiddenValue =
+            match user.Username with
+            | "" -> true
+            | _  -> false
+
+        let returnButtonDiv = 
              Html.div [            
                 Html.form [
                     prop.action (MaximeRouter.Router.toHash (MaximeRouter.Router.Home))
                     prop.children [
+                        Html.td [
+                            Html.h4 [                                                                        
+                                prop.id 100
+                                prop.hidden hiddenValue
+                                prop.children [
+                                    Html.text userText                                                       
+                                ]
+                            ]
+                        ]         
                         Html.input [
                             prop.type' "submit"
-                            prop.value "Logout a návrat na webové stránky" //second "rozcestnik" 
+                            prop.value "Logout a návrat na webové stránky" 
                             prop.id "Button2"
-                            prop.onClick (fun _ -> dispatch Dummy) //Main.fs contains "Session = None" for the second "rozcestnik"
+                            prop.onClick (fun _ -> dispatch Dummy) //Main.fs contains "Session = None" 
                             prop.style
                                 [
                                   style.width(300)
@@ -57,27 +72,9 @@ module CMSRozcestnik =
                                   style.color.blue
                                   style.fontFamily "sans-serif"
                                 ]
-                        ]                  
-                    ]                   
-                ]
-
-                (*
-                Html.button [
-                    prop.type' "button"
-                    prop.text "Log-off"
-                    prop.id "Button2"                                                                           
-                    prop.onClick (fun _ -> dispatch askServerForDeletingSecurityTokenFile)
-                    prop.style
-                        [
-                          style.height(50)
-                          style.width(200)
-                          style.fontWeight.bold
-                          style.fontSize(16) //font-size: large
-                          style.color.blue
-                          style.fontFamily "sans-serif"
                         ]
-                ]
-                *)
+                    ]                   
+                ]                
              ]      
 
         contentCMSRozcestnik returnButtonDiv 
