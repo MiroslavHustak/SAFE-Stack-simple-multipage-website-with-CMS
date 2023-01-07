@@ -48,7 +48,7 @@ module CMSCenik =
         | GetOldCenikValues of GetCenikValues
         | AsyncWorkIsComplete 
     
-    let getCenikValuesApi =
+    let private getCenikValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>

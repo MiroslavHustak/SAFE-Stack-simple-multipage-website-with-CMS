@@ -43,7 +43,7 @@ module CMSKontakt =
         | GetOldKontaktValues of GetKontaktValues
         | AsyncWorkIsComplete 
     
-    let getKontaktValuesApi =
+    let private getKontaktValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
@@ -218,8 +218,7 @@ module CMSKontakt =
                                                 Html.tr [
                                                     Html.td [
                                                         Html.div [
-                                                            Html.h1 "Editace kontaktních údajů"
-                                                            //Html.h3 ""
+                                                            Html.h1 "Editace kontaktních údajů"                                                           
                                                         ]
                                                     ]
                                                 ]                                                                             

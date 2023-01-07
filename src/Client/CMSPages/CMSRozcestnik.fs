@@ -19,12 +19,7 @@ module CMSRozcestnik =
 
     type Msg =
          | Dummy  
-
-    let private deleteSecurityTokenFileApi =
-        Remoting.createApi ()
-        |> Remoting.withRouteBuilder Route.builder
-        |> Remoting.buildProxy<IGetApi>
-
+            
     let init id: Model * Cmd<Msg> =
         let model = {
                         Id = id                

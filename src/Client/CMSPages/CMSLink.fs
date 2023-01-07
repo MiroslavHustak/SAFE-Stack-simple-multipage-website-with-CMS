@@ -53,7 +53,7 @@ module CMSLink =
         | GetOldLinkAndLinkNameValues of GetLinkAndLinkNameValues
         | AsyncWorkIsComplete 
 
-    let getLinkAndLinkNameValuesApi =
+    let private getLinkAndLinkNameValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
