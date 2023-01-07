@@ -90,9 +90,9 @@ module Sql =
 
             let whatIsInt (x: obj) =
                 match x with
-                | :? int as i ->  i 
+                | :? int as i -> i 
                 | _           -> -1 //Id cannot be -1 
-                              
+
             let getValues =
 
                 let idString = string idInt

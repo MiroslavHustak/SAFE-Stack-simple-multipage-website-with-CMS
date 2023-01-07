@@ -1,4 +1,4 @@
-namespace PublicPages
+namespace LoginPages
 
 open System
 
@@ -32,7 +32,6 @@ open HtmlFeliz.ContentCMSRozcestnik
                 InputPsw: string
                 Id: int
             }
-
         
         [<RequireQualifiedAccess>]
         type Page =       
@@ -168,7 +167,7 @@ open HtmlFeliz.ContentCMSRozcestnik
             match model.User with      
             | Anonymous             -> fnError()
             | FirstTimeRunAnonymous -> fnFirstRun()
-            | LoggedIn user         -> CMSPages.CMSRozcestnik.view CMSRozcestnikModel user (CMSRozcestnikMsg >> dispatch) //it is not strictly necessary for the model and user to be here, but I left them here to keep things the same
+            | LoggedIn user         -> CMSPages.CMSRozcestnik.view CMSRozcestnikModel user (CMSRozcestnikMsg >> dispatch) //it is not strictly necessary for the model and user to be here, but I left them here to keep things tidy
 
                    
     //Redundant code - for learning purposes only!!!

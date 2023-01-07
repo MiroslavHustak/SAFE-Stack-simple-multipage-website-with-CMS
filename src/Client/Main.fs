@@ -13,6 +13,7 @@ open Feliz.Router //Cmd.Navigation //not used in this app
 open Fable.Remoting.Client
 
 open CMSPages
+open LoginPages
 open PublicPages
 
 open Shared
