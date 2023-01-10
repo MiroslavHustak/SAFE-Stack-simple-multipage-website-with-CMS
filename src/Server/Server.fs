@@ -15,12 +15,14 @@ open SharedTypes
 open DbAccess.Sql       //uncomment to test plain SQL (and, at the same time, comment out "open DbAccess.Dapper")
 //open DbAccess.Dapper  //uncomment to test Dapper.FSharp (and, at the same time, comment out "open DbAccess.Sql")
 
+open DiscriminatedUnions.Server
+
+open Auxiliary.Server.Security2
 open Auxiliaries.Server.Connection
 open Auxiliaries.Server.CopyingFiles
 open Auxiliaries.Server.ROP_Functions
 open Auxiliaries.Server.Serialisation
 open Auxiliaries.Server.Deserialisation
-open DiscriminatedUnions.Server
 
 module Server = 
 
@@ -39,22 +41,52 @@ module Server =
     let private isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)
     let private isValidCenik param = ()   //TODO validation upon request from the user 
     let private isValidKontakt param = () //TODO validation upon request from the user 
-    let private isValidLink param = ()    //TODO validation upon request from the user 
+    let private isValidLink param = ()    //TODO validation upon request from the user
+
+    let private pswHash() = //to be used only once before bundling             
+       
+        let usr = uberHash "" //delete username before bundling
+        let psw = uberHash "" //delete password before bundling
+        let mySeq = seq { usr; psw }
+        
+        use sw = new StreamWriter(Path.GetFullPath("uberHash.txt")) 
+                |> Option.ofObj
+                |> function
+                    | Some value -> value
+                    | None       -> //TODO some action 
+                                    new StreamWriter(Path.GetFullPath("")) 
+        mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
 
     let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>
 
         (*
         MyPatternBuilder    
-            {  
-                let! _ = SharedLoginValues.isValid login.Username login.Password
-                let! _ = login.Username = "q" && login.Password = "q"                
+            {
+                let result = 
+                match File.Exists(Path.GetFullPath("uberHash.txt")) with
+                | false ->  Seq.empty                       
+                | true  ->                        
+                           match File.ReadAllLines("uberHash.txt") |> Option.ofObj with
+                           | Some value -> (value |> Seq.ofArray) 
+                           | None       -> Seq.empty  
+
+                let! _ = isValidLogin login.Username login.Password
+                let! _ = verify (result |> Seq.head) login.Username && verify (result |> Seq.last) login.Password               
                 return SharedApi.LoggedIn { Username = login.Username; AccessToken = SharedApi.AccessToken "Dummy" }
             } 
         *)
 
         //containing redundant code for learning purposes
         MyPatternBuilder    
-            {  
+            {
+                let result = 
+                    match File.Exists(Path.GetFullPath("uberHash.txt")) with
+                    | false ->  Seq.empty //No need of any action, Seq.empty will do its job here                                
+                    | true  -> //StreamReader refused to work here, thar is why File.ReadAllLines was used                              
+                               match File.ReadAllLines("uberHash.txt") |> Option.ofObj with
+                               | Some value -> (value |> Seq.ofArray) 
+                               | None       -> Seq.empty  //No need of any action, Seq.empty will do its job here
+
                 let! _ = isValidLogin login.Username login.Password
                 let securityTokenFile = Path.GetFullPath("securityToken.txt")
                                         |> Option.ofObj
@@ -63,7 +95,7 @@ module Server =
                                             | None       -> //TODO some action only in case you decide to use saved accessToken
                                                             String.Empty           
            
-                let! _ = login.Username = "q" && login.Password = "q" 
+                let! _ = verify (result |> Seq.head) login.Username && verify (result |> Seq.last) login.Password 
 
                 //TODO trywith only in case you decide to use the saved accessToken
                 let result =                
@@ -287,5 +319,6 @@ module Server =
     [<EntryPoint>]
     let main _ =   
         Dapper.FSharp.OptionTypes.register()
+        //pswHash()
         run app    
         0

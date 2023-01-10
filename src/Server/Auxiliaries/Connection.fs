@@ -6,7 +6,7 @@ open System.Data.SqlClient
 
 module Connection = 
 
-    //Choose between the databases (always comment out the option you will not use)
+    //Switch between the databases (always comment out the option you will not use)
    
     //nutricniterapie.somee.com
     //let [<Literal>] connStringSomee = @"" 
