@@ -33,7 +33,8 @@ module CMSRozcestnik =
     let view model (user: SharedApi.User) (dispatch: Msg -> unit) = 
 
         let userText = sprintf"%s%s" "Uživatel byl právě přihlášen jako : " user.Username
-                
+        let userTextTime = sprintf"%s%s" "Okamžik přihlášení : " (string <| System.DateTime.Now.ToLongTimeString())
+               
         let hiddenValue =
             match user.Username with
             | "" -> true
@@ -45,11 +46,13 @@ module CMSRozcestnik =
                     prop.action (MaximeRouter.Router.toHash (MaximeRouter.Router.Home))
                     prop.children [
                         Html.td [
-                            Html.h4 [                                                                        
+                            Html.h5 [                                                                        
                                 prop.id 100
                                 prop.hidden hiddenValue
                                 prop.children [
-                                    Html.text userText                                                       
+                                    Html.text userText
+                                    Html.br[]
+                                    Html.text userTextTime
                                 ]
                             ]
                         ]         

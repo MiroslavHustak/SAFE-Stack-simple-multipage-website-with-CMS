@@ -82,7 +82,7 @@ module Server =
                 let result = 
                     match File.Exists(Path.GetFullPath("uberHash.txt")) with
                     | false ->  Seq.empty //No need of any action, Seq.empty will do its job here                                
-                    | true  -> //StreamReader refused to work here, thar is why File.ReadAllLines was used                              
+                    | true  -> //StreamReader refused to work here, that is why File.ReadAllLines was used                              
                                match File.ReadAllLines("uberHash.txt") |> Option.ofObj with
                                | Some value -> (value |> Seq.ofArray) 
                                | None       -> Seq.empty  //No need of any action, Seq.empty will do its job here

@@ -154,6 +154,7 @@
         <Content Include="public\Content\images\under-construction.png" />
         <Content Include="public\Content\images\under-maintenance.jpg" />
         <Content Include="public\Content\images\Uvodni foto.png" />
+        <Compile Include="Types\Strings.fs" />
         <Compile Include="Types\DiscriminatedUnions.fs" />
         <Compile Include="Types\Records.fs" />
         <Compile Include="Deferred\Deferred.fs" />
