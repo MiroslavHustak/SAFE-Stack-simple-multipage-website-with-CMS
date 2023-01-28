@@ -1,3 +1,5 @@
+//GENERATED CODE
+
 module Helpers
 
 open Fake.Core

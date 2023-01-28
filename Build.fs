@@ -1,3 +1,5 @@
+//GENERATED CODE
+
 open Fake.Core
 open Fake.IO
 open Farmer

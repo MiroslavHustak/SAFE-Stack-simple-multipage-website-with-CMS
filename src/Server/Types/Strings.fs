@@ -1,4 +1,4 @@
-namespace Strings.Client
+namespace Strings.Server
 
 module Strings = 
 

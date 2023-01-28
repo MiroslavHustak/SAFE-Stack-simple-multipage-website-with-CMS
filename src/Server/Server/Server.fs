@@ -16,26 +16,14 @@ open DbAccess.Sql       //uncomment to test plain SQL (and, at the same time, co
 //open DbAccess.Dapper  //uncomment to test Dapper.FSharp (and, at the same time, comment out "open DbAccess.Sql")
 
 open DiscriminatedUnions.Server
-
-open Auxiliary.Server.Security2
-open Auxiliaries.Server.Connection
+open Auxiliaries.Server.Security2
 open Auxiliaries.Server.CopyingFiles
 open Auxiliaries.Server.ROP_Functions
 open Auxiliaries.Server.Serialisation
 open Auxiliaries.Server.Deserialisation
+open PatternBuilders.Server.PatternBuilders
 
-module Server = 
-
-    let private (>>=) condition nextFunc = 
-        match condition with
-        | false -> SharedApi.UsernameOrPasswordIncorrect  
-        | true  -> nextFunc()
-
-    [<Struct>]
-    type private MyPatternBuilder = MyPatternBuilder with            
-        member _.Bind(condition, nextFunc) = (>>=) <| condition <| nextFunc
-        member _.Using x = x
-        member _.Return x = x
+module Server =
 
     let private strContainsOnlySpace str = str |> Seq.forall (fun item -> item = (char)32)  //A string is a sequence of characters => use Seq.forall to test directly //(char)32 = space
     let private isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)
@@ -43,6 +31,7 @@ module Server =
     let private isValidKontakt param = () //TODO validation upon request from the user 
     let private isValidLink param = ()    //TODO validation upon request from the user
 
+    //************************************************************************
     let private pswHash() = //to be used only once before bundling             
        
         let usr = uberHash "" //delete username before bundling
@@ -50,92 +39,60 @@ module Server =
         let mySeq = seq { usr; psw }
         
         use sw = new StreamWriter(Path.GetFullPath("uberHash.txt")) 
-                |> Option.ofObj
-                |> function
-                    | Some value -> value
-                    | None       -> //TODO some action 
-                                    new StreamWriter(Path.GetFullPath("")) 
+                 |> Option.ofObj
+                 |> function
+                     | Some value -> value
+                     | None       -> //Check the "uberHash.txt" file manually 
+                                     new StreamWriter(Path.GetFullPath("")) 
         mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
+    //************************************************************************
 
     let private verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>
 
-        (*
         MyPatternBuilder    
             {
-                let result = 
-                match File.Exists(Path.GetFullPath("uberHash.txt")) with
-                | false ->  Seq.empty                       
-                | true  ->                        
-                           match File.ReadAllLines("uberHash.txt") |> Option.ofObj with
-                           | Some value -> (value |> Seq.ofArray) 
-                           | None       -> Seq.empty  
+                let rc1 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
+                let rc2 = { SharedApi.LoginProblems.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedApi.LoginProblems.line2 = "Prosím zadej údaje znovu." }  
+                let rc3 = { SharedApi.LoginProblems.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedApi.LoginProblems.line2 = "Prosím zadej údaje znovu." }  
 
-                let! _ = isValidLogin login.Username login.Password
-                let! _ = verify (result |> Seq.head) login.Username && verify (result |> Seq.last) login.Password               
-                return SharedApi.LoggedIn { Username = login.Username; AccessToken = SharedApi.AccessToken "Dummy" }
-            } 
-        *)
-
-        //containing redundant code for learning purposes
-        MyPatternBuilder    
-            {
-                let result = 
+                let uberHash x =
+                    //File.Exists will not throw an exception, but GetFullPath will do so
                     match File.Exists(Path.GetFullPath("uberHash.txt")) with
-                    | false ->  Seq.empty //No need of any action, Seq.empty will do its job here                                
-                    | true  -> //StreamReader refused to work here, that is why File.ReadAllLines was used                              
-                               match File.ReadAllLines("uberHash.txt") |> Option.ofObj with
-                               | Some value -> (value |> Seq.ofArray) 
-                               | None       -> Seq.empty  //No need of any action, Seq.empty will do its job here
+                    | false -> Seq.empty //No need of any action, Seq.empty will do its job here                                
+                    | true  ->                              
+                               match File.ReadAllLines("uberHash.txt") |> Option.ofObj with //StreamReader refused to work here, that is why File.ReadAllLines was used 
+                               | Some value -> value |> Seq.ofArray 
+                               | None       -> Seq.empty //No need of any action, Seq.empty will do its job here
+             
+                let uberHash = (uberHash, (fun x -> ()), String.Empty) |||> tryWith |> deconstructor0 
 
-                let! _ = isValidLogin login.Username login.Password
-                let securityTokenFile = Path.GetFullPath("securityToken.txt")
-                                        |> Option.ofObj
-                                        |> function
-                                            | Some value -> value
-                                            | None       -> //TODO some action only in case you decide to use saved accessToken
-                                                            String.Empty           
-           
-                let! _ = verify (result |> Seq.head) login.Username && verify (result |> Seq.last) login.Password 
-
-                //TODO trywith only in case you decide to use the saved accessToken
-                let result =                
-                    let accessToken = string <| System.Guid.NewGuid() //encodeJwt securityToken //TODO only in case you decide to use saved accessToken
-                    //********************************************************************************
-                    let mySeq = seq { login.Username; accessToken }
-                    use sw = new StreamWriter(Path.GetFullPath(securityTokenFile)) 
-                             |> Option.ofObj
-                             |> function
-                                 | Some value -> value
-                                 | None       -> //TODO some action only in case you decide to use accessToken
-                                                 new StreamWriter(Path.GetFullPath(securityTokenFile)) 
-                    mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
-                    //code with saved accessToken (originally a workaround) left for potential exploitation in the future
-
-                    //*********************************************************************************************
-                    SharedApi.LoggedIn { Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
-                return result
+                let! _ = (<>) uberHash Seq.empty, SharedApi.UsernameOrPasswordIncorrect rc1                         
+                let! _ = isValidLogin login.Username login.Password, SharedApi.UsernameOrPasswordIncorrect rc2                          
+                let! _ = (&&) (verify (uberHash |> Seq.head) login.Username) (verify (uberHash |> Seq.last) login.Password), SharedApi.UsernameOrPasswordIncorrect rc3 
+                                                                        
+                return SharedApi.LoggedIn { Username = login.Username } //{ Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             }
     
       //TODO validation upon request from the user 
     let private verifyCenikValues (cenikValues: GetCenikValues) =
         match isValidCenik () with
-        | () -> Success ()        
-        //| _  -> Failure ()
+        | ()  -> Success ()        
+        //| _ -> Failure ()
 
      //TODO validation upon request from the user 
     let private verifyKontaktValues (kontaktValues: GetKontaktValues) =
        match isValidKontakt () with
-       | () -> Success ()        
-       //| _  -> Failure ()
+       | ()  -> Success ()        
+       //| _ -> Failure ()
 
     //TODO validation upon request from the user 
     let private verifyLinkAndLinkNameValues (linkValues: GetLinkAndLinkNameValues) =
        match isValidLink () with
-       | () -> Success ()        
-       //| _  -> Failure ()
+       | ()  -> Success ()        
+       //| _ -> Failure ()
 
     let IGetApi exn =
-        {
+        {            
             login =
                 fun login -> async { return (verifyLogin login) }          
          (*
@@ -178,6 +135,7 @@ module Server =
                                               { dbNewCenikValues with Msgs = { Messages.Default with Msg1 = exnSql } }
                                                                            
                                 | Failure () -> GetCenikValues.Default
+
                           return getNewCenikValues
                       }
 
@@ -190,7 +148,7 @@ module Server =
                             let IdOld = 3
                                                                     
                             let (dbGetNewCenikValues, exnSql2) = selectValues IdNew                                         
-                            let exnSql = insertOrUpdate { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }//eqv of the aforementioned copying 
+                            let exnSql = insertOrUpdate { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                             let (dbSendOldCenikValues, exnSql3) = selectValues IdOld
 
                             return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnSql; Msg2 = exnSql2; Msg3 = exnSql3 } }
@@ -221,7 +179,8 @@ module Server =
                                                   serialize getKontaktValues "jsonKontaktValues.xml"                            
                                                let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error10") |||> tryWith |> deconstructor1
                                                { getKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson } }                                   
-                                | Failure () -> GetKontaktValues.Default    
+                                | Failure () -> GetKontaktValues.Default
+
                             return getNewKontaktValues
                         }
 
@@ -240,6 +199,7 @@ module Server =
                                 //failwith "Simulated exception12" 
                                 deserialize "jsonKontaktValuesBackUp.xml"
                             let (sendOldKontaktValues, exnJson2) = (sendOldKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error12") |||> tryWith |> deconstructor2 GetKontaktValues.Default
+
                             return { sendOldKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }                 
                         } 
 
@@ -251,6 +211,7 @@ module Server =
                                 //failwith "Simulated exception13" 
                                 deserialize "jsonKontaktValues.xml" 
                             let (sendKontaktValues, exnJson1) = (sendKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error13") |||> tryWith |> deconstructor2 GetKontaktValues.Default
+
                             return { sendKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }                   
                         }
 
@@ -267,7 +228,8 @@ module Server =
                                             let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error14") |||> tryWith |> deconstructor1
                                             { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
                              | Failure () -> GetLinkAndLinkNameValues.Default                        
-                        return getNewLinkAndLinkNameValues
+
+                         return getNewLinkAndLinkNameValues
                       }
            
             sendOldLinkAndLinkNameValues =
@@ -285,6 +247,7 @@ module Server =
                                //failwith "Simulated exception16" 
                                deserialize "jsonLinkAndLinkNameValuesBackUp.xml" 
                            let (sendOldLinkAndLinkNameValues, exnJson2) = (sendOldLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error16") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
+
                            return { sendOldLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }  
                        } 
 
@@ -296,14 +259,15 @@ module Server =
                                //failwith "Simulated exception17" 
                                deserialize "jsonLinkandLinkNameValues.xml"  
                            let (sendLinkAndLinkNameValues, exnJson1) = (sendLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error17") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
+
                            return { sendLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }  
                        }
         }
 
-    let webApp exn =
+    let webApp exnSql =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
-        |> Remoting.fromValue (IGetApi exn)
+        |> Remoting.fromValue (IGetApi exnSql)
         |> Remoting.buildHttpHandler
 
     let app =
@@ -319,6 +283,6 @@ module Server =
     [<EntryPoint>]
     let main _ =   
         Dapper.FSharp.OptionTypes.register()
-        //pswHash()
+        //pswHash() //to be used only once before bundling 
         run app    
         0

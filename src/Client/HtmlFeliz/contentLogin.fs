@@ -1,13 +1,14 @@
 namespace HtmlFeliz
 
 open Feliz
+open SharedTypes
 
 module ContentLogin = 
 
     let private br n = ( [ 1..n ] |> List.map (fun _ -> Html.br []) |> List.ofSeq ) |> List.map (fun item -> item)
 
     //complete html/Feliz code (no layout)
-    let contentLogin submitInput inputElementUsr inputElementPsw (errorMsg: string*string) hiddenValue dispatch = 
+    let contentLogin submitInput inputElementUsr inputElementPsw (rcErrorMsg: SharedApi.LoginProblems) hiddenValue dispatch = 
 
         Html.html [
             prop.xmlns "http://www.w3.org/1999/xhtml"
@@ -163,9 +164,9 @@ module ContentLogin =
                                                                                       style.fontFamily "sans-serif"
                                                                                     ]
                                                                                 prop.children [
-                                                                                    Html.text (fst errorMsg)
+                                                                                    Html.text rcErrorMsg.line1
                                                                                     Html.br []
-                                                                                    Html.text (snd errorMsg) 
+                                                                                    Html.text rcErrorMsg.line2 
                                                                                 ]
                                                                             ]          
                                                                             Html.br []

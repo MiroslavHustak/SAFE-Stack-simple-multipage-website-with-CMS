@@ -7,7 +7,10 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="paket.references" />
+    <Compile Include="Types\Strings.fs" />
     <Compile Include="Types\DiscriminatedUnions.fs" />
+    <Compile Include="Types\Records.fs" />
+    <Compile Include="Types\PatternBuilders.fs" />
     <Compile Include="Auxiliaries\DapperHelper.fs" />
     <Compile Include="Auxiliaries\Security2.fs" />
     <Compile Include="Auxiliaries\Security.fs" />
@@ -18,7 +21,7 @@
     <Compile Include="Queries\Sql_Queries.fs" />
     <Compile Include="DbAccess\Dapper.fs" />
     <Compile Include="DbAccess\Sql.fs" />
-    <Compile Include="Server.fs" />
+    <Compile Include="Server\Server.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />

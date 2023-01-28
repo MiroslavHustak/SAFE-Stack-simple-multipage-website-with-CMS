@@ -27,7 +27,8 @@ open HtmlFeliz.ContentCMSRozcestnik
 
         type Model =
             {
-                User: ApplicationUser 
+                User: ApplicationUser
+                problem: SharedApi.LoginProblems
                 InputUsr: string
                 InputPsw: string
                 Id: int
@@ -56,6 +57,7 @@ open HtmlFeliz.ContentCMSRozcestnik
 
             let model = {
                             User = FirstTimeRunAnonymous
+                            problem = { line1 = String.Empty; line2 = String.Empty }
                             InputUsr = String.Empty
                             InputPsw = String.Empty
                             Id = id
@@ -76,19 +78,16 @@ open HtmlFeliz.ContentCMSRozcestnik
             | GetLoginResults value -> 
                 let model =           
                     match value with
-                    | SharedApi.UsernameOrPasswordIncorrect -> { model with User = ApplicationUser.Anonymous } //potrebne pro na konci modulu uvedeny kod
-                    | SharedApi.LoggedIn user               -> { model with User = ApplicationUser.LoggedIn user } //potrebne pro na konci modulu uvedeny kod    
+                    | SharedApi.UsernameOrPasswordIncorrect problem -> { model with User = ApplicationUser.Anonymous; problem = problem } //potrebne pro na konci modulu uvedeny kod
+                    | SharedApi.LoggedIn user                       -> { model with User = ApplicationUser.LoggedIn user } //potrebne pro na konci modulu uvedeny kod    
                 model, Cmd.ofMsg (LoginCompleted value), NoOp
 
             | LoginCompleted session -> model, Cmd.none, SignedIn session
-            | Logout -> model, Cmd.none, NoOp
-            | CMSRozcestnikMsg _ -> model, Cmd.none, NoOp
-            | CMSRozcestnikModel _ -> model, Cmd.none, NoOp
+            | Logout                 -> model, Cmd.none, NoOp
+            | CMSRozcestnikMsg _     -> model, Cmd.none, NoOp
+            | CMSRozcestnikModel _   -> model, Cmd.none, NoOp
 
         let view (model: Model) (dispatch: Msg -> unit) =
-
-            let errorMsg1 = "Buď uživatelské jméno anebo heslo je neplatné."
-            let errorMsg2 = "Prosím zadej údaje znovu."
 
             let proponClick =
                 prop.onClick (fun e -> e.preventDefault()
@@ -146,27 +145,27 @@ open HtmlFeliz.ContentCMSRozcestnik
          
           //************************************************************************
 
-            let fnError() =
+            let fnError rcErrorMsg =
                 contentLogin
                 <| submitInput                        
                 <| inputElementUsr 
                 <| inputElementPsw  
-                <| (errorMsg1, errorMsg2)
+                <| rcErrorMsg
                 <| false //related to hiding
                 <| (dispatch: Msg -> unit)
 
-            let fnFirstRun() =
+            let fnFirstRun rcErrorMsg =
                 contentLogin
                 <| submitInput                        
                 <| inputElementUsr 
                 <| inputElementPsw                    
-                <| (String.Empty, String.Empty)
+                <| rcErrorMsg
                 <| true //related to hiding
                 <| (dispatch: Msg -> unit)
 
             match model.User with      
-            | Anonymous             -> fnError()
-            | FirstTimeRunAnonymous -> fnFirstRun()
+            | Anonymous             -> fnError model.problem
+            | FirstTimeRunAnonymous -> fnFirstRun model.problem
             | LoggedIn user         -> CMSPages.CMSRozcestnik.view CMSRozcestnikModel user (CMSRozcestnikMsg >> dispatch) //it is not strictly necessary for the model and user to be here, but I left them here to keep things tidy
 
                    

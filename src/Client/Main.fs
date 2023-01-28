@@ -85,34 +85,35 @@ module App =
                 match model.Session with
                 | Some value ->
                                 match value with
-                                | SharedApi.UsernameOrPasswordIncorrect -> Anonymous
-                                | SharedApi.LoggedIn user               -> LoggedIn user  
+                                | SharedApi.UsernameOrPasswordIncorrect problem  -> Anonymous 
+                                | SharedApi.LoggedIn user                        -> LoggedIn user  
                 | None       -> Anonymous
-
+                
             {
                 model with CurrentRoute = optRoute //currentRoute //Not necessary as User = applicationUser in pattern matching will take care of the correct routing
-                                          User = applicationUser                                                                                                                              
+                                          User = applicationUser                                          
             }    
-    
+
+        (*
         //testing match for the deconstruction of a single case DU
-        let accessToken = match model.user.AccessToken with SharedApi.AccessToken value -> value
+        let accessToken = match model.user.Username with SharedApi.AccessToken value -> value
                       
         //testing the deconstruction of a single case DU
         let unwrap (SharedApi.AccessToken x) = x
         let accessToken = unwrap model.user.AccessToken
 
-        (*
-            //What's happening here is that F# allows you to deconstruct function arguments inline using arbitrarily complex pattern matching.
-            //This is often mentioned when introducing single case DU's, but it's rarely followed to the conclusion, which leads
-            //people to believe single case DU's are somehow special that way.
+       
+        //What's happening here is that F# allows you to deconstruct function arguments inline using arbitrarily complex pattern matching.
+        //This is often mentioned when introducing single case DU's, but it's rarely followed to the conclusion, which leads
+        //people to believe single case DU's are somehow special that way.
 
-            type Composite = Composite of int 
-            let unwrap (Composite a) = a
+        type Composite = Composite of int 
+        let unwrap (Composite a) = a
 
-            which corresponds to:
-            let unwrap x = 
-            match x with
-            | Composite a -> a
+        which corresponds to:
+        let unwrap x = 
+        match x with
+        | Composite a -> a
         *)
 
         match optRoute with
@@ -205,7 +206,7 @@ module App =
                 ActivePage = Page.NotFound 
                 CurrentRoute = None
                 User = Anonymous
-                user = { Username = String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
+                user = { Username = String.Empty } //{ Username = String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
                 Session = None          
                 LinkAndLinkNameValues = GetLinkAndLinkNameValues.Default   
                 LinkAndLinkNameInputValues = GetLinkAndLinkNameValues.Default

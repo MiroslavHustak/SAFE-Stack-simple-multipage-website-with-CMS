@@ -4,8 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Types\SharedApi.fs" />
-    <Compile Include="Types\SharedTypes.fs" />
+    <Compile Include="SharedApi.fs" />
+    <Compile Include="SharedTypes.fs" />
     <Compile Include="Shared.fs" />
   </ItemGroup>
   <ItemGroup>   

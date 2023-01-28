@@ -16,16 +16,26 @@ module ROP_Functions =
         with
         | ex -> Failure (sprintf"%s: %s" s ex.Message)
 
+    let deconstructor0 =  
+        function
+        | Success x  -> x                                                  
+        | Failure ex -> Seq.empty
+
     let deconstructor1 =  
         function
         | Success x  -> String.Empty                                                   
-        | Failure ex -> ex 
+        | Failure ex -> ex
+
+    let deconstructor3 =  
+        function
+        | Success x  -> x                                                
+        | Failure ex -> String.Empty    
 
     let deconstructor2 a =  
         function
         | Success x  -> x, String.Empty                                                    
         | Failure ex -> a, (sprintf"%s %s" ex "(byly dosazeny defaultní hodnoty).")
-
+        
     let optionToFailwith str = 
         function
         | Some value -> value
