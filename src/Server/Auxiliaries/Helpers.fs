@@ -7,7 +7,6 @@ open System.Runtime.Serialization
 
 open Auxiliaries.Server.ROP_Functions
 
-
     module private TryParserInt =
 
          let tryParseWith (tryParseFunc: string -> bool * _) = tryParseFunc >> function

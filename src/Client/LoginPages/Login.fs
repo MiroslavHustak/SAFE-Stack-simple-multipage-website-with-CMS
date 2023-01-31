@@ -67,8 +67,8 @@ open HtmlFeliz.ContentCMSRozcestnik
         let update (msg: Msg) (model: Model): Model * Cmd<Msg> * ExternalMsg =
 
             match msg with
-            | SetUsrInput value  -> { model with InputUsr = value }, Cmd.none, NoOp
-            | SetPswInput value  -> { model with InputPsw = value }, Cmd.none, NoOp
+            | SetUsrInput value -> { model with InputUsr = value }, Cmd.none, NoOp
+            | SetPswInput value -> { model with InputPsw = value }, Cmd.none, NoOp
 
             | SendUsrPswToServer ->
                 let buttonClickEvent = SharedLoginValues.create model.InputUsr model.InputPsw

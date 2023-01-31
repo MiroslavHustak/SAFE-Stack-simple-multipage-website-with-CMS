@@ -32,6 +32,7 @@ module Server =
     let private isValidLink param = ()    //TODO validation upon request from the user
 
     //************************************************************************
+    //TODO create a separate solution and include a try with block
     let private pswHash() = //to be used only once before bundling             
        
         let usr = uberHash "" //delete username before bundling
@@ -52,7 +53,7 @@ module Server =
         MyPatternBuilder    
             {
                 let rc1 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
-                let rc2 = { SharedApi.LoginProblems.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedApi.LoginProblems.line2 = "Prosím zadej údaje znovu." }  
+                let rc2 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Problém s ověřením uživatelského jména a hesla" }
                 let rc3 = { SharedApi.LoginProblems.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedApi.LoginProblems.line2 = "Prosím zadej údaje znovu." }  
 
                 let uberHash x =
@@ -67,8 +68,18 @@ module Server =
                 let uberHash = (uberHash, (fun x -> ()), String.Empty) |||> tryWith |> deconstructor0 
 
                 let! _ = (<>) uberHash Seq.empty, SharedApi.UsernameOrPasswordIncorrect rc1                         
-                let! _ = isValidLogin login.Username login.Password, SharedApi.UsernameOrPasswordIncorrect rc2                          
-                let! _ = (&&) (verify (uberHash |> Seq.head) login.Username) (verify (uberHash |> Seq.last) login.Password), SharedApi.UsernameOrPasswordIncorrect rc3 
+                let! _ = isValidLogin login.Username login.Password, SharedApi.UsernameOrPasswordIncorrect rc3
+
+                let verify1 x = verify (uberHash |> Seq.head) login.Username
+                let verify1 = (verify1, (fun x -> ()), String.Empty) |||> tryWith |> deconstructor4
+
+                let! _ = (<>) verify1 Exception, SharedApi.UsernameOrPasswordIncorrect rc2 
+
+                let verify2 x = verify (uberHash |> Seq.last) login.Password
+                let verify2 = (verify2, (fun x -> ()), String.Empty) |||> tryWith |> deconstructor4
+
+                let! _ = (<>) verify2 Exception, SharedApi.UsernameOrPasswordIncorrect rc2
+                let! _ = (&&) (verify1 = LegitimateTrue) (verify2 = LegitimateTrue), SharedApi.UsernameOrPasswordIncorrect rc3 
                                                                         
                 return SharedApi.LoggedIn { Username = login.Username } //{ Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             }
@@ -283,6 +294,6 @@ module Server =
     [<EntryPoint>]
     let main _ =   
         Dapper.FSharp.OptionTypes.register()
-        //pswHash() //to be used only once before bundling 
+        //pswHash() //to be used only once && before bundling 
         run app    
         0

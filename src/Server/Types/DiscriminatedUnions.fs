@@ -10,3 +10,9 @@ type ErrorOptions =
    | NotFullDb
    | ProblemsWithReader
    | OtherProblems
+
+[<Struct>]
+type ErrorVerifyOptions = 
+   | LegitimateTrue 
+   | LegitimateFalse 
+   | Exception 
