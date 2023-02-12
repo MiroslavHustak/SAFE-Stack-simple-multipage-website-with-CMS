@@ -290,7 +290,7 @@ module App =
         | Page.Nenajdete nenajdeteModel -> Nenajdete.view nenajdeteModel (NenajdeteMsg >> dispatch) model.LinkAndLinkNameValues 
         | Page.Kontakt kontaktModel -> Kontakt.view kontaktModel (KontaktMsg >> dispatch) model.LinkAndLinkNameValues
         | Page.Maintenance maintenanceModel -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch) //not in use
-        | Page.Login loginModel ->  Login.view loginModel (LoginMsg >> dispatch)                              
+        | Page.Login loginModel -> Login.view loginModel (LoginMsg >> dispatch)                              
         | Page.CMSRozcestnik rozcestnikModel -> CMSRozcestnik.view rozcestnikModel model.user (CMSRozcestnikMsg >> dispatch)  
         | Page.CMSCenik cmsCenikModel -> CMSCenik.view cmsCenikModel (CMSCenikMsg >> dispatch) 
         | Page.CMSKontakt cmsKontaktModel -> CMSKontakt.view cmsKontaktModel (CMSKontaktMsg >> dispatch) 
