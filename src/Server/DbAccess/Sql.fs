@@ -136,7 +136,11 @@ module Sql =
                                                 } 
                                    ) |> Seq.head //the function only places data to the head of the collection (a function with "while" does the same)
                                                                                       
-                let mySeq = seq { string myRecord.Id; myRecord.ValueState; myRecord.V001; myRecord.V002; myRecord.V003; myRecord.V004; myRecord.V005; myRecord.V006; myRecord.V007; myRecord.V008; myRecord.V009 }
+                let mySeq = seq
+                               {
+                                   string myRecord.Id; myRecord.ValueState; myRecord.V001; myRecord.V002; myRecord.V003;
+                                   myRecord.V004; myRecord.V005; myRecord.V006; myRecord.V007; myRecord.V008; myRecord.V009
+                               }
                        
                 match mySeq |> Seq.contains "error" || mySeq |> Seq.contains "-1" with
                 | false -> myRecord                         
