@@ -1,3 +1,3 @@
 A very simple multi-page website with a very simple content management system created from the SAFE Stack standard template with the help of the Elmish Book and code for client-side routing by Maxime Mangel. The code involves a HTML/CSS template made by others (see the footer of the website). The website was originally created in ASP.NET MVC(C#) and I have been re-writting it into F# for learning purposes.
 
-The code contains many lines for learning purposes only. Database options (Dapper.FSharp and plain T-SQL) for the CMS were tested for the CMSCenik page. The rest of the CMS uses Json/XML only. Currently working (time permitting) on safety features and exceptions.
+The code contains many lines for learning purposes only. Database options (Dapper.FSharp and plain T-SQL) for the CMS were tested for the CMSCenik page. The rest of the CMS uses Json/XML only. Currently trying (time permitting) to refactor the code.
