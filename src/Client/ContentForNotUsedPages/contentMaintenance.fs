@@ -1,4 +1,4 @@
-namespace HtmlFeliz
+namespace NotUsedPages
 
 open Feliz
 

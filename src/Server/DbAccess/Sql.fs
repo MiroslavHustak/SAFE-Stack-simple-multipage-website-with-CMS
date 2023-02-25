@@ -83,7 +83,7 @@ module Sql =
             use connection = new SqlConnection(connStringSomee) 
             connection.Open()  
 
-            let whatIs (x: obj) =
+            let whatIs (x: obj) = //downcast
                 match x with
                 | :? string as s -> s 
                 | _              -> "error"        

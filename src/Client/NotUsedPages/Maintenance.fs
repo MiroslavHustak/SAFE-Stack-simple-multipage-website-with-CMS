@@ -1,10 +1,10 @@
-namespace PublicPages
+namespace NotUsedPages
 
 open Feliz
 open Elmish
 open Fable.Remoting.Client
 
-open HtmlFeliz.ContentMaintenance
+open NotUsedPages.ContentMaintenance
 
 module Maintenance = 
 

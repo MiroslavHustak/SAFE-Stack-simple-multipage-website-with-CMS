@@ -1,11 +1,13 @@
-namespace HtmlFeliz
+namespace NotUsedPages
 
 open Feliz
 
-module ContentCMSRozcestnik = 
+module ContentCMSForbidden = 
+
+    //not in use 
 
     //complete html/Feliz code (no layout)
-    let contentCMSRozcestnik returnButtonDiv = 
+    let contentCMSForbidden() = 
 
         Html.html [
             prop.xmlns "http://www.w3.org/1999/xhtml"
@@ -103,7 +105,7 @@ module ContentCMSRozcestnik =
                                                                         Html.h1 [                                                                        
                                                                             prop.id 1
                                                                             prop.children [
-                                                                                Html.text "Rozcestník"                                                        
+                                                                                Html.text "K této stránce lze přistupovat pouze po přihlášení."                                                        
                                                                             ]
                                                                         ]
                                                                     ]                                                       
@@ -116,70 +118,21 @@ module ContentCMSRozcestnik =
                                                                           style.height(80)                                                                 
                                                                         ]
                                                                     prop.children [
-                                                                        Html.div [                                                                        
-                                                                            Html.div [
-                                                                                Html.a [
-                                                                                    prop.style
-                                                                                        [                                                                                      
-                                                                                          style.fontFamily "sans-serif"
-                                                                                          style.fontWeight.bold
-                                                                                          style.color.blue
-                                                                                        ]
-                                                                                    prop.href (MaximeRouter.Router.toHash (MaximeRouter.Router.CMSCenik 7))
-                                                                                    prop.children [
-                                                                                        Html.text "Editace ceníku"
-                                                                                    ]
-                                                                                ]    
-                                                                            ]
-                                                                            Html.div [
-                                                                                Html.a [
-                                                                                    prop.style
-                                                                                        [                                                                                      
-                                                                                          style.fontFamily "sans-serif"
-                                                                                          style.fontWeight.bold
-                                                                                          style.color.blue
-                                                                                        ]
-                                                                                    prop.href (MaximeRouter.Router.toHash (MaximeRouter.Router.CMSKontakt 8))
-                                                                                    prop.children [
-                                                                                        Html.text "Editace kontaktních údajů"
-                                                                                    ]
-                                                                                ]    
-                                                                            ]
-                                                                            Html.div [
-                                                                                Html.a [
-                                                                                    prop.style
-                                                                                        [                                                                                      
-                                                                                            style.fontFamily "sans-serif"
-                                                                                            style.fontWeight.bold
-                                                                                            style.color.blue
-                                                                                        ]
-                                                                                    prop.href (MaximeRouter.Router.toHash (MaximeRouter.Router.CMSLink 9))
-                                                                                    prop.children [
-                                                                                        Html.text "Editace odkazů na webové stránky"
-                                                                                    ]
-                                                                                ]    
-                                                                            ]                                                                        
+                                                                        Html.div [                                                                 
                                                                             Html.br []
-                                                                            Html.br []
-                                                                            returnButtonDiv
-                                                                            (*
-                                                                            Html.div [                                                                                 
-                                                                                Html.button [                                                                           
-                                                                                    prop.text "Log-off"
-                                                                                    prop.id "Button2"                                                                           
-                                                                                    proponClick
+                                                                            Html.div [                                                                                                                                          
+                                                                                Html.a [
                                                                                     prop.style
-                                                                                        [
-                                                                                          style.height(50)
-                                                                                          style.width(200)
-                                                                                          style.fontWeight.bold
-                                                                                          style.fontSize(16) //font-size: large
-                                                                                          style.color.blue
+                                                                                        [                                                                                      
                                                                                           style.fontFamily "sans-serif"
+                                                                                          style.fontWeight.bold
                                                                                         ]
-                                                                                ]                                                                            
+                                                                                    prop.href "/"
+                                                                                    prop.children [
+                                                                                        Html.text "Návrat na hlavní stránku" //TODO zrobit skutecny log-off
+                                                                                    ]
+                                                                                ]
                                                                             ]
-                                                                            *)
                                                                         ]
                                                                     ]
                                                                 ]

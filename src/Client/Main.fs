@@ -15,6 +15,7 @@ open Fable.Remoting.Client
 open CMSPages
 open LoginPages
 open PublicPages
+open NotUsedPages
 
 open Shared
 open SharedTypes
@@ -35,7 +36,7 @@ module App =
         | Nenajdete of Nenajdete.Model
         | Kontakt of Kontakt.Model
         | Login of Login.Model 
-        | Maintenance of Maintenance.Model 
+        | Maintenance of Maintenance.Model  //not in use
         | CMSRozcestnik of CMSRozcestnik.Model
         | CMSCenik of CMSCenik.Model
         | CMSKontakt of CMSKontakt.Model
@@ -61,7 +62,7 @@ module App =
         | NenajdeteMsg of Nenajdete.Msg
         | KontaktMsg of Kontakt.Msg
         | LoginMsg of Login.Msg
-        | MaintenanceMsg of Maintenance.Msg    
+        | MaintenanceMsg of Maintenance.Msg  //not in use 
         | CMSRozcestnikMsg of CMSRozcestnik.Msg
         | CMSCenikMsg of CMSCenik.Msg
         | CMSKontaktMsg of CMSKontakt.Msg
