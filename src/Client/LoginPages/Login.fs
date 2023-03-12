@@ -68,7 +68,7 @@ open SharedTypes
             | SetPswInput value -> { model with InputPsw = value }, Cmd.none, NoOp
 
             | SendUsrPswToServer ->
-                let buttonClickEvent = SharedLoginValues.create model.InputUsr model.InputPsw
+                let buttonClickEvent = SharedLoginValues.create (SharedApi.Username model.InputUsr) (SharedApi.Password model.InputPsw)
                 let cmd = Cmd.OfAsync.perform getLoginApi.login buttonClickEvent GetLoginResults 
                 model, cmd, NoOp
 

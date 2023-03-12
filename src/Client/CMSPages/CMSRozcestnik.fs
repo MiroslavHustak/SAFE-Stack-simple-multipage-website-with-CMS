@@ -29,11 +29,13 @@ module CMSRozcestnik =
 
     let view model (user: SharedApi.User) (dispatch: Msg -> unit) = 
 
-        let userText = sprintf"%s%s" "Uživatel byl právě přihlášen jako : " user.Username
+        let usr = user.Username |> function SharedApi.Username value -> value
+
+        let userText = sprintf"%s%s" "Uživatel byl právě přihlášen jako : " usr   
         let userTextTime = sprintf"%s%s" "Okamžik přihlášení : " (string <| System.DateTime.Now.ToLongTimeString())
                
         let hiddenValue =
-            match user.Username with
+            match usr with
             | "" -> true
             | _  -> false
 

@@ -207,7 +207,7 @@ module App =
                 ActivePage = Page.NotFound 
                 CurrentRoute = None
                 User = Anonymous
-                user = { Username = String.Empty } //{ Username = String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
+                user = { Username = SharedApi.Username String.Empty } //{ Username = SharedApi.Username String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
                 Session = None          
                 LinkAndLinkNameValues = GetLinkAndLinkNameValues.Default   
                 LinkAndLinkNameInputValues = GetLinkAndLinkNameValues.Default

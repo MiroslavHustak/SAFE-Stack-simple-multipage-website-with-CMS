@@ -3,7 +3,7 @@ namespace Records.Client
 open System
 
 open Feliz
-
+           
 [<Struct>]
 type MyCssClass =
     {

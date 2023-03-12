@@ -56,6 +56,9 @@ module Server =
                 let rc2 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Problém s ověřením uživatelského jména a hesla" }
                 let rc3 = { SharedApi.LoginProblems.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedApi.LoginProblems.line2 = "Prosím zadej údaje znovu." }  
 
+                let usr = login.Username |> function SharedApi.Username value -> value
+                let psw = login.Password |> function SharedApi.Password value -> value
+
                 let uberHash x =
                     //File.Exists will not throw an exception, but GetFullPath will do so
                     match File.Exists(Path.GetFullPath("uberHash.txt")) with
@@ -67,15 +70,16 @@ module Server =
              
                 let uberHash = (uberHash, (fun x -> ()), String.Empty) |||> tryWith |> deconstructor0 
 
-                let! _ = (<>) uberHash Seq.empty, SharedApi.UsernameOrPasswordIncorrect rc1                         
-                let! _ = isValidLogin login.Username login.Password, SharedApi.UsernameOrPasswordIncorrect rc3
+                let! _ = (<>) uberHash Seq.empty, SharedApi.UsernameOrPasswordIncorrect rc1
+                
+                let! _ = isValidLogin usr psw, SharedApi.UsernameOrPasswordIncorrect rc3
 
-                let verify1 x = verify (uberHash |> Seq.head) login.Username
+                let verify1 x = verify (uberHash |> Seq.head) usr
                 let verify1 = (verify1, (fun x -> ()), String.Empty) |||> tryWith |> deconstructor4
 
                 let! _ = (<>) verify1 Exception, SharedApi.UsernameOrPasswordIncorrect rc2 
 
-                let verify2 x = verify (uberHash |> Seq.last) login.Password
+                let verify2 x = verify (uberHash |> Seq.last) psw
                 let verify2 = (verify2, (fun x -> ()), String.Empty) |||> tryWith |> deconstructor4
 
                 let! _ = (<>) verify2 Exception, SharedApi.UsernameOrPasswordIncorrect rc2

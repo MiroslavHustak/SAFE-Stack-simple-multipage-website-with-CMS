@@ -3,7 +3,11 @@ namespace SharedTypes
 open System
 
 [<Struct>]
-type LoginInfo = { Username: string; Password: string }
+type LoginInfo =
+    {
+        Username: SharedApi.Username
+        Password: SharedApi.Password
+    }
 
 type Messages =
     {
