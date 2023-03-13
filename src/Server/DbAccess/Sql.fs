@@ -83,16 +83,6 @@ module Sql =
             use connection = new SqlConnection(connStringSomee) 
             connection.Open()  
 
-            let whatIs (x: obj) = //downcast
-                match x with
-                | :? string as s -> s 
-                | _              -> "error"        
-
-            let whatIsInt (x: obj) =
-                match x with
-                | :? int as i -> i 
-                | _           -> -1 //Id cannot be -1 
-
             let getValues =
 
                 let idString = string idInt
@@ -112,7 +102,25 @@ module Sql =
                                 | _  -> Array.set myErrType 0 OtherProblems                             
                                 cmdSelect.ExecuteReader()
 
-                let myRecord =                 
+                let myRecord =
+
+                    let whatIs (x: obj) = //downcast
+                        match x with
+                        | :? string as s -> Some s 
+                        | _              -> None         
+
+                    let whatIsInt (x: obj) =
+                        match x with
+                        | :? int as i -> Some i 
+                        | _           -> None 
+
+                    let extractValue fn defaultValue =
+                        match fn with     
+                        | Some value -> value
+                        | None       -> Array.set myErrMsg 1 "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
+                                        Array.set myErrType 1 ProblemsWithReader 
+                                        defaultValue                                                           
+
                     Seq.initInfinite (fun _ -> reader.Read())
                     |> Seq.takeWhile ((=) true) 
                     |> Seq.collect (fun _ ->  
@@ -120,33 +128,22 @@ module Sql =
                                                 {
                                                 yield    
                                                     {
-                                                        Id = whatIsInt reader.["Id"]
-                                                        ValueState = whatIs reader.["ValueState"]
-                                                        V001 = whatIs reader.["V001"]
-                                                        V002 = whatIs reader.["V002"]
-                                                        V003 = whatIs reader.["V003"]
-                                                        V004 = whatIs reader.["V004"]
-                                                        V005 = whatIs reader.["V005"]
-                                                        V006 = whatIs reader.["V006"]
-                                                        V007 = whatIs reader.["V007"]
-                                                        V008 = whatIs reader.["V008"]
-                                                        V009 = whatIs reader.["V009"]
+                                                        Id = extractValue (whatIsInt reader.["Id"]) GetCenikValues.Default.Id                                                           
+                                                        ValueState = extractValue (whatIs reader.["ValueState"]) GetCenikValues.Default.ValueState 
+                                                        V001 = extractValue (whatIs reader.["V001"]) GetCenikValues.Default.V001
+                                                        V002 = extractValue (whatIs reader.["V002"]) GetCenikValues.Default.V002
+                                                        V003 = extractValue (whatIs reader.["V003"]) GetCenikValues.Default.V003
+                                                        V004 = extractValue (whatIs reader.["V004"]) GetCenikValues.Default.V004
+                                                        V005 = extractValue (whatIs reader.["V005"]) GetCenikValues.Default.V005
+                                                        V006 = extractValue (whatIs reader.["V006"]) GetCenikValues.Default.V006
+                                                        V007 = extractValue (whatIs reader.["V007"]) GetCenikValues.Default.V007
+                                                        V008 = extractValue (whatIs reader.["V008"]) GetCenikValues.Default.V008
+                                                        V009 = extractValue (whatIs reader.["V009"]) GetCenikValues.Default.V009
                                                         Msgs = Messages.Default
                                                     }
                                                 } 
-                                   ) |> Seq.head //the function only places data to the head of the collection (a function with "while" does the same)
-                                                                                      
-                let mySeq = seq
-                               {
-                                   string myRecord.Id; myRecord.ValueState; myRecord.V001; myRecord.V002; myRecord.V003;
-                                   myRecord.V004; myRecord.V005; myRecord.V006; myRecord.V007; myRecord.V008; myRecord.V009
-                               }
-                       
-                match mySeq |> Seq.contains "error" || mySeq |> Seq.contains "-1" with
-                | false -> myRecord                         
-                | true  -> Array.set myErrMsg 1 "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty."
-                           Array.set myErrType 1 ProblemsWithReader 
-                           GetCenikValues.Default            
+                                   ) |> Seq.head //the function only places data to the head of the collection (a function with "while" does the same)                       
+                myRecord        
             getValues
  
         let (getValues, exnSql2) = (selectValuesNow, (fun x -> ()), "ErrorSql2") |||> tryWith |> deconstructor2 GetCenikValues.Default
