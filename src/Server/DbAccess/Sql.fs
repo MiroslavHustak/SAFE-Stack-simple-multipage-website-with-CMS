@@ -128,17 +128,17 @@ module Sql =
                                                 {
                                                 yield    
                                                     {
-                                                        Id = extractValue (whatIsInt reader.["Id"]) GetCenikValues.Default.Id                                                           
-                                                        ValueState = extractValue (whatIs reader.["ValueState"]) GetCenikValues.Default.ValueState 
-                                                        V001 = extractValue (whatIs reader.["V001"]) GetCenikValues.Default.V001
-                                                        V002 = extractValue (whatIs reader.["V002"]) GetCenikValues.Default.V002
-                                                        V003 = extractValue (whatIs reader.["V003"]) GetCenikValues.Default.V003
-                                                        V004 = extractValue (whatIs reader.["V004"]) GetCenikValues.Default.V004
-                                                        V005 = extractValue (whatIs reader.["V005"]) GetCenikValues.Default.V005
-                                                        V006 = extractValue (whatIs reader.["V006"]) GetCenikValues.Default.V006
-                                                        V007 = extractValue (whatIs reader.["V007"]) GetCenikValues.Default.V007
-                                                        V008 = extractValue (whatIs reader.["V008"]) GetCenikValues.Default.V008
-                                                        V009 = extractValue (whatIs reader.["V009"]) GetCenikValues.Default.V009
+                                                        Id = int (extractValue (whatIsInt reader.["Id"]) GetCenikValues.Default.Id)                                                           
+                                                        ValueState = string (extractValue (whatIs reader.["ValueState"]) GetCenikValues.Default.ValueState) 
+                                                        V001 = string (extractValue (whatIs reader.["V001"]) GetCenikValues.Default.V001) 
+                                                        V002 = string (extractValue (whatIs reader.["V002"]) GetCenikValues.Default.V002)
+                                                        V003 = string (extractValue (whatIs reader.["V003"]) GetCenikValues.Default.V003)
+                                                        V004 = string (extractValue (whatIs reader.["V004"]) GetCenikValues.Default.V004)
+                                                        V005 = string (extractValue (whatIs reader.["V005"]) GetCenikValues.Default.V005)
+                                                        V006 = string (extractValue (whatIs reader.["V006"]) GetCenikValues.Default.V006)
+                                                        V007 = string (extractValue (whatIs reader.["V007"]) GetCenikValues.Default.V007)
+                                                        V008 = string (extractValue (whatIs reader.["V008"]) GetCenikValues.Default.V008)
+                                                        V009 = string (extractValue (whatIs reader.["V009"]) GetCenikValues.Default.V009)
                                                         Msgs = Messages.Default
                                                     }
                                                 } 
