@@ -58,7 +58,7 @@ module Server =
                 let rc2 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Problém s ověřením uživatelského jména a hesla" }
                 let rc3 = { SharedApi.LoginProblems.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedApi.LoginProblems.line2 = "Prosím zadej údaje znovu." }  
 
-                let usr = login.Username |> function SharedApi.Username value -> value
+                let usr = login.Username |> function SharedApi.Username value -> value //unwrapping SCDU
                 let psw = login.Password |> function SharedApi.Password value -> value
 
                 let uberHash x =
