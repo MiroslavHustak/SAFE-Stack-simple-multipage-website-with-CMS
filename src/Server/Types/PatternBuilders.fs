@@ -12,4 +12,3 @@ module PatternBuilders =
         member _.Bind(condition, nextFunc) = (>>=) <| condition <| nextFunc
         member _.Using x = x
         member _.Return x = x
-

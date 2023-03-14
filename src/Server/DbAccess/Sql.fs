@@ -8,6 +8,7 @@ open Queries.SqlQueries
 open DiscriminatedUnions.Server
 open Auxiliaries.Server.Connection
 open Auxiliaries.Server.ROP_Functions
+open PatternBuilders.Server.PatternBuilders
 
 //SQL type providers did not work in this app
 
@@ -63,13 +64,32 @@ module Sql =
                         cmdInsert.ExecuteNonQuery() |> ignore
 
         let exnSql = (insertOrUpdateNow, (fun x -> ()), "ErrorSql1") |||> tryWith |> deconstructor1
-                
+            
+        //just testing active patterns... :-)
+        let (|Cond1|Cond2|Cond3|) (value:string) =
+    
+            MyPatternBuilder    
+                {    
+                    let! _ = value <> String.Empty, Cond1
+                    let! _ = value = String.Empty, Cond2                          
+                    return Cond3
+                }       
+
+        let cond4 = getCenikValues.Msgs.Msg1 = "First run" 
+
+        match exnSql with
+        | Cond2 when cond4 = true  -> sprintf"%s %s" "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k této chybě:" exnSql
+        | Cond2 when cond4 = false -> sprintf"%s %s" "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k této chybě:" exnSql
+        | Cond1                    -> String.Empty 
+        | Cond3 | _                -> exnSql   
+      
+        (*
         match getCenikValues.Msgs.Msg1 = "First run" with
-        | true when exnSql <> String.Empty  -> sprintf"%s %s" "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k této chybě:" exnSql
-        | true when exnSql = String.Empty   -> String.Empty 
-        | false when exnSql <> String.Empty -> sprintf"%s %s" "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k této chybě:" exnSql
-        | false when exnSql = String.Empty  -> String.Empty
-        | _                                 -> exnSql        
+        | true when exnSql <> String.Empty        -> sprintf"%s %s" "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k této chybě:" exnSql
+        | true | false when exnSql = String.Empty -> String.Empty 
+        | false when exnSql <> String.Empty       -> sprintf"%s %s" "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k této chybě:" exnSql
+        | _                                       -> exnSql        
+        *) 
         
     let selectValues idInt =
 
