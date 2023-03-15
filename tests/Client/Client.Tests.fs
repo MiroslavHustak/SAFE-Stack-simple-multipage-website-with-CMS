@@ -6,18 +6,34 @@ open Fable.Mocha
 open Expecto
 #endif
 
-//dotnet run Runtests (Client + Server + Shared)
-//Client tests alone -> npm run test:live
+open System
+
+//dotnet run Runtests (Client + Server + Shared) //reliable
+//Client tests alone -> npm run test:live //not reliable, TODO find out why
 
 //Client/Shared test results -> to http://localhost:8081/ in a web browser.
 
 let client =
     testList "Client"
         [
-            testCase "testingMochaClient" <| fun _ -> 
-                //just testing a test :-)
-                let expected = 5
-                Expect.equal expected (2+8) "2+3 = 5"//test description     
+            testCase "testingMochaClient" <| fun _ ->
+
+                //just testing a testCase :-), no real benefit out of this unit test
+                let expected = 
+                    let strContainsOnlySpace str = 
+                               str |> Seq.forall (fun item -> item = (char)32)
+
+                    let current = "testString1"
+                    let old = "testString2"     
+
+                    let input current old =                  
+                        match strContainsOnlySpace current || current = String.Empty with
+                        | true  -> old
+                        | false -> current
+
+                    input current old
+
+                Expect.stringContains expected "test" "testingMochaClient"//test description     
         ]
 
 let allTests =

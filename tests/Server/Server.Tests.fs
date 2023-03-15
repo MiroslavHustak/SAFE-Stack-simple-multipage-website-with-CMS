@@ -14,7 +14,7 @@ open System.IO
 let server =
     testList "Server"
         [
-            //just testing a test :-)
+            //just testing a test :-), no real benefit out of this unit test
             testCase "testingExpectoServer" <| fun _ ->
 
                 let expected = 5

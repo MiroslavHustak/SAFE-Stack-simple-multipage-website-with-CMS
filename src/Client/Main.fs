@@ -86,8 +86,8 @@ module App =
                 match model.Session with
                 | Some value ->
                                 match value with
-                                | SharedApi.UsernameOrPasswordIncorrect problem  -> Anonymous 
-                                | SharedApi.LoggedIn user                        -> LoggedIn user  
+                                | SharedApi.UsernameOrPasswordIncorrect problem -> Anonymous 
+                                | SharedApi.LoggedIn user                       -> LoggedIn user  
                 | None       -> Anonymous
                 
             {
