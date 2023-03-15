@@ -5,16 +5,42 @@ open Expecto
 open Shared
 open Server
 
-let server = testList "Server" [
-    testCase "Adding valid Todo" <| fun _ ->
-        let validTodo = Todo.create "TODO"
-        let expectedResult = Ok ()
+open Auxiliaries.Server.Security2
+open Auxiliaries.Server.ROP_Functions
 
-        let result = Storage.addTodo validTodo
+open System
+open System.IO
 
-        Expect.equal result expectedResult "Result should be ok"
-        Expect.contains Storage.todos validTodo "Storage should contain new todo"
-]
+let server =
+    testList "Server"
+        [
+            //just testing a test :-)
+            testCase "testingExpecto" <| fun _ ->
+
+                let expected = 5
+                Expect.equal expected (2+3) "2+3 = 5"//test description
+
+            //real unit test 
+            testCase "uberHash" <| fun _ ->
+
+                let expected =
+
+                    let uberHash x =
+                    
+                        match File.Exists(Path.GetFullPath(@"e:\SAFE Stack\SAFE-Nutricni-terapie4\tests\Server\uberHash.txt")) with
+                        | false -> Seq.empty                               
+                        | true  ->                              
+                                   match File.ReadAllLines(@"e:\SAFE Stack\SAFE-Nutricni-terapie4\tests\Server\uberHash.txt") |> Option.ofObj with 
+                                   | Some value -> value |> Seq.ofArray 
+                                   | None       -> Seq.empty 
+             
+                    let result = (uberHash, (fun x -> ()), String.Empty) |||> tryWith |> deconstructor0
+
+                    (verify (result |> Seq.head) "......"), (verify (result |> Seq.last) "......")
+
+                Expect.equal (fst expected) true "secret usr" 
+                Expect.equal (snd expected) true "secret psw" 
+        ]
 
 let all =
     testList "All"

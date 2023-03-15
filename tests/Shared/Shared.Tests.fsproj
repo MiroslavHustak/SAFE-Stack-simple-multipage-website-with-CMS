@@ -6,6 +6,7 @@
     <Compile Include="Shared.Tests.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Expecto.FsCheck" Version="9.0.4" />
     <PackageReference Include="Fable.Reactstrap" Version="0.5.1" />
   </ItemGroup>
   <ItemGroup>

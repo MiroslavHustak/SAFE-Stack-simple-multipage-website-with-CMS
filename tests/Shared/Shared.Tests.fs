@@ -8,9 +8,13 @@ open Expecto
 
 open Shared
 
-let shared = testList "Shared" [
-    testCase "Empty string is not a valid description" <| fun _ ->
-        let expected = false
-        let actual = Todo.isValid ""
-        Expect.equal actual expected "Should be false"
-]
+//Expecto unit test for Shared performed together with the Server test
+let shared =
+    testList "Shared"
+        [
+            //just testing a test :-)
+            testCase "testingExpecto" <| fun _ ->
+
+                let expected = 5
+                Expect.equal expected (2+3) "2+3 = 5"//test description      
+        ]
