@@ -11,10 +11,10 @@ module SharedApi =
     //type AccessToken = AccessToken of string
 
     [<Struct>]
-    type Username =  Username of string //See Isaac Abraham page 272 onwards
+    type Username = Username of string //See Isaac Abraham page 272 onwards
 
     [<Struct>]
-    type Password =  Password of string
+    type Password = Password of string
 
     [<Struct>]
     type LoginProblems =

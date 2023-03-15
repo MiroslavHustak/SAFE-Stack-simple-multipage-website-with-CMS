@@ -1,20 +1,23 @@
 module Shared.Tests
 
 #if FABLE_COMPILER
-open Fable.Mocha
+open Fable.Mocha //Mocha unit test for Shared performed together with the Client test
 #else
-open Expecto
+open Expecto //Expecto unit test for Shared performed together with the Server test
 #endif
 
 open Shared
 
-//Expecto unit test for Shared performed together with the Server test
+
 let shared =
     testList "Shared"
-        [
-            //just testing a test :-)
-            testCase "testingExpecto" <| fun _ ->
+        [           
+            testCase "testingExpectoMochaShared" <| fun _ ->
 
-                let expected = 5
-                Expect.equal expected (2+3) "2+3 = 5"//test description      
+                let x = SharedDeserialisedCenikValues.create SharedTypes.GetCenikValues.Default
+
+                let expected = x.Msgs
+                let actual = SharedTypes.Messages.Default
+
+                Expect.equal expected (actual) "Msgs"//test description      
         ]

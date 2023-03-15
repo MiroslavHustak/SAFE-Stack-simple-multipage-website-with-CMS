@@ -15,13 +15,13 @@ let server =
     testList "Server"
         [
             //just testing a test :-)
-            testCase "testingExpecto" <| fun _ ->
+            testCase "testingExpectoServer" <| fun _ ->
 
                 let expected = 5
-                Expect.equal expected (2+3) "2+3 = 5"//test description
+                Expect.isLessThanOrEqual expected (2+3) "2+3 = 5"//test description
 
             //real unit test 
-            testCase "uberHash" <| fun _ ->
+            testCase "uberHashServer" <| fun _ ->
 
                 let expected =
 

@@ -1,22 +1,26 @@
 module Client.Tests
 
+#if FABLE_COMPILER
 open Fable.Mocha
+#else
+open Expecto
+#endif
 
-//open Index
-open Shared
+//dotnet run Runtests (Client + Server + Shared)
+//Client tests alone -> npm run test:live
 
-let client = testList "Client" [
-    testCase "Added todo" <| fun _ -> ()
-       // let newTodo = Todo.create "new todo"
-        //let model, _ = init ()
+//Client/Shared test results -> to http://localhost:8081/ in a web browser.
 
-        //let model, _ = update (AddedTodo newTodo) model
+let client =
+    testList "Client"
+        [
+            testCase "testingMochaClient" <| fun _ -> 
+                //just testing a test :-)
+                let expected = 5
+                Expect.equal expected (2+8) "2+3 = 5"//test description     
+        ]
 
-       // Expect.equal model.Todos.Length 1 "There should be 1 todo"
-       // Expect.equal model.Todos.[0] newTodo "Todo should equal new todo"
-]
-
-let all =
+let allTests =
     testList "All"
         [
 #if FABLE_COMPILER // This preprocessor directive makes editor happy
@@ -26,4 +30,9 @@ let all =
         ]
 
 [<EntryPoint>]
-let main _ = Mocha.runTests all
+let main args =
+#if FABLE_COMPILER
+    Mocha.runTests allTests
+#else
+    runTestsWithArgs defaultConfig args allTests
+#endif
