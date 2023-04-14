@@ -115,7 +115,8 @@ module Sql =
                 use reader =            
                     match cmdExists.ExecuteScalar() |> Option.ofObj with 
                     | Some _ -> cmdSelect.ExecuteReader()
-                    | None   -> let exnSql1 = insertOrUpdate GetCenikValues.Default
+                    | None   ->
+                                let exnSql1 = insertOrUpdate GetCenikValues.Default
                                 Array.set myErrMsg 0 exnSql1 //Error message can only be caught here, not further down the code
                                 match myErrMsg |> Array.head with
                                 | "" -> Array.set myErrType 0 NotFullDb 
@@ -129,12 +130,13 @@ module Sql =
                     let inline whatIsG (x: obj) = //downcast
                         match x with
                         | :? ^a as gen -> Some gen 
-                        | _            -> None     
-                   
+                        | _            -> None                        
+                                           
                     let extractValue fn defaultValue =
                         match fn with     
                         | Some value -> value
-                        | None       -> Array.set myErrMsg 1 "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
+                        | None       ->
+                                        Array.set myErrMsg 1 "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
                                         Array.set myErrType 1 ProblemsWithReader 
                                         defaultValue                                                           
 
@@ -144,8 +146,8 @@ module Sql =
                                             seq
                                                 {
                                                 yield    
-                                                    {
-                                                        Id = int (extractValue (whatIsG reader.["Id"]) GetCenikValues.Default.Id)                                                           
+                                                    {                                                       
+                                                        Id = int (extractValue (whatIsG reader.["Id"]) GetCenikValues.Default.Id) 
                                                         ValueState = string (extractValue (whatIsG reader.["ValueState"]) GetCenikValues.Default.ValueState) 
                                                         V001 = string (extractValue (whatIsG reader.["V001"]) GetCenikValues.Default.V001) 
                                                         V002 = string (extractValue (whatIsG reader.["V002"]) GetCenikValues.Default.V002)

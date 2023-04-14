@@ -87,7 +87,8 @@ open SharedTypes
         let view (model: Model) (dispatch: Msg -> unit) =
 
             let proponClick =
-                prop.onClick (fun e -> e.preventDefault()
+                prop.onClick (fun e ->
+                                       e.preventDefault()
                                        dispatch SendUsrPswToServer
                              )
 

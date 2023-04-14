@@ -35,13 +35,16 @@ open Auxiliaries.Server.ROP_Functions
 
          let serialize record xmlFile =
 
-             let filepath = Path.GetFullPath(xmlFile) 
-                            |> Option.ofObj 
-                            |> optionToFailwith "Chyba při čtení cesty k souboru json.xml" 
+             let filepath =
+                 Path.GetFullPath(xmlFile) 
+                 |> Option.ofObj 
+                 |> optionToFailwith "Chyba při čtení cesty k souboru json.xml" 
 
-             let xmlSerializer = new DataContractSerializer(typedefof<string>)          
-                                 |> Option.ofObj 
-                                 |> optionToFailwith "Chyba při serializaci" 
+             let xmlSerializer =
+                 new DataContractSerializer(typedefof<string>)          
+                 |> Option.ofObj 
+                 |> optionToFailwith "Chyba při serializaci"
+
              use stream = File.Create(filepath)   
              xmlSerializer.WriteObject(stream, JsonConvert.SerializeObject(record))            
 
@@ -50,25 +53,35 @@ open Auxiliaries.Server.ROP_Functions
               
        let deserialize xmlFile = 
            
-           let filepath = Path.GetFullPath(xmlFile) 
-                          |> Option.ofObj 
-                          |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " xmlFile) 
+           let filepath =
+               Path.GetFullPath(xmlFile) 
+               |> Option.ofObj 
+               |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " xmlFile) 
           
            let jsonString() = 
 
-               let xmlSerializer = new DataContractSerializer(typedefof<string>) 
-                                   |> Option.ofObj 
-                                   |> optionToFailwith "Chyba při serializaci" 
-               let fileStream = File.ReadAllBytes(filepath)  
-                                |> Option.ofObj 
-                                |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile) 
-               use memoryStream = new MemoryStream(fileStream) 
-               let resultObj = xmlSerializer.ReadObject(memoryStream)  
-                               |> Option.ofObj 
-                               |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile) 
-               let resultString = unbox resultObj  
-                                  |> Option.ofObj 
-                                  |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru (unboxing) " xmlFile)    
+               let xmlSerializer =
+                   new DataContractSerializer(typedefof<string>) 
+                   |> Option.ofObj 
+                   |> optionToFailwith "Chyba při serializaci"
+
+               let fileStream =
+                   File.ReadAllBytes(filepath)  
+                   |> Option.ofObj 
+                   |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile)
+
+               use memoryStream = new MemoryStream(fileStream)
+
+               let resultObj =
+                   xmlSerializer.ReadObject(memoryStream)  
+                   |> Option.ofObj 
+                   |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile)
+
+               let resultString =
+                   unbox resultObj  
+                   |> Option.ofObj 
+                   |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru (unboxing) " xmlFile)    
+
                let jsonString = JsonConvert.DeserializeObject<'a>(resultString) 
                jsonString
            
@@ -82,12 +95,15 @@ open Auxiliaries.Server.ROP_Functions
        let copyFiles source destination =
                                                                     
           let perform x =                                    
-              let sourceFilepath = Path.GetFullPath(source) 
-                                   |> Option.ofObj
-                                   |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " source) 
-              let destinFilepath = Path.GetFullPath(destination) 
-                                   |> Option.ofObj 
-                                   |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " source) 
+              let sourceFilepath =
+                  Path.GetFullPath(source) 
+                  |> Option.ofObj
+                  |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " source)
+
+              let destinFilepath =
+                  Path.GetFullPath(destination) 
+                  |> Option.ofObj 
+                  |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " source) 
                     
               let fInfodat: FileInfo = new FileInfo(sourceFilepath)  
               match fInfodat.Exists with 

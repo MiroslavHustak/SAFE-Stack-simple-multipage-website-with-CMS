@@ -157,48 +157,52 @@ module App =
 
         | Some (MaximeRouter.Router.Route.CMSRozcestnik cmsRozcestnikId) ->               
             match model.User with
-            | Anonymous ->  
-                       let (homeModel, homeCmd) = Home.init () //or Login.init      
-                       { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
-            | LoggedIn user  ->
-                       let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.init cmsRozcestnikId 
-                       { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd
+            | Anonymous     ->  
+                              let (homeModel, homeCmd) = Home.init () //or Login.init      
+                              { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
+            | LoggedIn user ->
+                              let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.init cmsRozcestnikId 
+                              { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd
              //FirstTimeRunAnonymous is a long string, that is why a placeholder is used instead :-)
-            | _     -> let (homeModel, homeCmd) = Home.init () //or Login.init      
-                       { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues                  
+            | _             ->
+                              let (homeModel, homeCmd) = Home.init () //or Login.init      
+                              { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues                  
                      
         | Some (MaximeRouter.Router.Route.CMSCenik cmsCenikId) ->  
             match model.User with
-            | Anonymous ->  
-                        let (homeModel, homeCmd) = Home.init () //or Login.init      
-                        { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
+            | Anonymous     ->  
+                              let (homeModel, homeCmd) = Home.init () //or Login.init      
+                              { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
             | LoggedIn user ->
-                        let (cmsCenikModel, cmsCenikCmd) = CMSCenik.init cmsCenikId
-                        { model with ActivePage = Page.CMSCenik cmsCenikModel }, Cmd.map CMSCenikMsg cmsCenikCmd 
-            | _      -> let (homeModel, homeCmd) = Home.init () //or Login.init      
-                        { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
+                              let (cmsCenikModel, cmsCenikCmd) = CMSCenik.init cmsCenikId
+                              { model with ActivePage = Page.CMSCenik cmsCenikModel }, Cmd.map CMSCenikMsg cmsCenikCmd 
+            | _             ->
+                              let (homeModel, homeCmd) = Home.init () //or Login.init      
+                              { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
         | Some (MaximeRouter.Router.Route.CMSKontakt cmsKontaktId) ->
             match model.User with
-            | Anonymous ->  
-                       let (homeModel, homeCmd) = Home.init () //or Login.init     
-                       { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
+            | Anonymous     ->  
+                              let (homeModel, homeCmd) = Home.init () //or Login.init     
+                              { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
             | LoggedIn user ->
-                       let (cmsKontaktModel, cmsKontaktCmd) = CMSKontakt.init cmsKontaktId
-                       { model with ActivePage = Page.CMSKontakt cmsKontaktModel }, Cmd.map CMSKontaktMsg cmsKontaktCmd 
-            | _ ->     let (homeModel, homeCmd) = Home.init () //or Login.init      
-                       { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
+                              let (cmsKontaktModel, cmsKontaktCmd) = CMSKontakt.init cmsKontaktId
+                              { model with ActivePage = Page.CMSKontakt cmsKontaktModel }, Cmd.map CMSKontaktMsg cmsKontaktCmd 
+            | _             ->
+                              let (homeModel, homeCmd) = Home.init () //or Login.init      
+                              { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
         | Some (MaximeRouter.Router.Route.CMSLink cmsLinkId) ->    
             match model.User with
-            | Anonymous ->  
-                       let (homeModel, homeCmd) = Home.init () //or Login.init      
-                       { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
+            | Anonymous     ->  
+                              let (homeModel, homeCmd) = Home.init () //or Login.init      
+                              { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
             | LoggedIn user ->
-                       let (cmsLinkModel, cmsLinkCmd) = CMSLink.init cmsLinkId
-                       { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
-            | _     -> let (homeModel, homeCmd) = Home.init () //or Login.init       
-                       { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues
+                              let (cmsLinkModel, cmsLinkCmd) = CMSLink.init cmsLinkId
+                              { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
+            | _             ->
+                              let (homeModel, homeCmd) = Home.init () //or Login.init       
+                              { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues
 
     let init (location: MaximeRouter.Router.Route option) =
         
@@ -240,7 +244,7 @@ module App =
             let (kontaktModel, kontaktCmd) = Kontakt.update kontaktMsg kontaktModel
             { model with ActivePage = Page.Kontakt kontaktModel; Session = None }, Cmd.map KontaktMsg kontaktCmd
 
-        | Page.Login loginModel, LoginMsg loginMsg  ->
+        | Page.Login loginModel, LoginMsg loginMsg ->
             let (loginModel, loginCmd, loginExtraMsg) = Login.update loginMsg loginModel        
             match loginExtraMsg with
             | Login.ExternalMsg.NoOp -> { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd

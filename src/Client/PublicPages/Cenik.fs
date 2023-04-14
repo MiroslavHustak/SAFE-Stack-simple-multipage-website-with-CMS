@@ -35,12 +35,12 @@ module Cenik =
     let init id : Model * Cmd<Msg> =
 
         let model =
-          {
-              CenikValues = GetCenikValues.Default       
-              CenikInputValues = GetCenikValues.Default
-              ErrorMsg = String.Empty
-              Id = id
-          }
+           {
+               CenikValues = GetCenikValues.Default       
+               CenikInputValues = GetCenikValues.Default
+               ErrorMsg = String.Empty
+               Id = id
+           }
         model, Cmd.ofMsg AskServerForCenikValues
 
     let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =

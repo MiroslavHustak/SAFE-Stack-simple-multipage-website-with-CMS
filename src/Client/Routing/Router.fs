@@ -43,7 +43,8 @@ module Router =
     open Elmish.UrlParser
 
     let routeParser : Parser<Route -> Route, Route> =
-        oneOf [ // Auth Routes
+        oneOf
+            [   // Auth Routes
                 map Route.Home (s "home")
                 map (fun domainId -> Route.Cenik domainId) (s "cenik" </> i32)
                 map (fun domainId -> Route.Sluzby domainId) (s "sluzby" </> i32)
@@ -59,5 +60,5 @@ module Router =
 
                 // Default Route
                 map Route.Home top
-             ]
+            ]
 

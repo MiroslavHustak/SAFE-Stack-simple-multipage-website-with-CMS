@@ -52,7 +52,8 @@ module Security2 =
 
         match parts.Length <> 54 || parts.[0] <> byte 0 with
         | true  -> false
-        | false -> let salt = Array.zeroCreate<byte> saltSize
+        | false ->
+                   let salt = Array.zeroCreate<byte> saltSize
                    Buffer.BlockCopy(parts, 1, salt, 0, saltSize)
 
                    let bytes = Array.zeroCreate<byte> subkeyLength
