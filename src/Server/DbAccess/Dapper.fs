@@ -10,9 +10,10 @@ open System.Data.SqlClient
 open SharedTypes
 open Queries.SqlQueries
 open DiscriminatedUnions.Server
-open Auxiliaries.Server.Connection
-open Auxiliaries.Server.ROP_Functions
+
 open Auxiliaries.Server.DapperHelper
+open Auxiliaries.Server.ROP_Functions
+open Auxiliaries.Connections.Connection
 
 module Dapper = 
 
@@ -79,7 +80,7 @@ module Dapper =
 
             //failwith "Simulated exception SqlSelectValues"
 
-            use connection = new SqlConnection(connStringSomee) 
+            use connection = new SqlConnection(connStringSomee) //Tohle uzavre ve vhodne dobe a navic je mozne toto mit v try with bloku. Vzpomen si, co to delalo pri samostatnem connection.Close() 
             connection.Open()
 
             //**************** SqlCommands ***************** 

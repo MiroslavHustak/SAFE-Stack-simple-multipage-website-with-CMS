@@ -40,7 +40,7 @@ module ROP_Functions =
         function
         | Success x when x = true  -> LegitimateTrue
         | Success x when x = false -> LegitimateFalse            
-        | _                        -> Exception  
+        | _                        -> Exception
         
     let optionToFailwith str = 
         function

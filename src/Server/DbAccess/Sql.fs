@@ -6,14 +6,16 @@ open System.Data.SqlClient
 open SharedTypes
 open Queries.SqlQueries
 open DiscriminatedUnions.Server
-open Auxiliaries.Server.Connection
+
+open Auxiliaries.Server.DapperHelper
 open Auxiliaries.Server.ROP_Functions
+open Auxiliaries.Connections.Connection
 open PatternBuilders.Server.PatternBuilders
 
-//SQL type providers did not work in this app
+//SQL type providers did not work in this app, they block the database
 
-module Sql = 
-
+module Sql =
+      
     //**************** Sql query strings *****************
     //See the file SQL Queries.fs
 
@@ -70,8 +72,8 @@ module Sql =
     
             MyPatternBuilder    
                 {    
-                    let! _ = value <> String.Empty, Cond1
-                    let! _ = value = String.Empty, Cond2                          
+                    let! _ = (<>) value String.Empty, Cond1
+                    let! _ = (=) value String.Empty, Cond2                          
                     return Cond3
                 }       
 
@@ -100,9 +102,9 @@ module Sql =
 
             //failwith "Simulated exception SqlSelectValues"
 
-            use connection = new SqlConnection(connStringSomee) 
-            connection.Open()  
-
+            use connection = new SqlConnection(connStringSomee) //Tohle uzavre ve vhodne dobe a navic je mozne toto mit v try with bloku. Vzpomen si, co to delalo pri samostatnem connection.Close() 
+            connection.Open()
+                       
             let getValues =
 
                 let idString = string idInt

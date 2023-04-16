@@ -6,6 +6,7 @@
     <FSharpPreferNetFrameworkTools>True</FSharpPreferNetFrameworkTools>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Connections\Connection.fs" />
     <None Include="paket.references" />
     <Compile Include="Types\Strings.fs" />
     <Compile Include="Types\DiscriminatedUnions.fs" />
@@ -14,7 +15,6 @@
     <Compile Include="Auxiliaries\DapperHelper.fs" />
     <Compile Include="Auxiliaries\Security2.fs" />
     <Compile Include="Auxiliaries\Security.fs" />
-    <Compile Include="Auxiliaries\Connection.fs" />
     <Compile Include="Auxiliaries\ROP_Functions.fs" />
     <Compile Include="Auxiliaries\Helpers.fs" />
     <Content Include="Queries\Sql_Queries.txt" />
@@ -31,6 +31,8 @@
     <PackageReference Include="Fable.React" Version="7.4.3" />
     <PackageReference Include="Feliz.Router" Version="3.8.0" />
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />
+    <PackageReference Include="FSharp.Data" Version="5.0.2" />
+    <PackageReference Include="FSharp.Data.SqlClient" Version="2.1.2" />
     <PackageReference Include="jose-jwt" Version="4.0.1" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
