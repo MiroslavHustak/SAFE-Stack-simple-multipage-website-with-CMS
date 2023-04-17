@@ -41,11 +41,12 @@ module Server =
         let psw = uberHash "" //delete password before bundling
         let mySeq = seq { usr; psw }
         
-        use sw = new StreamWriter(Path.GetFullPath("uberHash.txt")) 
-                 |> Option.ofObj
-                 |> function
-                     | Some value -> value
-                     | None       -> //Check the "uberHash.txt" file manually 
+        use sw =
+            new StreamWriter(Path.GetFullPath("uberHash.txt")) 
+            |> Option.ofObj
+            |> function
+                | Some value -> value
+                | None       -> //Check the "uberHash.txt" file manually 
                                      new StreamWriter(Path.GetFullPath("")) 
         mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
     //************************************************************************

@@ -45,25 +45,42 @@ Automatic conversions:
 
 F# OOP
 
-type LoginResult =
-    abstract member IsUsernameOrPasswordIncorrect : bool
-    abstract member User : User option
+type AccessToken(token: string) =
+    member val Token = token with get
 
-and LoginProblems(line1: string, line2: string) =
+type Username(name: string) =
+    member val Name = name with get
+
+type Password(value: string) =
+    member val Value = value with get
+
+type LoginProblems(line1: string, line2: string) =
     member val Line1 = line1 with get
     member val Line2 = line2 with get
 
-    interface LoginResult with
-        member this.IsUsernameOrPasswordIncorrect = true
-        member this.User = None
+type LoginResult(loginProblems: option<LoginProblems>, user: option<User>) =
+    member val LoginProblems = loginProblems with get
+    member val User = user with get
 
-and User(username: Username, accessToken: AccessToken) =
+type User(username: Username, accessToken: AccessToken) =
     member val Username = username with get
     member val AccessToken = accessToken with get
 
-    interface LoginResult with
-        member this.IsUsernameOrPasswordIncorrect = false
-        member this.User = Some this
+type Login(login: string, password: string) =
+    member val Login = login with get
+    member val Password = password with get
+
+type Auth =
+    static member Login(login: Login, password: Password) =
+        match (login.Login, password.Value) with
+        | ("admin", "password123") ->
+            let accessToken = AccessToken("token")
+            let username = Username(login.Login)
+            let user = User(username, accessToken)
+            LoginResult(None, Some(user))
+        | _ ->
+            let loginProblems = LoginProblems("Username or password is incorrect", "Please try again")
+            LoginResult(Some(loginProblems), None)
 
 
 C# OOP
