@@ -129,10 +129,10 @@ module Sql =
 
                     (* ^a -> statically resolved generic type parameter *)
 
-                    let inline whatIsG (x: obj) = //downcast
+                    let inline whatIsSrtp (x: obj) = //downcast
                         match x with
-                        | :? ^a as gen -> Some gen 
-                        | _            -> None                        
+                        | :? ^a as srtp -> Some srtp 
+                        | _             -> None                        
                                            
                     let extractValue fn defaultValue =
                         match fn with     
@@ -149,17 +149,17 @@ module Sql =
                                                 {
                                                 yield    
                                                     {                                                       
-                                                        Id = int (extractValue (whatIsG reader.["Id"]) GetCenikValues.Default.Id) 
-                                                        ValueState = string (extractValue (whatIsG reader.["ValueState"]) GetCenikValues.Default.ValueState) 
-                                                        V001 = string (extractValue (whatIsG reader.["V001"]) GetCenikValues.Default.V001) 
-                                                        V002 = string (extractValue (whatIsG reader.["V002"]) GetCenikValues.Default.V002)
-                                                        V003 = string (extractValue (whatIsG reader.["V003"]) GetCenikValues.Default.V003)
-                                                        V004 = string (extractValue (whatIsG reader.["V004"]) GetCenikValues.Default.V004)
-                                                        V005 = string (extractValue (whatIsG reader.["V005"]) GetCenikValues.Default.V005)
-                                                        V006 = string (extractValue (whatIsG reader.["V006"]) GetCenikValues.Default.V006)
-                                                        V007 = string (extractValue (whatIsG reader.["V007"]) GetCenikValues.Default.V007)
-                                                        V008 = string (extractValue (whatIsG reader.["V008"]) GetCenikValues.Default.V008)
-                                                        V009 = string (extractValue (whatIsG reader.["V009"]) GetCenikValues.Default.V009)
+                                                        Id = int (extractValue (whatIsSrtp reader.["Id"]) GetCenikValues.Default.Id) 
+                                                        ValueState = string (extractValue (whatIsSrtp reader.["ValueState"]) GetCenikValues.Default.ValueState) 
+                                                        V001 = string (extractValue (whatIsSrtp reader.["V001"]) GetCenikValues.Default.V001) 
+                                                        V002 = string (extractValue (whatIsSrtp reader.["V002"]) GetCenikValues.Default.V002)
+                                                        V003 = string (extractValue (whatIsSrtp reader.["V003"]) GetCenikValues.Default.V003)
+                                                        V004 = string (extractValue (whatIsSrtp reader.["V004"]) GetCenikValues.Default.V004)
+                                                        V005 = string (extractValue (whatIsSrtp reader.["V005"]) GetCenikValues.Default.V005)
+                                                        V006 = string (extractValue (whatIsSrtp reader.["V006"]) GetCenikValues.Default.V006)
+                                                        V007 = string (extractValue (whatIsSrtp reader.["V007"]) GetCenikValues.Default.V007)
+                                                        V008 = string (extractValue (whatIsSrtp reader.["V008"]) GetCenikValues.Default.V008)
+                                                        V009 = string (extractValue (whatIsSrtp reader.["V009"]) GetCenikValues.Default.V009)
                                                         Msgs = Messages.Default
                                                     }
                                                 } 

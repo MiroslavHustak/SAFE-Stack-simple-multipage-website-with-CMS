@@ -47,7 +47,7 @@ module Server =
             |> function
                 | Some value -> value
                 | None       -> //Check the "uberHash.txt" file manually 
-                                     new StreamWriter(Path.GetFullPath("")) 
+                                new StreamWriter(Path.GetFullPath("")) 
         mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
     //************************************************************************
 
