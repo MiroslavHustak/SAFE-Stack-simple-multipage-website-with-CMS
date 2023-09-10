@@ -64,7 +64,7 @@ module SqlRF =
                         cmdInsert.ExecuteNonQuery() |> ignore
                         Ok () 
         with
-        | _ -> Error String.Empty //uzivatel nepotrebuje znat detailni popis chyby       
+        | _ -> Error InsertOrUpdateError //uzivatel nepotrebuje znat detailni popis chyby       
             
     let selectValues idInt =
            
@@ -88,10 +88,9 @@ module SqlRF =
                             match cmdExists.ExecuteScalar() |> Option.ofObj with 
                             | Some _ -> Ok <| cmdSelect.ExecuteReader()
                             | None   ->
-                                        let exnSql = insertOrUpdate GetCenikValues.Default
-                                        match exnSql.Equals(String.Empty) with
-                                        | true  -> Error InsertOrUpdateError1 
-                                        | false -> Error InsertOrUpdateError2                                
+                                        match insertOrUpdate GetCenikValues.Default with
+                                        | Ok _    -> Error InsertOrUpdateError1
+                                        | Error _ -> Error InsertOrUpdateError2                                                                  
                        
                         match reader with
                         | Ok reader ->                                     

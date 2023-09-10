@@ -21,7 +21,7 @@ let client =
                 //just testing a testCase :-), no real benefit out of this unit test
                 let expected = 
                     let strContainsOnlySpace str = 
-                               str |> Seq.forall (fun item -> item = (char)32)
+                        str |> Seq.forall (fun item -> item = (char)32)
 
                     let current = "testString1"
                     let old = "testString2"     

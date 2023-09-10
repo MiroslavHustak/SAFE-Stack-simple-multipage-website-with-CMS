@@ -14,17 +14,11 @@ open System
 
         let removeSpaces (input: string) =
 
-            let c = string <| (char)32
-            let d = sprintf "%s%s" c c 
+            let c = (char)32         
 
-            match input with
-            | x when x = c -> String.Empty
-            | x when x = d -> String.Empty
-            | _            ->
-                            match String.length input, input.[0] with
-                            | length, c when length >= 2 && input.[1] = c -> input.[2..]
-                            | length, c when length >= 1                  -> input.[1..]
-                            | _                                           -> input                                 
+            match input.[0] with
+            | x when x = c -> input.[1..]        
+            | _            -> input                                               
 
         let strContainsOnlySpace str = str |> Seq.forall (fun item -> item = (char)32) 
 

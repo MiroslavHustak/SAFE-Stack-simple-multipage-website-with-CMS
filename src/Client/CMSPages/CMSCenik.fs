@@ -142,7 +142,6 @@ module CMSCenik =
                            ErrorMsg =
                                let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3   
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3
-
             },  Cmd.none
 
         | GetOldCenikValues valueOld ->    

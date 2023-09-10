@@ -177,7 +177,7 @@ module Server =
                             // let (dbGetNewCenikValues, exnSql2) = selectValues IdNew            
                             let (dbGetNewCenikValues, exnSql2) =                              
                                 match selectValues IdNew with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!!                                 
-                                | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+                                | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
                                 | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
                                 | value, ReadingDbError       -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
                                 | value, ConnectionError      -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
@@ -198,7 +198,7 @@ module Server =
                             //let (dbSendOldCenikValues, exnSql3) = selectValues IdOld
                             let (dbSendOldCenikValues, exnSql3) =                              
                                 match selectValues IdOld with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!! 
-                                | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+                                | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
                                 | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
                                 | value, ReadingDbError       -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
                                 | value, ConnectionError      -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
@@ -218,7 +218,7 @@ module Server =
 
                            let (dbSendCenikValues, exnSql1) =                              
                                match selectValues IdNew with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!! 
-                               | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+                               | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
                                | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
                                | value, ReadingDbError       -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
                                | value, ConnectionError      -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
@@ -283,7 +283,8 @@ module Server =
                       {
                          let getNewLinkAndLinkNameValues: GetLinkAndLinkNameValues = 
                              match verifyLinkAndLinkNameValues getLinkAndLinkNameValues with
-                             | Success () ->                     //failwith "Simulated exception14" 
+                             | Success () ->
+                                           //failwith "Simulated exception14" 
                                            let serializeNow x = serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"
                                            let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error14") |||> tryWith |> deconstructor1
                                            { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
@@ -303,7 +304,7 @@ module Server =
                                <| "jsonLinkAndLinkNameValues.xml"
                                <| "jsonLinkAndLinkNameValuesBackUp.xml"
                            let exnJson1 = (copyFilesNow, (fun x -> ()), "Byly dosazeny předchozí hodnoty, neb došlo k této chybě: Error15") |||> tryWith |> deconstructor1
-                                                                   //failwith "Simulated exception16" 
+                           //failwith "Simulated exception16" 
                            let sendOldLinkAndLinkNameValuesNow x = deserialize "jsonLinkAndLinkNameValuesBackUp.xml"                                
                            let (sendOldLinkAndLinkNameValues, exnJson2) = (sendOldLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error16") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
 
