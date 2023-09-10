@@ -2,10 +2,10 @@ namespace Server
 
 open System
 open System.IO
-open System.Data.SqlClient
+//open System.Data.SqlClient
 
 open Saturn
-open Dapper.FSharp
+//open Dapper.FSharp
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 
@@ -14,8 +14,7 @@ open SharedTypes
 
 open Database.SqlRF      
 //open DbAccess.Dapper 
-
-open Errors
+open Auxiliaries.Errors.Errors
 open DiscriminatedUnions.Server
 open Auxiliaries.Server.Security2
 open Auxiliaries.Server.CopyingFiles
@@ -23,7 +22,6 @@ open Auxiliaries.Server.ROP_Functions
 open Auxiliaries.Server.Serialisation
 open Auxiliaries.Server.Deserialisation
 open PatternBuilders.Server.PatternBuilders
-open Auxiliaries.Errors.Errors
 
 module Server =
 
@@ -111,7 +109,7 @@ module Server =
        | ()  -> Success ()        
        //| _ -> Failure ()
 
-    let IGetApi exn =
+    let IGetApi errMsg =
         {            
             login =
                 fun login -> async { return (verifyLogin login) }          
@@ -152,18 +150,17 @@ module Server =
                                               //************* plain SQL or Dapper.FSharp ********************
 
                                               let cond = dbNewCenikValues.Msgs.Msg1 = "First run" 
-                                              let du =  errorMsgBox (insertOrUpdate dbNewCenikValues) cond
+                                              let du = errorMsgBox (insertOrUpdate dbNewCenikValues) cond
                                               let exnSql =
                                                   match du with
                                                   | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
                                                   | InsertOrUpdateError -> "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k chybě při načítání hodnot z databáze." 
                                                   | NoInsertError       -> String.Empty
-
-                                              //let exnSql = insertOrUpdate dbNewCenikValues
                                          
                                               { dbNewCenikValues with Msgs = { Messages.Default with Msg1 = exnSql } }
                                                                            
-                                | Failure () -> GetCenikValues.Default
+                                | Failure () ->
+                                              GetCenikValues.Default
 
                           return getNewCenikValues
                       }
@@ -175,36 +172,37 @@ module Server =
                             //************* plain SQL or Dapper.FSharp ********************                     
                             let IdNew = 2
                             let IdOld = 3
-                            //******************************
+
+                            //********************************************************
                             // let (dbGetNewCenikValues, exnSql2) = selectValues IdNew            
                             let (dbGetNewCenikValues, exnSql2) =                              
-                                    match selectValues IdNew with                                    
-                                    | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
-                                    | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
-                                    | value, ReadingDbError -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
-                                    | value, ConnectionError -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
-                                    | value, NoSelectError -> value, String.Empty
+                                match selectValues IdNew with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!!                                 
+                                | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+                                | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
+                                | value, ReadingDbError       -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
+                                | value, ConnectionError      -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
+                                | value, NoSelectError        -> value, String.Empty
 
-                            //*****************************************************
+                            //********************************************************
                             //let exnSql = insertOrUpdate { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                             let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                             let cond = dbCenikValues.Msgs.Msg1 = "First run" 
-                            let du =  errorMsgBox (insertOrUpdate dbCenikValues) cond
+                            let du = errorMsgBox (insertOrUpdate dbCenikValues) cond
                             let exnSql =
                                 match du with
                                 | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
                                 | InsertOrUpdateError -> "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k chybě při načítání hodnot z databáze." 
                                 | NoInsertError       -> String.Empty
 
-                                //********************************************************
+                            //********************************************************
                             //let (dbSendOldCenikValues, exnSql3) = selectValues IdOld
                             let (dbSendOldCenikValues, exnSql3) =                              
-                                match selectValues IdOld with
+                                match selectValues IdOld with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!! 
                                 | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
                                 | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
-                                | value, ReadingDbError -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
-                                | value, ConnectionError -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
-                                | value, NoSelectError -> value, String.Empty              
+                                | value, ReadingDbError       -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
+                                | value, ConnectionError      -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
+                                | value, NoSelectError        -> value, String.Empty
 
                             return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnSql; Msg2 = exnSql2; Msg3 = exnSql3 } }
                         }
@@ -219,14 +217,14 @@ module Server =
                            //let (dbSendCenikValues, exnSql1) = selectValues IdNew
 
                            let (dbSendCenikValues, exnSql1) =                              
-                               match selectValues IdNew with
+                               match selectValues IdNew with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!! 
                                | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
                                | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
-                               | value, ReadingDbError -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
-                               | value, ConnectionError -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
-                               | value, NoSelectError -> value, String.Empty      
+                               | value, ReadingDbError       -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
+                               | value, ConnectionError      -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
+                               | value, NoSelectError        -> value, String.Empty      
 
-                           return { dbSendCenikValues with Msgs = { Messages.Default with Msg1 = exnSql1; Msg2 = exn } }
+                           return { dbSendCenikValues with Msgs = { Messages.Default with Msg1 = exnSql1; Msg2 = errMsg } } 
                        }
 
              //************* from here downwards Json/XML ********************   
@@ -237,12 +235,13 @@ module Server =
                             let getNewKontaktValues: GetKontaktValues = 
                                 match verifyKontaktValues getKontaktValues with
                                 | Success () ->                                  
-                                               let serializeNow x =
-                                                  //failwith "Simulated exception10" 
-                                                  serialize getKontaktValues "jsonKontaktValues.xml"                            
-                                               let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error10") |||> tryWith |> deconstructor1
-                                               { getKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson } }                                   
-                                | Failure () -> GetKontaktValues.Default
+                                              let serializeNow x =
+                                                 //failwith "Simulated exception10" 
+                                                 serialize getKontaktValues "jsonKontaktValues.xml"                            
+                                              let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error10") |||> tryWith |> deconstructor1
+                                              { getKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson } }                                   
+                                | Failure () ->
+                                              GetKontaktValues.Default
 
                             return getNewKontaktValues
                         }
@@ -259,7 +258,7 @@ module Server =
 
                             let exnJson1 = (copyFilesNow, (fun x -> ()), "Byly dosazeny předchozí hodnoty, neb došlo k této chybě: Error11") |||> tryWith |> deconstructor1
 
-                                                           //failwith "Simulated exception12" 
+                             //failwith "Simulated exception12" 
                             let sendOldKontaktValuesNow x = deserialize "jsonKontaktValuesBackUp.xml"
 
                             let (sendOldKontaktValues, exnJson2) = (sendOldKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error12") |||> tryWith |> deconstructor2 GetKontaktValues.Default
@@ -270,7 +269,8 @@ module Server =
             sendDeserialisedKontaktValues =
                 fun _ ->
                     async
-                        {                                //failwith "Simulated exception13"   
+                        {
+                            //failwith "Simulated exception13"   
                             let sendKontaktValuesNow x = deserialize "jsonKontaktValues.xml"                                 
                             let (sendKontaktValues, exnJson1) = (sendKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error13") |||> tryWith |> deconstructor2 GetKontaktValues.Default
 
@@ -284,10 +284,11 @@ module Server =
                          let getNewLinkAndLinkNameValues: GetLinkAndLinkNameValues = 
                              match verifyLinkAndLinkNameValues getLinkAndLinkNameValues with
                              | Success () ->                     //failwith "Simulated exception14" 
-                                            let serializeNow x = serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"
-                                            let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error14") |||> tryWith |> deconstructor1
-                                            { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
-                             | Failure () -> GetLinkAndLinkNameValues.Default                        
+                                           let serializeNow x = serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"
+                                           let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error14") |||> tryWith |> deconstructor1
+                                           { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
+                             | Failure () ->
+                                           GetLinkAndLinkNameValues.Default                        
 
                          return getNewLinkAndLinkNameValues
                       }
@@ -312,7 +313,8 @@ module Server =
             sendDeserialisedLinkAndLinkNameValues =
                fun _ ->
                    async
-                       {                                        //failwith "Simulated exception17"    
+                       {
+                           //failwith "Simulated exception17"    
                            let sendLinkAndLinkNameValuesNow x = deserialize "jsonLinkandLinkNameValues.xml"                                 
                            let (sendLinkAndLinkNameValues, exnJson1) = (sendLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error17") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
 
@@ -328,9 +330,8 @@ module Server =
 
     let app =
         //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
-        let dbCenikValues = { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } } 
-        let cond = dbCenikValues.Msgs.Msg1 = "First run" 
-        let du =  errorMsgBox (insertOrUpdate dbCenikValues) cond
+        let dbCenikValues = { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }         
+        let du = errorMsgBox (insertOrUpdate dbCenikValues) true //true == first run
         let exnSql =
             match du with
             | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."

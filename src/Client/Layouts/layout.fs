@@ -6,7 +6,7 @@ open Feliz
 
 open SharedTypes
 open Records.Client
-open Auxiliaries.Client.SpaceChecker
+open Auxiliaries.Client.Helper
 
 module Layout = 
 

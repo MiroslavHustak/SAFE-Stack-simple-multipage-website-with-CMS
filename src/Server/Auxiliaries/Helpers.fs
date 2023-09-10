@@ -12,7 +12,7 @@ open Auxiliaries.Server.ROP_Functions
          let tryParseWith (tryParseFunc: string -> bool * _) = tryParseFunc >> function
              | true, value -> Some value
              | false, _    -> None
-         let parseInt  = tryParseWith <| System.Int32.TryParse  
+         let parseInt = tryParseWith <| System.Int32.TryParse  
          let (|Int|_|) = parseInt        
 
     module Parsing =

@@ -9,7 +9,7 @@ open Fable.Remoting.Client
 
 open Shared
 open SharedTypes
-open Auxiliaries.Client.SpaceChecker
+open Auxiliaries.Client.Helper
 
 module CMSKontakt = 
 
@@ -126,7 +126,9 @@ module CMSKontakt =
                                   V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
                                   V007 = valueNew.V007; Msgs = valueNew.Msgs
                               }
-                           ErrorMsg = sprintf "%s %s %s" valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3 
+                           ErrorMsg = 
+                               let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3
+                               removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
             },  Cmd.none
 
         | GetOldKontaktValues valueOld ->
@@ -138,7 +140,9 @@ module CMSKontakt =
                                   V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
                                   V007 = valueOld.V007; Msgs = valueOld.Msgs
                               }
-                           ErrorMsg = sprintf "%s %s %s" valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3  
+                           ErrorMsg =
+                               let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3  
+                               removeSpaces <| sprintf "%s %s %s" p1 p2 p3  
             },  Cmd.none  
    
     let view (model: Model) (dispatch: Msg -> unit) =        

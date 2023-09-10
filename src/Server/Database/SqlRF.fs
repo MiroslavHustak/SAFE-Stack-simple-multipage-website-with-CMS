@@ -8,10 +8,7 @@ open FsToolkit.ErrorHandling
 open SharedTypes
 open Queries.SqlQueries
 open DiscriminatedUnions.Server
-
-open Auxiliaries.Server.ROP_Functions
 open Auxiliaries.Connections.Connection
-open PatternBuilders.Server.PatternBuilders
 
 //SQL type providers did not work in this app, they block the database
 
@@ -31,76 +28,43 @@ module SqlRF =
 
     //**************** Sql queries - inner functions  *****************
     let insertOrUpdate getCenikValues =
-              
-        let insertOrUpdate: Result<unit, string> =
 
-            try
-
-                //failwith "Simulated exception SqlInsertOrUpdate"
+        try
+            //failwith "Simulated exception SqlInsertOrUpdate"
                 
-                use connection = new SqlConnection(connStringSomee) //choose between LocalHost and Somee
-                connection.Open()  
+            use connection = new SqlConnection(connStringSomee) //choose between LocalHost and Somee
+            connection.Open()  
 
-                let idInt = getCenikValues.Id //idInt = Primary Key for new/old/fixed value state
-                let valState = getCenikValues.ValueState
-                let idString = string idInt        
+            let idInt = getCenikValues.Id //idInt = Primary Key for new/old/fixed value state
+            let valState = getCenikValues.ValueState
+            let idString = string idInt        
        
-                //**************** Parameters for command.Parameters.AddWithValue("@val", some value) *****************
-                let newParamList =
-                    [
-                        ("@valState", valState); ("@val01", getCenikValues.V001); ("@val02", getCenikValues.V002);
-                        ("@val03", getCenikValues.V003); ("@val04", getCenikValues.V004); ("@val05", getCenikValues.V005);
-                        ("@val06", getCenikValues.V006); ("@val07", getCenikValues.V007); ("@val08", getCenikValues.V008); ("@val09", getCenikValues.V009)
-                    ]       
+            //**************** Parameters for command.Parameters.AddWithValue("@val", some value) *****************
+            let newParamList =
+                [
+                    ("@valState", valState); ("@val01", getCenikValues.V001); ("@val02", getCenikValues.V002);
+                    ("@val03", getCenikValues.V003); ("@val04", getCenikValues.V004); ("@val05", getCenikValues.V005);
+                    ("@val06", getCenikValues.V006); ("@val07", getCenikValues.V007); ("@val08", getCenikValues.V008); ("@val09", getCenikValues.V009)
+                ]       
 
-                //**************** SqlCommands *****************
-                use cmdExists = new SqlCommand(queryExists idString, connection)
-                use cmdInsert = new SqlCommand(queryInsert, connection)
-                use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
+            //**************** SqlCommands *****************
+            use cmdExists = new SqlCommand(queryExists idString, connection)
+            use cmdInsert = new SqlCommand(queryInsert, connection)
+            use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
 
-                //**************** Add values to parameters and execute commands with business logic *****************
-                match cmdExists.ExecuteScalar() |> Option.ofObj with
-                | Some _ -> 
-                            newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
-                            cmdUpdate.ExecuteNonQuery() |> ignore
-                            Ok () 
-                | None   -> 
-                            cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
-                            newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
-                            cmdInsert.ExecuteNonQuery() |> ignore
-                            Ok () 
-            with
-            | _ -> Error String.Empty //uzivatel nepotrebuje znat popis chyby
-
-        (*
-        let errorMsgBox =
-
-            let s =
-                match insertOrUpdate with
-                | Ok _     -> String.Empty
-                | Error ex -> ex
-            
-            //just testing active patterns... :-)
-            let (|Cond1|Cond2|Cond3|) (value:string) =
-    
-                MyPatternBuilder    
-                    {    
-                        let! _ = (<>) value String.Empty, Cond1
-                        let! _ = (=) value String.Empty, Cond2                          
-                        return Cond3
-                    }       
-
-            let cond4 = getCenikValues.Msgs.Msg1 = "First run"       
-        
-            match s with
-            | Cond2 when cond4 = true  -> sprintf"%s %s" "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k této chybě:" s
-            | Cond2 when cond4 = false -> sprintf"%s %s" "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k této chybě:" s
-            | Cond1                    -> String.Empty 
-            | Cond3 | _                -> s
-
-        errorMsgBox
-        *)
-        insertOrUpdate
+            //**************** Add values to parameters and execute commands with business logic *****************
+            match cmdExists.ExecuteScalar() |> Option.ofObj with
+            | Some _ -> 
+                        newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
+                        cmdUpdate.ExecuteNonQuery() |> ignore
+                        Ok () 
+            | None   -> 
+                        cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
+                        newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
+                        cmdInsert.ExecuteNonQuery() |> ignore
+                        Ok () 
+        with
+        | _ -> Error String.Empty //uzivatel nepotrebuje znat detailni popis chyby       
             
     let selectValues idInt =
            
@@ -113,7 +77,7 @@ module SqlRF =
 
                     try
                         let idString = string idInt
-                        failwith "Simulated exception SqlSelectValues" 
+                        //failwith "Simulated exception SqlSelectValues" 
 
                         //**************** SqlCommands *****************
                         use cmdExists = new SqlCommand(queryExists idString, connection)
@@ -126,8 +90,8 @@ module SqlRF =
                             | None   ->
                                         let exnSql = insertOrUpdate GetCenikValues.Default
                                         match exnSql.Equals(String.Empty) with
-                                        | true  -> Error InsertOrUpdateError1 //"Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze." 
-                                        | false -> Error InsertOrUpdateError2   //"Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."                             
+                                        | true  -> Error InsertOrUpdateError1 
+                                        | false -> Error InsertOrUpdateError2                                
                        
                         match reader with
                         | Ok reader ->                                     
@@ -140,7 +104,7 @@ module SqlRF =
                                         match fn with     
                                         | Some value -> value, false
                                         | None       -> defaultValue, true           
-                                                                                                             
+                                                                                                     
                                     let getValues =                                                
                                         Seq.initInfinite (fun _ -> reader.Read())
                                         |> Seq.takeWhile ((=) true) 
@@ -167,8 +131,7 @@ module SqlRF =
                                     reader.Close()
                                     reader.Dispose()
 
-                                    let convertToRegularRc getValues : GetCenikValues =
-
+                                    let convertToRegularRc getValues =
                                         {
                                             Id = fst getValues.IdRF; ValueState = fst getValues.ValueStateRF;
                                             V001 = fst getValues.V001RF; V002 = fst getValues.V002RF; V003 = fst getValues.V003RF;
@@ -192,23 +155,18 @@ module SqlRF =
                                                 flag6 || flag7 || flag8 || flag9 ||
                                                 flag10 || flag11
                                                                                                
-                                    match anySndTrue getValues with //TODO cemu su chybove hlasky 2x v redakcnim systemu?
+                                    match anySndTrue getValues with 
                                     | true  -> GetCenikValues.Default, ReadingDbError
                                     | false -> convertToRegularRc getValues, NoSelectError                                               
                                        
-                        | Error du  -> GetCenikValues.Default, du
-                                    //match InsertOrUpdateError with th                               
-                                    //| NotFullDb    -> GetCenikValues.Default, "NotFullDb. Dosazeny defaultní hodnoty místo chybných hodnot."
-                                    //| SelectError -> GetCenikValues.Default, "UnknownError. Hmm, neco zvlastniho se stane."
-                                      
+                        | Error du -> GetCenikValues.Default, du                                                                         
                     with
-                    | _ -> GetCenikValues.Default, ReadingDbError //"Reading db problem. Dosazeny defaultní hodnoty místo chybných hodnot."
+                    | _ -> GetCenikValues.Default, ReadingDbError 
 
                 getValues
 
             with
-            | _ -> GetCenikValues.Default, ConnectionError //"Connection problem. Dosazeny defaultní hodnoty místo chybných hodnot."
-
+            | _ -> GetCenikValues.Default, ConnectionError 
        
  
         

@@ -21,7 +21,7 @@ module Sluzby =
         let model = { Id = id }
         model, Cmd.none
 
-    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =  model, Cmd.none   
+    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none   
 
     let view (model: Model) (dispatch: Msg -> unit) links =
 

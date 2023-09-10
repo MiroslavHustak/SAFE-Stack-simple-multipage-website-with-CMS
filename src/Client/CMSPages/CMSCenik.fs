@@ -9,7 +9,7 @@ open Fable.Remoting.Client
 
 open Shared
 open SharedTypes
-open Auxiliaries.Client.SpaceChecker
+open Auxiliaries.Client.Helper
 
 module CMSCenik = 
 
@@ -138,11 +138,14 @@ module CMSCenik =
                                   V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
                                   V007 = valueNew.V007; V008 = valueNew.V008; V009 = valueNew.V009;
                                   Msgs = valueNew.Msgs
-                              };
-                           ErrorMsg = sprintf "%s %s %s" valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3                      
+                              };                           
+                           ErrorMsg =
+                               let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3   
+                               removeSpaces <| sprintf "%s %s %s" p1 p2 p3
+
             },  Cmd.none
 
-        | GetOldCenikValues valueOld ->
+        | GetOldCenikValues valueOld ->    
             {
                 model with
                            OldCenikValues =
@@ -153,7 +156,9 @@ module CMSCenik =
                                   V007 = valueOld.V007; V008 = valueOld.V008; V009 = valueOld.V009;
                                   Msgs = valueOld.Msgs 
                               }
-                           ErrorMsg = sprintf "%s %s %s" valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3                      
+                           ErrorMsg =
+                               let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3  
+                               removeSpaces <| sprintf "%s %s %s" p1 p2 p3                      
             },  Cmd.none
 
     let view (model: Model) (dispatch: Msg -> unit) =        
@@ -245,7 +250,7 @@ module CMSCenik =
                                                 Html.tr [                                              
                                                     prop.children
                                                         [
-                                                            //let studyIt =  yield! [ for item in 1..7 do Html.td [] ] |> List.map (fun item -> item)
+                                                            //let studyIt = yield! [ for item in 1..7 do Html.td [] ] |> List.map (fun item -> item)
                                                             //let studyIt = [ yield! ( [ 1..7 ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) ] //zajimava konstrukce quli yield
                                                             yield! td 7 
                                                         ]  

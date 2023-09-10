@@ -9,7 +9,7 @@ open Fable.Remoting.Client
 
 open Shared
 open SharedTypes
-open Auxiliaries.Client.SpaceChecker
+open Auxiliaries.Client.Helper
 
 module CMSLink = 
 
@@ -150,7 +150,9 @@ module CMSLink =
                                   V004n = valueNew.V004n; V005n = valueNew.V005n; V006n = "Facebook";
                                   Msgs = valueNew.Msgs
                               }
-                           ErrorMsg = sprintf "%s %s %s" valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3  
+                           ErrorMsg = 
+                               let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3
+                               removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
             },  Cmd.none
 
         | GetOldLinkAndLinkNameValues valueOld ->
@@ -164,7 +166,9 @@ module CMSLink =
                                     V004n = valueOld.V004n; V005n = valueOld.V005n; V006n = "Facebook";
                                     Msgs = valueOld.Msgs
                                 }
-                            ErrorMsg = sprintf "%s %s %s" valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3
+                            ErrorMsg = 
+                                let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3
+                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
             },  Cmd.none
    
     let view (model: Model) (dispatch: Msg -> unit) =

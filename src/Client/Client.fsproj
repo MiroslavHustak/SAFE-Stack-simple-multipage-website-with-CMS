@@ -5,6 +5,8 @@
         <DefineConstants>FABLE_COMPILER</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
+        <Compile Include="EducationalCode\DiscriminatedUnions.fs" />
+        <Compile Include="EducationalCode\Deferred\Deferred.fs" />
         <None Include="paket.references" />
         <None Include="output\Shared\Shared.js" />
         <None Include="output\Shared\Shared.js.map" />
@@ -155,9 +157,7 @@
         <Content Include="public\Content\images\under-maintenance.jpg" />
         <Content Include="public\Content\images\Uvodni foto.png" />
         <Compile Include="Types\Strings.fs" />
-        <Compile Include="Types\DiscriminatedUnions.fs" />
         <Compile Include="Types\Records.fs" />
-        <Compile Include="Deferred\Deferred.fs" />
         <Compile Include="Auxiliaries\Helpers.fs" />
         <Compile Include="Routing\Router.fs" />
         <Compile Include="ContentForNotUsedPages\contentMaintenance.fs" />
