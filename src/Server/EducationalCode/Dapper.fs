@@ -1,5 +1,7 @@
 namespace DbAccess
 
+(*
+
 open System
 
 open Dapper
@@ -131,3 +133,5 @@ module Dapper =
           *************************************************
           Using task expressions is preferred when interoperating extensively with .NET libraries that create or consume .NET tasks.
         *)
+
+*)

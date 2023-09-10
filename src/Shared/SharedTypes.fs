@@ -40,7 +40,16 @@ type GetCenikValues =
             V004 = "250"; V005 = "230"; V006 = "400";
             V007 = "600"; V008 = "450"; V009 = "450";
             Msgs = Messages.Default
-        }        
+        }
+
+type GetCenikValuesRF =
+    {
+        IdRF: int*bool; ValueStateRF: string*bool;
+        V001RF: string*bool; V002RF: string*bool; V003RF: string*bool;
+        V004RF: string*bool; V005RF: string*bool; V006RF: string*bool;
+        V007RF: string*bool; V008RF: string*bool; V009RF: string*bool;
+        MsgsRF: Messages
+    }       
 
 type GetKontaktValues =
     {

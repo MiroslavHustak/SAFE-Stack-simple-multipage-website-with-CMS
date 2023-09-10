@@ -12,15 +12,16 @@
     <Compile Include="Types\DiscriminatedUnions.fs" />
     <Compile Include="Types\Records.fs" />
     <Compile Include="Types\PatternBuilders.fs" />
-    <Compile Include="Auxiliaries\DapperHelper.fs" />
+    <Compile Include="Auxiliaries\Errors.fs" />
     <Compile Include="Auxiliaries\Security2.fs" />
     <Compile Include="Auxiliaries\Security.fs" />
     <Compile Include="Auxiliaries\ROP_Functions.fs" />
     <Compile Include="Auxiliaries\Helpers.fs" />
     <Content Include="Queries\Sql_Queries.txt" />
     <Compile Include="Queries\Sql_Queries.fs" />
-    <Compile Include="DbAccess\Dapper.fs" />
-    <Compile Include="DbAccess\Sql.fs" />
+    <Compile Include="EducationalCode\Auxiliaries\DapperHelper.fs" />
+    <Compile Include="EducationalCode\Dapper.fs" />
+    <Compile Include="Database\SqlRF.fs" />
     <Compile Include="Server\Server.fs" />
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +34,7 @@
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />
     <PackageReference Include="FSharp.Data" Version="5.0.2" />
     <PackageReference Include="FSharp.Data.SqlClient" Version="2.1.2" />
+    <PackageReference Include="FsToolkit.ErrorHandling" Version="4.9.0" />
     <PackageReference Include="jose-jwt" Version="4.0.1" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />

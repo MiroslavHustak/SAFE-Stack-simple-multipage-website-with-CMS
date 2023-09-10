@@ -12,9 +12,10 @@ open Fable.Remoting.Giraffe
 open Shared
 open SharedTypes
 
-open DbAccess.Sql       //uncomment to test plain SQL (and, at the same time, comment out "open DbAccess.Dapper")
-//open DbAccess.Dapper  //uncomment to test Dapper.FSharp (and, at the same time, comment out "open DbAccess.Sql")
+open Database.SqlRF      
+//open DbAccess.Dapper 
 
+open Errors
 open DiscriminatedUnions.Server
 open Auxiliaries.Server.Security2
 open Auxiliaries.Server.CopyingFiles
@@ -22,6 +23,7 @@ open Auxiliaries.Server.ROP_Functions
 open Auxiliaries.Server.Serialisation
 open Auxiliaries.Server.Deserialisation
 open PatternBuilders.Server.PatternBuilders
+open Auxiliaries.Errors.Errors
 
 module Server =
 
@@ -147,8 +149,17 @@ module Server =
                                 | Success () ->
                                               let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" }
 
-                                              //************* plain SQL or Dapper.FSharp ********************                                                                         
-                                              let exnSql = insertOrUpdate dbNewCenikValues
+                                              //************* plain SQL or Dapper.FSharp ********************
+
+                                              let cond = dbNewCenikValues.Msgs.Msg1 = "First run" 
+                                              let du =  errorMsgBox (insertOrUpdate dbNewCenikValues) cond
+                                              let exnSql =
+                                                  match du with
+                                                  | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+                                                  | InsertOrUpdateError -> "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k chybě při načítání hodnot z databáze." 
+                                                  | NoInsertError       -> String.Empty
+
+                                              //let exnSql = insertOrUpdate dbNewCenikValues
                                          
                                               { dbNewCenikValues with Msgs = { Messages.Default with Msg1 = exnSql } }
                                                                            
@@ -164,10 +175,36 @@ module Server =
                             //************* plain SQL or Dapper.FSharp ********************                     
                             let IdNew = 2
                             let IdOld = 3
-                                                                    
-                            let (dbGetNewCenikValues, exnSql2) = selectValues IdNew                                         
-                            let exnSql = insertOrUpdate { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
-                            let (dbSendOldCenikValues, exnSql3) = selectValues IdOld
+                            //******************************
+                            // let (dbGetNewCenikValues, exnSql2) = selectValues IdNew            
+                            let (dbGetNewCenikValues, exnSql2) =                              
+                                    match selectValues IdNew with                                    
+                                    | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+                                    | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
+                                    | value, ReadingDbError -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
+                                    | value, ConnectionError -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
+                                    | value, NoSelectError -> value, String.Empty
+
+                            //*****************************************************
+                            //let exnSql = insertOrUpdate { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
+                            let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
+                            let cond = dbCenikValues.Msgs.Msg1 = "First run" 
+                            let du =  errorMsgBox (insertOrUpdate dbCenikValues) cond
+                            let exnSql =
+                                match du with
+                                | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+                                | InsertOrUpdateError -> "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k chybě při načítání hodnot z databáze." 
+                                | NoInsertError       -> String.Empty
+
+                                //********************************************************
+                            //let (dbSendOldCenikValues, exnSql3) = selectValues IdOld
+                            let (dbSendOldCenikValues, exnSql3) =                              
+                                match selectValues IdOld with
+                                | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+                                | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
+                                | value, ReadingDbError -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
+                                | value, ConnectionError -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
+                                | value, NoSelectError -> value, String.Empty              
 
                             return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnSql; Msg2 = exnSql2; Msg3 = exnSql3 } }
                         }
@@ -179,7 +216,15 @@ module Server =
                            //************* plain SQL or Dapper.FSharp ********************
                            let IdNew = 2
                     
-                           let (dbSendCenikValues, exnSql1) = selectValues IdNew
+                           //let (dbSendCenikValues, exnSql1) = selectValues IdNew
+
+                           let (dbSendCenikValues, exnSql1) =                              
+                               match selectValues IdNew with
+                               | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+                               | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
+                               | value, ReadingDbError -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
+                               | value, ConnectionError -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
+                               | value, NoSelectError -> value, String.Empty      
 
                            return { dbSendCenikValues with Msgs = { Messages.Default with Msg1 = exnSql1; Msg2 = exn } }
                        }
@@ -282,7 +327,16 @@ module Server =
         |> Remoting.buildHttpHandler
 
     let app =
-        let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
+        //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
+        let dbCenikValues = { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } } 
+        let cond = dbCenikValues.Msgs.Msg1 = "First run" 
+        let du =  errorMsgBox (insertOrUpdate dbCenikValues) cond
+        let exnSql =
+            match du with
+            | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+            | InsertOrUpdateError -> "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k chybě při načítání hodnot z databáze." 
+            | NoInsertError       -> String.Empty
+
         application
             {
                 use_router (webApp exnSql)

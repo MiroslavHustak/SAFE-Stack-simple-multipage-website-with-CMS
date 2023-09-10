@@ -1,5 +1,7 @@
 namespace Auxiliaries.Server
 
+(*
+
 open SharedTypes
 
 //for testing Dapper and Dapper.FSharp
@@ -37,6 +39,6 @@ module DapperHelper =
             V004 = dapperGetCenikValues.V004; V005 = dapperGetCenikValues.V005; V006 = dapperGetCenikValues.V006;
             V007 = dapperGetCenikValues.V007; V008 = dapperGetCenikValues.V008; V009 = dapperGetCenikValues.V009;
             Msgs = Messages.Default
-        }
-    
+        }    
 
+*)
