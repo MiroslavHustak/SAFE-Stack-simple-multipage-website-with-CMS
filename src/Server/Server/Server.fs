@@ -21,6 +21,7 @@ open Auxiliaries.Server.CopyingFiles
 open Auxiliaries.Server.ROP_Functions
 open Auxiliaries.Server.Serialisation
 open Auxiliaries.Server.Deserialisation
+open Auxiliaries.Connections.Connection
 open PatternBuilders.Server.PatternBuilders
 
 module Server =
@@ -150,7 +151,7 @@ module Server =
                                               //************* plain SQL or Dapper.FSharp ********************
 
                                               let cond = dbNewCenikValues.Msgs.Msg1 = "First run" 
-                                              let du = errorMsgBox (insertOrUpdate dbNewCenikValues) cond
+                                              let du = errorMsgBox (insertOrUpdate getConnection closeConnection dbNewCenikValues) cond
                                               let exnSql =
                                                   match du with
                                                   | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
@@ -176,7 +177,7 @@ module Server =
                             //********************************************************
                             // let (dbGetNewCenikValues, exnSql2) = selectValues IdNew            
                             let (dbGetNewCenikValues, exnSql2) =                              
-                                match selectValues IdNew with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!!                                 
+                                match selectValues getConnection closeConnection IdNew with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!!                                 
                                 | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
                                 | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
                                 | value, ReadingDbError       -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
@@ -187,7 +188,7 @@ module Server =
                             //let exnSql = insertOrUpdate { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                             let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                             let cond = dbCenikValues.Msgs.Msg1 = "First run" 
-                            let du = errorMsgBox (insertOrUpdate dbCenikValues) cond
+                            let du = errorMsgBox (insertOrUpdate getConnection closeConnection dbCenikValues) cond
                             let exnSql =
                                 match du with
                                 | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
@@ -197,7 +198,7 @@ module Server =
                             //********************************************************
                             //let (dbSendOldCenikValues, exnSql3) = selectValues IdOld
                             let (dbSendOldCenikValues, exnSql3) =                              
-                                match selectValues IdOld with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!! 
+                                match selectValues getConnection closeConnection IdOld with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!! 
                                 | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
                                 | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
                                 | value, ReadingDbError       -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
@@ -217,7 +218,7 @@ module Server =
                            //let (dbSendCenikValues, exnSql1) = selectValues IdNew
 
                            let (dbSendCenikValues, exnSql1) =                              
-                               match selectValues IdNew with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!! 
+                               match selectValues getConnection closeConnection IdNew with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!! 
                                | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
                                | value, InsertOrUpdateError2 -> value, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
                                | value, ReadingDbError       -> value, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
@@ -332,7 +333,7 @@ module Server =
     let app =
         //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
         let dbCenikValues = { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }         
-        let du = errorMsgBox (insertOrUpdate dbCenikValues) true //true == first run
+        let du = errorMsgBox (insertOrUpdate getConnection closeConnection dbCenikValues) true //true == first run
         let exnSql =
             match du with
             | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
