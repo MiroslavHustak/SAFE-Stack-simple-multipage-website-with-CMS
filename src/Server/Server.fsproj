@@ -16,11 +16,11 @@
     <Compile Include="Auxiliaries\Security2.fs" />
     <Compile Include="Auxiliaries\ROP_Functions.fs" />
     <Compile Include="Auxiliaries\Helpers.fs" />
-    <Content Include="Queries\Sql_Queries.txt" />
-    <Compile Include="Queries\Sql_Queries.fs" />
     <Compile Include="EducationalCode\Security.fs" />
     <Compile Include="EducationalCode\Auxiliaries\DapperHelper.fs" />
     <Compile Include="EducationalCode\Dapper.fs" />
+    <Content Include="Database\Queries\Sql_Queries.txt" />
+    <Compile Include="Database\Queries\Sql_Queries.fs" />
     <Compile Include="Database\SqlRF.fs" />
     <Compile Include="Server\Server.fs" />
   </ItemGroup>

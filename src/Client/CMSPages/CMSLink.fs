@@ -107,7 +107,7 @@ module CMSLink =
         | SendLinkAndLinkNameValuesToServer ->
             try
                 try
-                    let buttonClickEvent:GetLinkAndLinkNameValues =   //see remark in CMSCenik.fs
+                    let buttonClickEvent: GetLinkAndLinkNameValues =   //see remark in CMSCenik.fs
                         let input current old =
                             match current = String.Empty with //String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current)
                             | true  -> old

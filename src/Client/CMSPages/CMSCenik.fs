@@ -97,7 +97,7 @@ module CMSCenik =
         | SendCenikValuesToServer ->
             try
                 try
-                    let buttonClickEvent:GetCenikValues =                   
+                    let buttonClickEvent: GetCenikValues =                   
                         let input current old =                  
                             match strContainsOnlySpace current || current = String.Empty with
                             | true  -> old
