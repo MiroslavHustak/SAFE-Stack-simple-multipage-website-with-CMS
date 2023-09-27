@@ -24,7 +24,7 @@ module SharedCenikValues =
    
 module SharedDeserialisedCenikValues =
    
-    let create (cenikInputValues: GetCenikValues) =
+    let create (cenikInputValues: CenikValues) =
         {
             Id = cenikInputValues.Id; ValueState = cenikInputValues.ValueState;
             V001 = cenikInputValues.V001; V002 = cenikInputValues.V002; V003 = cenikInputValues.V003;

@@ -93,7 +93,7 @@ module Server =
             }
     
       //TODO validation upon request from the user 
-    let private verifyCenikValues (cenikValues: GetCenikValues) =
+    let private verifyCenikValues (cenikValues: CenikValues) =
         match isValidCenik () with
         | ()  -> Success ()        
         //| _ -> Failure ()
@@ -139,11 +139,11 @@ module Server =
                           return ()
                       }   
           *)
-            getCenikValues =  
+            sendCenikValues =  
                 fun getCenikValues ->
                     async
                         {                   
-                            let getNewCenikValues: GetCenikValues =                        
+                            let getNewCenikValues: CenikValues =                        
                                 match verifyCenikValues getCenikValues with                
                                 | Success () ->
                                               let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" }
@@ -161,12 +161,12 @@ module Server =
                                               { dbNewCenikValues with Msgs = { Messages.Default with Msg1 = exnSql } }
                                                                            
                                 | Failure () ->
-                                              GetCenikValues.Default
+                                              CenikValues.Default
 
                           return getNewCenikValues
                       }
 
-            sendOldCenikValues = 
+            getOldCenikValues = 
                 fun _ -> 
                     async
                         {                           
@@ -208,7 +208,7 @@ module Server =
                             return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnSql; Msg2 = exnSql2; Msg3 = exnSql3 } }
                         }
 
-            sendDeserialisedCenikValues = 
+            getDeserialisedCenikValues = 
                fun _ ->
                    async
                        {                          
@@ -332,7 +332,7 @@ module Server =
 
     let app =
         //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
-        let dbCenikValues = { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }         
+        let dbCenikValues = { CenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }         
         let du = errorMsgBox (insertOrUpdate getConnection closeConnection dbCenikValues) true //true == first run
         let exnSql =
             match du with

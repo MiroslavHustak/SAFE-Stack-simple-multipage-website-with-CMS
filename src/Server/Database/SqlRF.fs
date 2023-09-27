@@ -77,7 +77,7 @@ module SqlRF =
                 //connection.Open()
                 let connection = getConnection()
                        
-                let getValues: GetCenikValues*SelectErrorOptions =
+                let getValues: CenikValues*SelectErrorOptions =
 
                     try
                         try
@@ -93,7 +93,7 @@ module SqlRF =
                                 match cmdExists.ExecuteScalar() |> Option.ofObj with 
                                 | Some _ -> Ok <| cmdSelect.ExecuteReader()
                                 | None   ->
-                                            match insertOrUpdate getConnection closeConnection GetCenikValues.Default with
+                                            match insertOrUpdate getConnection closeConnection CenikValues.Default with
                                             | Ok _    -> Error InsertOrUpdateError1
                                             | Error _ -> Error InsertOrUpdateError2                                                                  
                        
@@ -117,17 +117,17 @@ module SqlRF =
                                                                         {                                                                               
                                                                         yield    
                                                                             {                                                       
-                                                                                IdRF = extractValue (downCast reader.["Id"]) GetCenikValues.Default.Id
-                                                                                ValueStateRF = extractValue (downCast reader.["ValueState"]) GetCenikValues.Default.ValueState
-                                                                                V001RF = extractValue (downCast reader.["V001"]) GetCenikValues.Default.V001                                                                                   
-                                                                                V002RF = extractValue (downCast reader.["V002"]) GetCenikValues.Default.V002
-                                                                                V003RF = extractValue (downCast reader.["V003"]) GetCenikValues.Default.V003
-                                                                                V004RF = extractValue (downCast reader.["V004"]) GetCenikValues.Default.V004
-                                                                                V005RF = extractValue (downCast reader.["V005"]) GetCenikValues.Default.V005
-                                                                                V006RF = extractValue (downCast reader.["V006"]) GetCenikValues.Default.V006
-                                                                                V007RF = extractValue (downCast reader.["V007"]) GetCenikValues.Default.V007
-                                                                                V008RF = extractValue (downCast reader.["V008"]) GetCenikValues.Default.V008
-                                                                                V009RF = extractValue (downCast reader.["V009"]) GetCenikValues.Default.V009
+                                                                                IdRF = extractValue (downCast reader.["Id"]) CenikValues.Default.Id
+                                                                                ValueStateRF = extractValue (downCast reader.["ValueState"]) CenikValues.Default.ValueState
+                                                                                V001RF = extractValue (downCast reader.["V001"]) CenikValues.Default.V001                                                                                   
+                                                                                V002RF = extractValue (downCast reader.["V002"]) CenikValues.Default.V002
+                                                                                V003RF = extractValue (downCast reader.["V003"]) CenikValues.Default.V003
+                                                                                V004RF = extractValue (downCast reader.["V004"]) CenikValues.Default.V004
+                                                                                V005RF = extractValue (downCast reader.["V005"]) CenikValues.Default.V005
+                                                                                V006RF = extractValue (downCast reader.["V006"]) CenikValues.Default.V006
+                                                                                V007RF = extractValue (downCast reader.["V007"]) CenikValues.Default.V007
+                                                                                V008RF = extractValue (downCast reader.["V008"]) CenikValues.Default.V008
+                                                                                V009RF = extractValue (downCast reader.["V009"]) CenikValues.Default.V009
                                                                                 MsgsRF = Messages.Default
                                                                             }
                                                                         } 
@@ -144,7 +144,7 @@ module SqlRF =
                                                 Msgs = getValues.MsgsRF
                                             }
                                       
-                                        let anySndTrue (rc: GetCenikValuesRF) =
+                                        let anySndTrue (rc: CenikValuesRF) =
 
                                             match rc with
                                             |
@@ -160,19 +160,19 @@ module SqlRF =
                                                     flag10 || flag11
                                                                                                
                                         match anySndTrue getValues with 
-                                        | true  -> GetCenikValues.Default, ReadingDbError
+                                        | true  -> CenikValues.Default, ReadingDbError
                                         | false -> convertToRegularRc getValues, NoSelectError                                               
                                        
-                            | Error du -> GetCenikValues.Default, du
+                            | Error du -> CenikValues.Default, du
                         finally
                             closeConnection connection                        
                     with
-                    | _ -> GetCenikValues.Default, ReadingDbError 
+                    | _ -> CenikValues.Default, ReadingDbError 
 
                 getValues
 
             with
-            | _ -> GetCenikValues.Default, ConnectionError 
+            | _ -> CenikValues.Default, ConnectionError 
        
  
         

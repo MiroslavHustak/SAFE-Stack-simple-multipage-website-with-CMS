@@ -17,17 +17,17 @@ module Cenik =
 
     type Model =
         {
-            CenikValues: GetCenikValues
-            CenikInputValues: GetCenikValues
+            CenikValues: CenikValues
+            CenikInputValues: CenikValues
             ErrorMsg: string
             Id: int
         }
 
     type Msg =   
         | AskServerForCenikValues 
-        | GetCenikValues of GetCenikValues    
+        | GetCenikValues of CenikValues    
 
-    let private sendDeserialisedCenikValuesApi =
+    let private getDeserialisedCenikValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
@@ -36,8 +36,8 @@ module Cenik =
 
         let model =
            {
-               CenikValues = GetCenikValues.Default       
-               CenikInputValues = GetCenikValues.Default
+               CenikValues = CenikValues.Default       
+               CenikInputValues = CenikValues.Default
                ErrorMsg = String.Empty
                Id = id
            }
@@ -48,7 +48,7 @@ module Cenik =
         match msg with       
             | AskServerForCenikValues -> 
                  let loadEvent = SharedDeserialisedCenikValues.create model.CenikInputValues
-                 let cmd = Cmd.OfAsync.perform sendDeserialisedCenikValuesApi.sendDeserialisedCenikValues loadEvent GetCenikValues
+                 let cmd = Cmd.OfAsync.perform getDeserialisedCenikValuesApi.getDeserialisedCenikValues loadEvent GetCenikValues
                  model, cmd            
             | GetCenikValues value -> { model with CenikValues =
                                                       {

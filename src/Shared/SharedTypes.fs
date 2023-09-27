@@ -25,7 +25,7 @@ type Messages =
                Msg5 = String.Empty; Msg6 = String.Empty
            }
 
-type GetCenikValues =
+type CenikValues =
     {
         Id: int; ValueState: string;
         V001: string; V002: string; V003: string;
@@ -42,7 +42,7 @@ type GetCenikValues =
             Msgs = Messages.Default
         }
 
-type GetCenikValuesRF =
+type CenikValuesRF =
     {
         IdRF: int*bool; ValueStateRF: string*bool;
         V001RF: string*bool; V002RF: string*bool; V003RF: string*bool;
@@ -87,9 +87,9 @@ type IGetApi =
     //unit -> Async<GetKontaktValues> etc is enough while transferring one way only, but I need error messages to be sent back to the client side
     {
         login : LoginInfo -> Async<SharedApi.LoginResult> 
-        getCenikValues: GetCenikValues -> Async<GetCenikValues> 
-        sendOldCenikValues: GetCenikValues -> Async<GetCenikValues>
-        sendDeserialisedCenikValues: GetCenikValues -> Async<GetCenikValues>
+        sendCenikValues: CenikValues -> Async<CenikValues> 
+        getOldCenikValues: CenikValues -> Async<CenikValues>
+        getDeserialisedCenikValues: CenikValues -> Async<CenikValues>
         getKontaktValues: GetKontaktValues -> Async<GetKontaktValues> 
         sendOldKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
         sendDeserialisedKontaktValues: GetKontaktValues -> Async<GetKontaktValues>

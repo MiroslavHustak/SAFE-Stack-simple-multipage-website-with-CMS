@@ -15,8 +15,8 @@ module CMSCenik =
 
     type Model =
         {
-            CenikValues: GetCenikValues
-            OldCenikValues: GetCenikValues
+            CenikValues: CenikValues
+            OldCenikValues: CenikValues
             V001Input: string
             V002Input: string
             V003Input: string
@@ -32,7 +32,6 @@ module CMSCenik =
         }
 
     type Msg =
-        //| SetInput of GetCenikValues
         | SetV001Input of string
         | SetV002Input of string
         | SetV003Input of string
@@ -44,11 +43,11 @@ module CMSCenik =
         | SetV009Input of string   
         | SendCenikValuesToServer
         | SendOldCenikValuesToServer
-        | GetCenikValues of GetCenikValues
-        | GetOldCenikValues of GetCenikValues
+        | NewCenikValues of CenikValues
+        | OldCenikValues of CenikValues
         | AsyncWorkIsComplete 
     
-    let private getCenikValuesApi =
+    let private sendCenikValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
@@ -56,8 +55,8 @@ module CMSCenik =
     let init id : Model * Cmd<Msg> =
         let model =
             {
-                CenikValues = GetCenikValues.Default           
-                OldCenikValues = GetCenikValues.Default
+                CenikValues = CenikValues.Default           
+                OldCenikValues = CenikValues.Default
                 V001Input = String.Empty
                 V002Input = String.Empty
                 V003Input = String.Empty
@@ -89,7 +88,7 @@ module CMSCenik =
     
         | SendOldCenikValuesToServer ->   
             let loadEvent = SharedDeserialisedCenikValues.create model.OldCenikValues
-            let cmd = Cmd.OfAsync.perform getCenikValuesApi.sendOldCenikValues loadEvent GetOldCenikValues  
+            let cmd = Cmd.OfAsync.perform sendCenikValuesApi.getOldCenikValues loadEvent OldCenikValues  
             model, cmd
 
         | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
@@ -97,19 +96,19 @@ module CMSCenik =
         | SendCenikValuesToServer ->
             try
                 try
-                    let buttonClickEvent: GetCenikValues =                   
+                    let buttonClickEvent: CenikValues =                   
                         let input current old =                  
                             match strContainsOnlySpace current || current = String.Empty with
                             | true  -> old
                             | false -> current 
-                        SharedCenikValues.create //Unit type would suffice, nevertheless sending GetCenikValues and empty values to the server preserved in order to use the existing code on Server and Shared 
-                        <| GetCenikValues.Default.Id <| GetCenikValues.Default.ValueState //whatever Id and Value State
+                        SharedCenikValues.create //Unit type would suffice, nevertheless sending CenikValues and empty values to the server preserved in order to use the existing code on Server and Shared 
+                        <| CenikValues.Default.Id <| CenikValues.Default.ValueState //whatever Id and Value State
                         <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
                         <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
                         <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
 
                     //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
-                    let cmd = Cmd.OfAsyncImmediate.perform getCenikValuesApi.getCenikValues buttonClickEvent GetCenikValues 
+                    let cmd = Cmd.OfAsyncImmediate.perform sendCenikValuesApi.sendCenikValues buttonClickEvent NewCenikValues 
                     let cmd2 (cmd: Cmd<Msg>) delayedCmd = Cmd.batch <| seq { cmd; Cmd.ofSub delayedCmd }               
 
                     let delayedCmd (dispatch: Msg -> unit): unit =                    
@@ -128,7 +127,7 @@ module CMSCenik =
             with
             | ex -> { model with ErrorMsg = sprintf "Nedošlo k načtení hodnot. Popis chyby: %s " (string ex) }, Cmd.none   
 
-        | GetCenikValues valueNew ->
+        | NewCenikValues valueNew ->
             {
                 model with
                            CenikValues =
@@ -144,7 +143,7 @@ module CMSCenik =
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3
             },  Cmd.none
 
-        | GetOldCenikValues valueOld ->    
+        | OldCenikValues valueOld ->    
             {
                 model with
                            OldCenikValues =
