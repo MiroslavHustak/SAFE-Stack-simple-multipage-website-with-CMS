@@ -51,7 +51,7 @@ type CenikValuesRF =
         MsgsRF: Messages
     }       
 
-type GetKontaktValues =
+type KontaktValues =
     {
         V001: string; V002: string; V003: string;
         V004: string; V005: string; V006: string;
@@ -64,7 +64,7 @@ type GetKontaktValues =
             V007 = (char)32 |> string; Msgs = Messages.Default
         }
 
-type GetLinkAndLinkNameValues =
+type LinkAndLinkNameValues =
     {
         V001: string; V002: string; V003: string;
         V004: string; V005: string; V006: string;
@@ -90,12 +90,12 @@ type IGetApi =
         sendCenikValues: CenikValues -> Async<CenikValues> 
         getOldCenikValues: CenikValues -> Async<CenikValues>
         getDeserialisedCenikValues: CenikValues -> Async<CenikValues>
-        getKontaktValues: GetKontaktValues -> Async<GetKontaktValues> 
-        sendOldKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
-        sendDeserialisedKontaktValues: GetKontaktValues -> Async<GetKontaktValues>
-        getLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues> 
-        sendOldLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
-        sendDeserialisedLinkAndLinkNameValues: GetLinkAndLinkNameValues -> Async<GetLinkAndLinkNameValues>
+        sendKontaktValues: KontaktValues -> Async<KontaktValues> 
+        getOldKontaktValues: KontaktValues -> Async<KontaktValues>
+        getDeserialisedKontaktValues: KontaktValues -> Async<KontaktValues>
+        sendLinkAndLinkNameValues: LinkAndLinkNameValues -> Async<LinkAndLinkNameValues> 
+        getOldLinkAndLinkNameValues: LinkAndLinkNameValues -> Async<LinkAndLinkNameValues>
+        getDeserialisedLinkAndLinkNameValues: LinkAndLinkNameValues -> Async<LinkAndLinkNameValues>
     }
     
 

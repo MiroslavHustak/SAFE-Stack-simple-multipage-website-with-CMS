@@ -10,7 +10,7 @@ open Auxiliaries.Client.Helper
 
 module Layout = 
 
-    let private myBody render (pageRecord: MyCssClass) (links: GetLinkAndLinkNameValues) =
+    let private myBody render (pageRecord: MyCssClass) (links: LinkAndLinkNameValues) =
 
         let errorMsg = sprintf "%s %s %s" links.Msgs.Msg1 links.Msgs.Msg2 links.Msgs.Msg3
 

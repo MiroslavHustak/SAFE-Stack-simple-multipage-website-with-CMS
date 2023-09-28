@@ -15,8 +15,8 @@ module CMSKontakt =
 
     type Model =
         {
-            KontaktValues: GetKontaktValues
-            OldKontaktValues: GetKontaktValues
+            KontaktValues: KontaktValues
+            OldKontaktValues: KontaktValues
             V001Input: string
             V002Input: string
             V003Input: string
@@ -39,11 +39,11 @@ module CMSKontakt =
         | SetV007Input of string   
         | SendKontaktValuesToServer
         | SendOldKontaktValuesToServer
-        | GetKontaktValues of GetKontaktValues
-        | GetOldKontaktValues of GetKontaktValues
+        | NewKontaktValues of KontaktValues
+        | OldKontaktValues of KontaktValues
         | AsyncWorkIsComplete 
     
-    let private getKontaktValuesApi =
+    let private sendKontaktValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
@@ -52,8 +52,8 @@ module CMSKontakt =
         
         let model =
             {
-                KontaktValues = GetKontaktValues.Default          
-                OldKontaktValues = GetKontaktValues.Default         
+                KontaktValues = KontaktValues.Default          
+                OldKontaktValues = KontaktValues.Default         
                 V001Input = String.Empty
                 V002Input = String.Empty
                 V003Input = String.Empty
@@ -79,7 +79,7 @@ module CMSKontakt =
 
         | SendOldKontaktValuesToServer ->
             let loadEvent = SharedDeserialisedKontaktValues.create model.OldKontaktValues
-            let cmd = Cmd.OfAsync.perform getKontaktValuesApi.sendOldKontaktValues loadEvent GetOldKontaktValues
+            let cmd = Cmd.OfAsync.perform sendKontaktValuesApi.getOldKontaktValues loadEvent OldKontaktValues
             model, cmd
 
         | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
@@ -87,7 +87,7 @@ module CMSKontakt =
         | SendKontaktValuesToServer ->
             try
                 try
-                    let buttonClickEvent: GetKontaktValues =
+                    let buttonClickEvent: KontaktValues =
                         let input current old =
                             match current = String.Empty with
                             | true  -> old
@@ -98,7 +98,7 @@ module CMSKontakt =
                         <| input model.V007Input model.OldKontaktValues.V007 
 
                     //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
-                    let cmd = Cmd.OfAsyncImmediate.perform getKontaktValuesApi.getKontaktValues buttonClickEvent GetKontaktValues
+                    let cmd = Cmd.OfAsyncImmediate.perform sendKontaktValuesApi.sendKontaktValues buttonClickEvent NewKontaktValues
                     let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }
 
                     let delayedCmd (dispatch: Msg -> unit): unit =                                                  
@@ -117,7 +117,7 @@ module CMSKontakt =
             with
             | ex -> { model with ErrorMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
                   
-        | GetKontaktValues valueNew ->
+        | NewKontaktValues valueNew ->
             {
                 model with
                            KontaktValues =
@@ -131,7 +131,7 @@ module CMSKontakt =
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
             },  Cmd.none
 
-        | GetOldKontaktValues valueOld ->
+        | OldKontaktValues valueOld ->
             {
                 model with
                            OldKontaktValues =

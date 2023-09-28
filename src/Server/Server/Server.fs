@@ -99,13 +99,13 @@ module Server =
         //| _ -> Failure ()
 
      //TODO validation upon request from the user 
-    let private verifyKontaktValues (kontaktValues: GetKontaktValues) =
+    let private verifyKontaktValues (kontaktValues: KontaktValues) =
        match isValidKontakt () with
        | ()  -> Success ()        
        //| _ -> Failure ()
 
     //TODO validation upon request from the user 
-    let private verifyLinkAndLinkNameValues (linkValues: GetLinkAndLinkNameValues) =
+    let private verifyLinkAndLinkNameValues (linkValues: LinkAndLinkNameValues) =
        match isValidLink () with
        | ()  -> Success ()        
        //| _ -> Failure ()
@@ -140,13 +140,13 @@ module Server =
                       }   
           *)
             sendCenikValues =  
-                fun getCenikValues ->
+                fun sendCenikValues ->
                     async
                         {                   
-                            let getNewCenikValues: CenikValues =                        
-                                match verifyCenikValues getCenikValues with                
+                            let sendNewCenikValues: CenikValues =                        
+                                match verifyCenikValues sendCenikValues with                
                                 | Success () ->
-                                              let dbNewCenikValues = { getCenikValues with Id = 2; ValueState = "new" }
+                                              let dbNewCenikValues = { sendCenikValues with Id = 2; ValueState = "new" }
 
                                               //************* plain SQL or Dapper.FSharp ********************
 
@@ -163,7 +163,7 @@ module Server =
                                 | Failure () ->
                                               CenikValues.Default
 
-                          return getNewCenikValues
+                          return sendNewCenikValues
                       }
 
             getOldCenikValues = 
@@ -175,7 +175,6 @@ module Server =
                             let IdOld = 3
 
                             //********************************************************
-                            // let (dbGetNewCenikValues, exnSql2) = selectValues IdNew            
                             let (dbGetNewCenikValues, exnSql2) =                              
                                 match selectValues getConnection closeConnection IdNew with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!!                                 
                                 | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
@@ -185,7 +184,6 @@ module Server =
                                 | value, NoSelectError        -> value, String.Empty
 
                             //********************************************************
-                            //let exnSql = insertOrUpdate { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                             let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                             let cond = dbCenikValues.Msgs.Msg1 = "First run" 
                             let du = errorMsgBox (insertOrUpdate getConnection closeConnection dbCenikValues) cond
@@ -196,7 +194,6 @@ module Server =
                                 | NoInsertError       -> String.Empty
 
                             //********************************************************
-                            //let (dbSendOldCenikValues, exnSql3) = selectValues IdOld
                             let (dbSendOldCenikValues, exnSql3) =                              
                                 match selectValues getConnection closeConnection IdOld with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!! 
                                 | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
@@ -215,8 +212,6 @@ module Server =
                            //************* plain SQL or Dapper.FSharp ********************
                            let IdNew = 2
                     
-                           //let (dbSendCenikValues, exnSql1) = selectValues IdNew
-
                            let (dbSendCenikValues, exnSql1) =                              
                                match selectValues getConnection closeConnection IdNew with   //do rozhodnuti o podobe chybovych hlasek neprovadet refactoring!!! 
                                | value, InsertOrUpdateError1 -> value, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
@@ -229,25 +224,25 @@ module Server =
                        }
 
              //************* from here downwards Json/XML ********************   
-            getKontaktValues =
-                fun getKontaktValues ->
+            sendKontaktValues =
+                fun sendKontaktValues ->
                     async
                         {
-                            let getNewKontaktValues: GetKontaktValues = 
-                                match verifyKontaktValues getKontaktValues with
+                            let sendNewKontaktValues: KontaktValues = 
+                                match verifyKontaktValues sendKontaktValues with
                                 | Success () ->                                  
                                               let serializeNow x =
                                                  //failwith "Simulated exception10" 
-                                                 serialize getKontaktValues "jsonKontaktValues.xml"                            
+                                                 serialize sendKontaktValues "jsonKontaktValues.xml"                            
                                               let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error10") |||> tryWith |> deconstructor1
-                                              { getKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson } }                                   
+                                              { sendKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson } }                                   
                                 | Failure () ->
-                                              GetKontaktValues.Default
+                                              KontaktValues.Default
 
-                            return getNewKontaktValues
+                            return sendNewKontaktValues
                         }
 
-            sendOldKontaktValues =
+            getOldKontaktValues =
                 fun _ ->
                     async
                         {
@@ -260,42 +255,42 @@ module Server =
                             let exnJson1 = (copyFilesNow, (fun x -> ()), "Byly dosazeny předchozí hodnoty, neb došlo k této chybě: Error11") |||> tryWith |> deconstructor1
 
                              //failwith "Simulated exception12" 
-                            let sendOldKontaktValuesNow x = deserialize "jsonKontaktValuesBackUp.xml"
+                            let getOldKontaktValuesNow x = deserialize "jsonKontaktValuesBackUp.xml"
 
-                            let (sendOldKontaktValues, exnJson2) = (sendOldKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error12") |||> tryWith |> deconstructor2 GetKontaktValues.Default
+                            let (getOldKontaktValues, exnJson2) = (getOldKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error12") |||> tryWith |> deconstructor2 KontaktValues.Default
 
-                            return { sendOldKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }                 
+                            return { getOldKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }                 
                         } 
 
-            sendDeserialisedKontaktValues =
+            getDeserialisedKontaktValues =
                 fun _ ->
                     async
                         {
                             //failwith "Simulated exception13"   
-                            let sendKontaktValuesNow x = deserialize "jsonKontaktValues.xml"                                 
-                            let (sendKontaktValues, exnJson1) = (sendKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error13") |||> tryWith |> deconstructor2 GetKontaktValues.Default
+                            let getKontaktValuesNow x = deserialize "jsonKontaktValues.xml"                                 
+                            let (getKontaktValues, exnJson1) = (getKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error13") |||> tryWith |> deconstructor2 KontaktValues.Default
 
-                            return { sendKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }                   
+                            return { getKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }                   
                         }
 
-            getLinkAndLinkNameValues =
-               fun getLinkAndLinkNameValues ->
+            sendLinkAndLinkNameValues =
+               fun sendLinkAndLinkNameValues ->
                    async
                       {
-                         let getNewLinkAndLinkNameValues: GetLinkAndLinkNameValues = 
-                             match verifyLinkAndLinkNameValues getLinkAndLinkNameValues with
+                         let sendNewLinkAndLinkNameValues: LinkAndLinkNameValues = 
+                             match verifyLinkAndLinkNameValues sendLinkAndLinkNameValues with
                              | Success () ->
                                            //failwith "Simulated exception14" 
-                                           let serializeNow x = serialize getLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"
+                                           let serializeNow x = serialize sendLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"
                                            let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error14") |||> tryWith |> deconstructor1
-                                           { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
+                                           { sendLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
                              | Failure () ->
-                                           GetLinkAndLinkNameValues.Default                        
+                                           LinkAndLinkNameValues.Default                        
 
-                         return getNewLinkAndLinkNameValues
+                         return sendNewLinkAndLinkNameValues
                       }
            
-            sendOldLinkAndLinkNameValues =
+            getOldLinkAndLinkNameValues =
                 fun _ ->
                    async
                        {
@@ -306,21 +301,21 @@ module Server =
                                <| "jsonLinkAndLinkNameValuesBackUp.xml"
                            let exnJson1 = (copyFilesNow, (fun x -> ()), "Byly dosazeny předchozí hodnoty, neb došlo k této chybě: Error15") |||> tryWith |> deconstructor1
                            //failwith "Simulated exception16" 
-                           let sendOldLinkAndLinkNameValuesNow x = deserialize "jsonLinkAndLinkNameValuesBackUp.xml"                                
-                           let (sendOldLinkAndLinkNameValues, exnJson2) = (sendOldLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error16") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
+                           let getOldLinkAndLinkNameValuesNow x = deserialize "jsonLinkAndLinkNameValuesBackUp.xml"                                
+                           let (getOldLinkAndLinkNameValues, exnJson2) = (getOldLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error16") |||> tryWith |> deconstructor2 LinkAndLinkNameValues.Default
 
-                           return { sendOldLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }  
+                           return { getOldLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }  
                        } 
 
-            sendDeserialisedLinkAndLinkNameValues =
+            getDeserialisedLinkAndLinkNameValues =
                fun _ ->
                    async
                        {
                            //failwith "Simulated exception17"    
-                           let sendLinkAndLinkNameValuesNow x = deserialize "jsonLinkandLinkNameValues.xml"                                 
-                           let (sendLinkAndLinkNameValues, exnJson1) = (sendLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error17") |||> tryWith |> deconstructor2 GetLinkAndLinkNameValues.Default
+                           let getLinkAndLinkNameValuesNow x = deserialize "jsonLinkandLinkNameValues.xml"                                 
+                           let (getLinkAndLinkNameValues, exnJson1) = (getLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error17") |||> tryWith |> deconstructor2 LinkAndLinkNameValues.Default
 
-                           return { sendLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }  
+                           return { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }  
                        }
         }
 

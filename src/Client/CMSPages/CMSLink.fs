@@ -15,8 +15,8 @@ module CMSLink =
 
     type Model =
         {
-            LinkAndLinkNameValues: GetLinkAndLinkNameValues
-            OldLinkAndLinkNameValues: GetLinkAndLinkNameValues
+            LinkAndLinkNameValues: LinkAndLinkNameValues
+            OldLinkAndLinkNameValues: LinkAndLinkNameValues
             V001LinkInput: string
             V002LinkInput: string
             V003LinkInput: string
@@ -49,11 +49,11 @@ module CMSLink =
         | SetV006LinkNameInput of string
         | SendLinkAndLinkNameValuesToServer
         | SendOldLinkAndLinkNameValuesToServer
-        | GetLinkAndLinkNameValues of GetLinkAndLinkNameValues
-        | GetOldLinkAndLinkNameValues of GetLinkAndLinkNameValues
+        | NewLinkAndLinkNameValues of LinkAndLinkNameValues
+        | OldLinkAndLinkNameValues of LinkAndLinkNameValues
         | AsyncWorkIsComplete 
 
-    let private getLinkAndLinkNameValuesApi =
+    let private sendLinkAndLinkNameValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
@@ -62,8 +62,8 @@ module CMSLink =
     
         let model =
             {
-                LinkAndLinkNameValues = GetLinkAndLinkNameValues.Default           
-                OldLinkAndLinkNameValues = GetLinkAndLinkNameValues.Default           
+                LinkAndLinkNameValues = LinkAndLinkNameValues.Default           
+                OldLinkAndLinkNameValues = LinkAndLinkNameValues.Default           
                 V001LinkInput = String.Empty
                 V002LinkInput = String.Empty
                 V003LinkInput = String.Empty
@@ -99,7 +99,7 @@ module CMSLink =
 
         | SendOldLinkAndLinkNameValuesToServer ->
             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.OldLinkAndLinkNameValues
-            let cmd = Cmd.OfAsync.perform getLinkAndLinkNameValuesApi.sendOldLinkAndLinkNameValues loadEvent GetOldLinkAndLinkNameValues
+            let cmd = Cmd.OfAsync.perform sendLinkAndLinkNameValuesApi.getOldLinkAndLinkNameValues loadEvent OldLinkAndLinkNameValues
             model, cmd
 
         | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
@@ -107,7 +107,7 @@ module CMSLink =
         | SendLinkAndLinkNameValuesToServer ->
             try
                 try
-                    let buttonClickEvent: GetLinkAndLinkNameValues =   //see remark in CMSCenik.fs
+                    let buttonClickEvent: LinkAndLinkNameValues =   //see remark in CMSCenik.fs
                         let input current old =
                             match current = String.Empty with //String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current)
                             | true  -> old
@@ -119,7 +119,7 @@ module CMSLink =
                         <| input model.V004LinkNameInput model.OldLinkAndLinkNameValues.V004n <| input model.V005LinkNameInput model.OldLinkAndLinkNameValues.V005n <| input model.V006LinkNameInput model.OldLinkAndLinkNameValues.V006n
 
                     //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
-                    let cmd = Cmd.OfAsyncImmediate.perform getLinkAndLinkNameValuesApi.getLinkAndLinkNameValues buttonClickEvent GetLinkAndLinkNameValues
+                    let cmd = Cmd.OfAsyncImmediate.perform sendLinkAndLinkNameValuesApi.sendLinkAndLinkNameValues buttonClickEvent NewLinkAndLinkNameValues
                     let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }    
 
                     let delayedCmd (dispatch: Msg -> unit): unit =                                                  
@@ -139,7 +139,7 @@ module CMSLink =
             with
             | ex -> { model with ErrorMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
 
-        | GetLinkAndLinkNameValues valueNew ->
+        | NewLinkAndLinkNameValues valueNew ->
             {
                 model with
                            LinkAndLinkNameValues =
@@ -155,7 +155,7 @@ module CMSLink =
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
             },  Cmd.none
 
-        | GetOldLinkAndLinkNameValues valueOld ->
+        | OldLinkAndLinkNameValues valueOld ->
             {
                 model with
                             OldLinkAndLinkNameValues =

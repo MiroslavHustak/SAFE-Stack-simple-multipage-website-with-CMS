@@ -17,17 +17,17 @@ module Kontakt =
 
     type Model =
         {
-            KontaktValues: GetKontaktValues
-            KontaktInputValues: GetKontaktValues
+            KontaktValues: KontaktValues
+            KontaktInputValues: KontaktValues
             ErrorMsg: string
             Id: int
         }
 
     type Msg =   
         | AskServerForKontaktValues 
-        | GetKontaktValues of GetKontaktValues    
+        | NewKontaktValues of KontaktValues    
 
-    let private sendDeserialisedKontaktValuesApi =
+    let private getDeserialisedKontaktValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
@@ -36,8 +36,8 @@ module Kontakt =
        
         let model =        
             {
-                KontaktValues = GetKontaktValues.Default        
-                KontaktInputValues = GetKontaktValues.Default
+                KontaktValues = KontaktValues.Default        
+                KontaktInputValues = KontaktValues.Default
                 ErrorMsg = String.Empty
                 Id = id
             }
@@ -48,9 +48,9 @@ module Kontakt =
         match msg with       
             | AskServerForKontaktValues ->
                  let loadEvent = SharedDeserialisedKontaktValues.create model.KontaktInputValues
-                 let cmd = Cmd.OfAsync.perform sendDeserialisedKontaktValuesApi.sendDeserialisedKontaktValues loadEvent GetKontaktValues
+                 let cmd = Cmd.OfAsync.perform getDeserialisedKontaktValuesApi.getDeserialisedKontaktValues loadEvent NewKontaktValues
                  model, cmd            
-            | GetKontaktValues value -> { model with KontaktValues =
+            | NewKontaktValues value -> { model with KontaktValues =
                                                         {
                                                             V001 = value.V001; V002 = value.V002; V003 = value.V003;
                                                             V004 = value.V004; V005 = value.V005; V006 = value.V006;

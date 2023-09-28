@@ -44,7 +44,7 @@ module SharedKontaktValues =
 
 module SharedDeserialisedKontaktValues =
    
-    let create (kontaktInputValues: GetKontaktValues) =
+    let create (kontaktInputValues: KontaktValues) =
         {
             V001 = kontaktInputValues.V001; V002 = kontaktInputValues.V002; V003 = kontaktInputValues.V003;
             V004 = kontaktInputValues.V004; V005 = kontaktInputValues.V005;
@@ -64,7 +64,7 @@ module SharedLinkAndLinkNameValues =
 
 module SharedDeserialisedLinkAndLinkNameValues =
    
-    let create (linkAndLinkNameInputValues: GetLinkAndLinkNameValues) =
+    let create (linkAndLinkNameInputValues: LinkAndLinkNameValues) =
         {
             V001 = linkAndLinkNameInputValues.V001; V002 = linkAndLinkNameInputValues.V002; V003 = linkAndLinkNameInputValues.V003;
             V004 = linkAndLinkNameInputValues.V004; V005 = linkAndLinkNameInputValues.V005; V006 = linkAndLinkNameInputValues.V006;

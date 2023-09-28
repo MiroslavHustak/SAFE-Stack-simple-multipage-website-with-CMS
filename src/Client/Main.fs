@@ -51,8 +51,8 @@ module App =
             User: ApplicationUser 
             user: SharedApi.User
             Session: SharedApi.LoginResult option
-            LinkAndLinkNameValues: GetLinkAndLinkNameValues
-            LinkAndLinkNameInputValues: GetLinkAndLinkNameValues
+            LinkAndLinkNameValues: LinkAndLinkNameValues
+            LinkAndLinkNameInputValues: LinkAndLinkNameValues
         }
 
     type Msg =
@@ -68,7 +68,7 @@ module App =
         | CMSKontaktMsg of CMSKontakt.Msg
         | CMSLinkMsg of CMSLink.Msg
         | AskServerForLinkAndLinkNameValues 
-        | GetLinkAndLinkNameValues of GetLinkAndLinkNameValues
+        | GetLinkAndLinkNameValues of LinkAndLinkNameValues
 
     let private sendDeserialisedLinkAndLinkNameValuesApi =
         Remoting.createApi ()
@@ -213,8 +213,8 @@ module App =
                 User = Anonymous
                 user = { Username = SharedApi.Username String.Empty } //{ Username = SharedApi.Username String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
                 Session = None          
-                LinkAndLinkNameValues = GetLinkAndLinkNameValues.Default   
-                LinkAndLinkNameInputValues = GetLinkAndLinkNameValues.Default
+                LinkAndLinkNameValues = LinkAndLinkNameValues.Default   
+                LinkAndLinkNameInputValues = LinkAndLinkNameValues.Default
             }    
 
     let update (msg: Msg) (model: Model) =
@@ -269,7 +269,7 @@ module App =
              //LinkAndLinkNameValues need to be activated during the first download of any page        
         | _, AskServerForLinkAndLinkNameValues ->
                 let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.LinkAndLinkNameInputValues
-                let cmd = Cmd.OfAsync.perform sendDeserialisedLinkAndLinkNameValuesApi.sendDeserialisedLinkAndLinkNameValues loadEvent GetLinkAndLinkNameValues
+                let cmd = Cmd.OfAsync.perform sendDeserialisedLinkAndLinkNameValuesApi.getDeserialisedLinkAndLinkNameValues loadEvent GetLinkAndLinkNameValues
                 model, cmd
         
         | _, GetLinkAndLinkNameValues value -> { model with LinkAndLinkNameValues =
