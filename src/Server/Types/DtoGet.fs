@@ -30,13 +30,4 @@ module DtoGet =
             MsgsDtoGet: MessagesDtoGet
         }
 
-    type CenikValuesDtoGet1 =
-        {
-            IdDtoGet1: Result<int, int>; ValueStateDtoGet1: Result<string, string>;
-            V001DtoGet1: Result<string, string>; V002DtoGet1: Result<string, string>; V003DtoGet1: Result<string, string>;
-            V004DtoGet1: Result<string, string>; V005DtoGet1: Result<string, string>; V006DtoGet1: Result<string, string>;
-            V007DtoGet1: Result<string, string>; V008DtoGet1: Result<string, string>; V009DtoGet1: Result<string, string>;
-            MsgsDtoGet1: MessagesDtoGet
-        }        
-      
-
+   
