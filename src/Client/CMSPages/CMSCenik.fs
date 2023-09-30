@@ -15,8 +15,8 @@ module CMSCenik =
 
     type Model =
         {
-            CenikValues: CenikValues
-            OldCenikValues: CenikValues
+            CenikValues: CenikValuesDomain
+            OldCenikValues: CenikValuesDomain
             V001Input: string
             V002Input: string
             V003Input: string
@@ -43,8 +43,8 @@ module CMSCenik =
         | SetV009Input of string   
         | SendCenikValuesToServer
         | SendOldCenikValuesToServer
-        | NewCenikValues of CenikValues
-        | OldCenikValues of CenikValues
+        | NewCenikValues of CenikValuesDomain
+        | OldCenikValues of CenikValuesDomain
         | AsyncWorkIsComplete 
     
     let private sendCenikValuesApi =
@@ -55,8 +55,8 @@ module CMSCenik =
     let init id : Model * Cmd<Msg> =
         let model =
             {
-                CenikValues = CenikValues.Default           
-                OldCenikValues = CenikValues.Default
+                CenikValues = CenikValuesDomain.Default           
+                OldCenikValues = CenikValuesDomain.Default
                 V001Input = String.Empty
                 V002Input = String.Empty
                 V003Input = String.Empty
@@ -96,13 +96,13 @@ module CMSCenik =
         | SendCenikValuesToServer ->
             try
                 try
-                    let buttonClickEvent: CenikValues =                   
+                    let buttonClickEvent: CenikValuesDomain =                   
                         let input current old =                  
                             match strContainsOnlySpace current || current = String.Empty with
                             | true  -> old
                             | false -> current 
                         SharedCenikValues.create //Unit type would suffice, nevertheless sending CenikValues and empty values to the server preserved in order to use the existing code on Server and Shared 
-                        <| CenikValues.Default.Id <| CenikValues.Default.ValueState //whatever Id and Value State
+                        <| CenikValuesDomain.Default.Id <| CenikValuesDomain.Default.ValueState //whatever Id and Value State
                         <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
                         <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
                         <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009

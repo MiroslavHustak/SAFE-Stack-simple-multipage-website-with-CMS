@@ -17,15 +17,15 @@ module Cenik =
 
     type Model =
         {
-            CenikValues: CenikValues
-            CenikInputValues: CenikValues
+            CenikValues: CenikValuesDomain
+            CenikInputValues: CenikValuesDomain
             ErrorMsg: string
             Id: int
         }
 
     type Msg =   
         | AskServerForCenikValues 
-        | GetCenikValues of CenikValues    
+        | GetCenikValues of CenikValuesDomain    
 
     let private getDeserialisedCenikValuesApi =
         Remoting.createApi ()
@@ -36,8 +36,8 @@ module Cenik =
 
         let model =
            {
-               CenikValues = CenikValues.Default       
-               CenikInputValues = CenikValues.Default
+               CenikValues = CenikValuesDomain.Default       
+               CenikInputValues = CenikValuesDomain.Default
                ErrorMsg = String.Empty
                Id = id
            }

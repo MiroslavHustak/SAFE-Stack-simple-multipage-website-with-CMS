@@ -9,7 +9,7 @@ type LoginInfo =
         Password: SharedApi.Password
     }
 
-type Messages =
+type MessagesDomain =
     {
         Msg1: string
         Msg2: string
@@ -25,13 +25,13 @@ type Messages =
                Msg5 = String.Empty; Msg6 = String.Empty
            }
 
-type CenikValues =
+type CenikValuesDomain =
     {
         Id: int; ValueState: string;
         V001: string; V002: string; V003: string;
         V004: string; V005: string; V006: string;
         V007: string; V008: string; V009: string;
-        Msgs: Messages
+        Msgs: MessagesDomain
     }
     static member Default = //fixed values
         {
@@ -39,29 +39,20 @@ type CenikValues =
             V001 = "300"; V002 = "300"; V003 = "2 200";
             V004 = "250"; V005 = "230"; V006 = "400";
             V007 = "600"; V008 = "450"; V009 = "450";
-            Msgs = Messages.Default
+            Msgs = MessagesDomain.Default
         }
-
-type CenikValuesRF =
-    {
-        IdRF: int*bool; ValueStateRF: string*bool;
-        V001RF: string*bool; V002RF: string*bool; V003RF: string*bool;
-        V004RF: string*bool; V005RF: string*bool; V006RF: string*bool;
-        V007RF: string*bool; V008RF: string*bool; V009RF: string*bool;
-        MsgsRF: Messages
-    }       
 
 type KontaktValues =
     {
         V001: string; V002: string; V003: string;
         V004: string; V005: string; V006: string;
-        V007: string; Msgs: Messages
+        V007: string; Msgs: MessagesDomain
     }
     static member Default = 
         {
             V001 = "Mgr. Hana NOVÁKOVÁ"; V002 = "Nutriční teraupetka"; V003 = "Pohoří 247";
             V004 = "725 26 Ostrava-Krásné Pole"; V005 = "Tel.: 739 421 710"; V006 = "E-mail: nutricniterapie@centrum.cz";
-            V007 = (char)32 |> string; Msgs = Messages.Default
+            V007 = (char)32 |> string; Msgs = MessagesDomain.Default
         }
 
 type LinkAndLinkNameValues =
@@ -70,7 +61,7 @@ type LinkAndLinkNameValues =
         V004: string; V005: string; V006: string;
         V001n: string; V002n: string; V003n: string;
         V004n: string; V005n: string; V006n: string;
-        Msgs: Messages
+        Msgs: MessagesDomain
     }
     static member Default = 
         {
@@ -80,16 +71,16 @@ type LinkAndLinkNameValues =
             V004 = "https://www.euronabycerny.com/eshop/jetbar-tycinky"; V005 = "https://www.morevsrdcievropy.cz";
             V006 = "https://www.facebook.com/nutricniterapie/";
             V001n = "Kdo nám může radit s výživou?"; V002n = "Civilizační choroby"; V003n = "Problém obezity"; V004n = "Tyčinky Eurona JETBAR";
-            V005n = "Moře v srdci Evropy"; V006n = "Facebook"; Msgs = Messages.Default
+            V005n = "Moře v srdci Evropy"; V006n = "Facebook"; Msgs = MessagesDomain.Default
         }
 
 type IGetApi =
     //unit -> Async<GetKontaktValues> etc is enough while transferring one way only, but I need error messages to be sent back to the client side
     {
         login : LoginInfo -> Async<SharedApi.LoginResult> 
-        sendCenikValues: CenikValues -> Async<CenikValues> 
-        getOldCenikValues: CenikValues -> Async<CenikValues>
-        getDeserialisedCenikValues: CenikValues -> Async<CenikValues>
+        sendCenikValues: CenikValuesDomain -> Async<CenikValuesDomain> 
+        getOldCenikValues: CenikValuesDomain -> Async<CenikValuesDomain>
+        getDeserialisedCenikValues: CenikValuesDomain -> Async<CenikValuesDomain>
         sendKontaktValues: KontaktValues -> Async<KontaktValues> 
         getOldKontaktValues: KontaktValues -> Async<KontaktValues>
         getDeserialisedKontaktValues: KontaktValues -> Async<KontaktValues>

@@ -8,9 +8,12 @@
   <ItemGroup>
     <Compile Include="Connections\Connection.fs" />
     <None Include="paket.references" />
+    <Compile Include="Types\DtoSend.fs" />
+    <Compile Include="Types\DtoGet.fs" />
+    <Compile Include="Types\TransLayerSend.fs" />
+    <Compile Include="Types\TransLayerGet.fs" />
     <Compile Include="Types\Strings.fs" />
     <Compile Include="Types\DiscriminatedUnions.fs" />
-    <Compile Include="Types\Records.fs" />
     <Compile Include="Types\PatternBuilders.fs" />
     <Compile Include="Auxiliaries\Errors.fs" />
     <Compile Include="Auxiliaries\Security2.fs" />

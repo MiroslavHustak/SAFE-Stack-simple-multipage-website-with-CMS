@@ -9,6 +9,11 @@ open SharedTypes
 open Queries.SqlQueries
 open DiscriminatedUnions.Server
 
+open DtoGet.Server.DtoGet
+open TransLayerGet.Server.TransLayerGet
+open DtoSend.Server.DtoSend
+open TransLayerSend.Server.TransLayerSend
+
 //SQL type providers did not work in this app, they block the database
 
 module SqlRF =
@@ -26,7 +31,7 @@ module SqlRF =
     *)
 
     //**************** Sql queries - inner functions  *****************
-    let insertOrUpdate getConnection closeConnection getCenikValues =
+    let insertOrUpdate getConnection closeConnection (sendCenikValues : CenikValuesDtoSend) =
 
         try
             //failwith "Simulated exception SqlInsertOrUpdate"
@@ -36,16 +41,16 @@ module SqlRF =
             let connection = getConnection()
 
             try
-                let idInt = getCenikValues.Id //idInt = Primary Key for new/old/fixed value state
-                let valState = getCenikValues.ValueState
+                let idInt = sendCenikValues.Id //idInt = Primary Key for new/old/fixed value state
+                let valState = sendCenikValues.ValueState
                 let idString = string idInt        
        
                 //**************** Parameters for command.Parameters.AddWithValue("@val", some value) *****************
                 let newParamList =
                     [
-                        ("@valState", valState); ("@val01", getCenikValues.V001); ("@val02", getCenikValues.V002);
-                        ("@val03", getCenikValues.V003); ("@val04", getCenikValues.V004); ("@val05", getCenikValues.V005);
-                        ("@val06", getCenikValues.V006); ("@val07", getCenikValues.V007); ("@val08", getCenikValues.V008); ("@val09", getCenikValues.V009)
+                        ("@valState", valState); ("@val01", sendCenikValues.V001); ("@val02", sendCenikValues.V002);
+                        ("@val03", sendCenikValues.V003); ("@val04", sendCenikValues.V004); ("@val05", sendCenikValues.V005);
+                        ("@val06", sendCenikValues.V006); ("@val07", sendCenikValues.V007); ("@val08", sendCenikValues.V008); ("@val09", sendCenikValues.V009)
                     ]       
 
                 //**************** SqlCommands *****************
@@ -77,7 +82,7 @@ module SqlRF =
                 //connection.Open()
                 let connection = getConnection()
                        
-                let getValues: CenikValues*SelectErrorOptions =
+                let getValues: CenikValuesDomain*SelectErrorOptions =
 
                     try
                         try
@@ -93,7 +98,8 @@ module SqlRF =
                                 match cmdExists.ExecuteScalar() |> Option.ofObj with 
                                 | Some _ -> Ok <| cmdSelect.ExecuteReader()
                                 | None   ->
-                                            match insertOrUpdate getConnection closeConnection CenikValues.Default with
+                                            let cenikValuesDtoSendDefault = cenikValuesTransferLayerSend CenikValuesDomain.Default
+                                            match insertOrUpdate getConnection closeConnection cenikValuesDtoSendDefault with
                                             | Ok _    -> Error InsertOrUpdateError1
                                             | Error _ -> Error InsertOrUpdateError2                                                                  
                        
@@ -107,8 +113,13 @@ module SqlRF =
                                         let extractValue fn defaultValue =
                                             match fn with     
                                             | Some value -> value, false
-                                            | None       -> defaultValue, true           
-                                                                                                     
+                                            | None       -> defaultValue, true
+
+                                        let extractValue1 fn defaultValue =
+                                            match fn with     
+                                            | Some value -> value, false
+                                            | None       -> defaultValue, true 
+                                      
                                         let getValues =                                                
                                             Seq.initInfinite (fun _ -> reader.Read())
                                             |> Seq.takeWhile ((=) true) 
@@ -117,42 +128,33 @@ module SqlRF =
                                                                         {                                                                               
                                                                         yield    
                                                                             {                                                       
-                                                                                IdRF = extractValue (downCast reader.["Id"]) CenikValues.Default.Id
-                                                                                ValueStateRF = extractValue (downCast reader.["ValueState"]) CenikValues.Default.ValueState
-                                                                                V001RF = extractValue (downCast reader.["V001"]) CenikValues.Default.V001                                                                                   
-                                                                                V002RF = extractValue (downCast reader.["V002"]) CenikValues.Default.V002
-                                                                                V003RF = extractValue (downCast reader.["V003"]) CenikValues.Default.V003
-                                                                                V004RF = extractValue (downCast reader.["V004"]) CenikValues.Default.V004
-                                                                                V005RF = extractValue (downCast reader.["V005"]) CenikValues.Default.V005
-                                                                                V006RF = extractValue (downCast reader.["V006"]) CenikValues.Default.V006
-                                                                                V007RF = extractValue (downCast reader.["V007"]) CenikValues.Default.V007
-                                                                                V008RF = extractValue (downCast reader.["V008"]) CenikValues.Default.V008
-                                                                                V009RF = extractValue (downCast reader.["V009"]) CenikValues.Default.V009
-                                                                                MsgsRF = Messages.Default
+                                                                                IdDtoGet = extractValue (downCast reader.["Id"]) CenikValuesDomain.Default.Id
+                                                                                ValueStateDtoGet = extractValue (downCast reader.["ValueState"]) CenikValuesDomain.Default.ValueState
+                                                                                V001DtoGet = extractValue (downCast reader.["V001"]) CenikValuesDomain.Default.V001                                                                                   
+                                                                                V002DtoGet = extractValue (downCast reader.["V002"]) CenikValuesDomain.Default.V002
+                                                                                V003DtoGet = extractValue (downCast reader.["V003"]) CenikValuesDomain.Default.V003
+                                                                                V004DtoGet = extractValue (downCast reader.["V004"]) CenikValuesDomain.Default.V004
+                                                                                V005DtoGet = extractValue (downCast reader.["V005"]) CenikValuesDomain.Default.V005
+                                                                                V006DtoGet = extractValue (downCast reader.["V006"]) CenikValuesDomain.Default.V006
+                                                                                V007DtoGet = extractValue (downCast reader.["V007"]) CenikValuesDomain.Default.V007
+                                                                                V008DtoGet = extractValue (downCast reader.["V008"]) CenikValuesDomain.Default.V008
+                                                                                V009DtoGet = extractValue (downCast reader.["V009"]) CenikValuesDomain.Default.V009
+                                                                                MsgsDtoGet = MessagesDtoGet.Default
                                                                             }
                                                                         } 
                                                             ) |> Seq.head //the function only places data to the head of the collection (a function with "while" does the same)
                                         reader.Close()
                                         reader.Dispose()
-
-                                        let convertToRegularRc getValues =
-                                            {
-                                                Id = fst getValues.IdRF; ValueState = fst getValues.ValueStateRF;
-                                                V001 = fst getValues.V001RF; V002 = fst getValues.V002RF; V003 = fst getValues.V003RF;
-                                                V004 = fst getValues.V004RF; V005 = fst getValues.V005RF; V006 = fst getValues.V006RF;
-                                                V007 = fst getValues.V007RF; V008 = fst getValues.V008RF; V009 = fst getValues.V009RF;
-                                                Msgs = getValues.MsgsRF
-                                            }
-                                      
-                                        let anySndTrue (rc: CenikValuesRF) =
+                                       
+                                        let anySndTrue (rc: CenikValuesDtoGet) =
 
                                             match rc with
                                             |
                                                 {
-                                                    IdRF = (_, flag1); ValueStateRF = (_, flag2);
-                                                    V001RF = (_, flag3); V002RF = (_, flag4); V003RF = (_, flag5);
-                                                    V004RF = (_, flag6); V005RF = (_, flag7); V006RF = (_, flag8);
-                                                    V007RF = (_, flag9); V008RF = (_, flag10); V009RF = (_, flag11)
+                                                    IdDtoGet = (_, flag1); ValueStateDtoGet = (_, flag2);
+                                                    V001DtoGet = (_, flag3); V002DtoGet = (_, flag4); V003DtoGet = (_, flag5);
+                                                    V004DtoGet = (_, flag6); V005DtoGet = (_, flag7); V006DtoGet = (_, flag8);
+                                                    V007DtoGet = (_, flag9); V008DtoGet = (_, flag10); V009DtoGet = (_, flag11)
                                                 }
                                                 ->
                                                     flag1 || flag2 || flag3 || flag4 || flag5 ||
@@ -160,19 +162,19 @@ module SqlRF =
                                                     flag10 || flag11
                                                                                                
                                         match anySndTrue getValues with 
-                                        | true  -> CenikValues.Default, ReadingDbError
-                                        | false -> convertToRegularRc getValues, NoSelectError                                               
+                                        | true  -> CenikValuesDomain.Default, ReadingDbError
+                                        | false -> cenikValuesTransferLayerGet getValues, NoSelectError                                               
                                        
-                            | Error du -> CenikValues.Default, du
+                            | Error du -> CenikValuesDomain.Default, du
                         finally
                             closeConnection connection                        
                     with
-                    | _ -> CenikValues.Default, ReadingDbError 
+                    | _ -> CenikValuesDomain.Default, ReadingDbError 
 
                 getValues
 
             with
-            | _ -> CenikValues.Default, ConnectionError 
+            | _ -> CenikValuesDomain.Default, ConnectionError 
        
  
         

@@ -19,18 +19,18 @@ module SharedCenikValues =
             V001 = v001; V002 = v002; V003 = v003;
             V004 = v004; V005 = v005; V006 = v006;
             V007 = v007; V008 = v008; V009 = v009;
-            Msgs = Messages.Default
+            Msgs = MessagesDomain.Default
         }
    
 module SharedDeserialisedCenikValues =
    
-    let create (cenikInputValues: CenikValues) =
+    let create (cenikInputValues: CenikValuesDomain) =
         {
             Id = cenikInputValues.Id; ValueState = cenikInputValues.ValueState;
             V001 = cenikInputValues.V001; V002 = cenikInputValues.V002; V003 = cenikInputValues.V003;
             V004 = cenikInputValues.V004; V005 = cenikInputValues.V005; V006 = cenikInputValues.V006;
             V007 = cenikInputValues.V007; V008 = cenikInputValues.V008; V009 = cenikInputValues.V009;
-            Msgs = Messages.Default
+            Msgs = MessagesDomain.Default
         }
 
 module SharedKontaktValues =
@@ -39,7 +39,7 @@ module SharedKontaktValues =
         {
             V001 = v001; V002 = v002; V003 = v003
             V004 = v004; V005 = v005;
-            V006 = v006; V007 = v007;  Msgs = Messages.Default
+            V006 = v006; V007 = v007;  Msgs = MessagesDomain.Default
         }
 
 module SharedDeserialisedKontaktValues =
@@ -48,7 +48,7 @@ module SharedDeserialisedKontaktValues =
         {
             V001 = kontaktInputValues.V001; V002 = kontaktInputValues.V002; V003 = kontaktInputValues.V003;
             V004 = kontaktInputValues.V004; V005 = kontaktInputValues.V005;
-            V006 = kontaktInputValues.V006; V007 = kontaktInputValues.V007; Msgs = Messages.Default           
+            V006 = kontaktInputValues.V006; V007 = kontaktInputValues.V007; Msgs = MessagesDomain.Default           
         }
 
 module SharedLinkAndLinkNameValues =
@@ -59,7 +59,7 @@ module SharedLinkAndLinkNameValues =
             V004 = v004; V005 = v005; V006 = v006;
             V001n = v001n; V002n = v002n; V003n = v003n;
             V004n = v004n; V005n = v005n; V006n = v006n;
-            Msgs = Messages.Default    
+            Msgs = MessagesDomain.Default    
         }
 
 module SharedDeserialisedLinkAndLinkNameValues =
@@ -70,7 +70,7 @@ module SharedDeserialisedLinkAndLinkNameValues =
             V004 = linkAndLinkNameInputValues.V004; V005 = linkAndLinkNameInputValues.V005; V006 = linkAndLinkNameInputValues.V006;
             V001n = linkAndLinkNameInputValues.V001n; V002n = linkAndLinkNameInputValues.V002n; V003n = linkAndLinkNameInputValues.V003n;
             V004n = linkAndLinkNameInputValues.V004n; V005n = linkAndLinkNameInputValues.V005n; V006n = linkAndLinkNameInputValues.V006n;
-            Msgs = Messages.Default    
+            Msgs = MessagesDomain.Default    
         }
 
 module Route =

@@ -23,6 +23,7 @@ open Auxiliaries.Server.Serialisation
 open Auxiliaries.Server.Deserialisation
 open Auxiliaries.Connections.Connection
 open PatternBuilders.Server.PatternBuilders
+open TransLayerSend.Server.TransLayerSend
 
 module Server =
 
@@ -93,7 +94,7 @@ module Server =
             }
     
       //TODO validation upon request from the user 
-    let private verifyCenikValues (cenikValues: CenikValues) =
+    let private verifyCenikValues (cenikValues: CenikValuesDomain) =
         match isValidCenik () with
         | ()  -> Success ()        
         //| _ -> Failure ()
@@ -143,25 +144,26 @@ module Server =
                 fun sendCenikValues ->
                     async
                         {                   
-                            let sendNewCenikValues: CenikValues =                        
+                            let sendNewCenikValues: CenikValuesDomain =                        
                                 match verifyCenikValues sendCenikValues with                
                                 | Success () ->
                                               let dbNewCenikValues = { sendCenikValues with Id = 2; ValueState = "new" }
 
                                               //************* plain SQL or Dapper.FSharp ********************
 
-                                              let cond = dbNewCenikValues.Msgs.Msg1 = "First run" 
-                                              let du = errorMsgBox (insertOrUpdate getConnection closeConnection dbNewCenikValues) cond
+                                              let cond = dbNewCenikValues.Msgs.Msg1 = "First run"
+                                              let cenikValuesSend = cenikValuesTransferLayerSend dbNewCenikValues
+                                              let du = errorMsgBox (insertOrUpdate getConnection closeConnection cenikValuesSend) cond
                                               let exnSql =
                                                   match du with
                                                   | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
                                                   | InsertOrUpdateError -> "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k chybě při načítání hodnot z databáze." 
                                                   | NoInsertError       -> String.Empty
                                          
-                                              { dbNewCenikValues with Msgs = { Messages.Default with Msg1 = exnSql } }
+                                              { dbNewCenikValues with Msgs = { MessagesDomain.Default with Msg1 = exnSql } }
                                                                            
                                 | Failure () ->
-                                              CenikValues.Default
+                                              CenikValuesDomain.Default
 
                           return sendNewCenikValues
                       }
@@ -185,8 +187,9 @@ module Server =
 
                             //********************************************************
                             let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
-                            let cond = dbCenikValues.Msgs.Msg1 = "First run" 
-                            let du = errorMsgBox (insertOrUpdate getConnection closeConnection dbCenikValues) cond
+                            let cond = dbCenikValues.Msgs.Msg1 = "First run"
+                            let cenikValuesSend = cenikValuesTransferLayerSend dbCenikValues
+                            let du = errorMsgBox (insertOrUpdate getConnection closeConnection cenikValuesSend) cond
                             let exnSql =
                                 match du with
                                 | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
@@ -202,7 +205,7 @@ module Server =
                                 | value, ConnectionError      -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
                                 | value, NoSelectError        -> value, String.Empty
 
-                            return { dbSendOldCenikValues with Msgs = { Messages.Default with Msg1 = exnSql; Msg2 = exnSql2; Msg3 = exnSql3 } }
+                            return { dbSendOldCenikValues with Msgs = { MessagesDomain.Default with Msg1 = exnSql; Msg2 = exnSql2; Msg3 = exnSql3 } }
                         }
 
             getDeserialisedCenikValues = 
@@ -220,7 +223,7 @@ module Server =
                                | value, ConnectionError      -> value, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
                                | value, NoSelectError        -> value, String.Empty      
 
-                           return { dbSendCenikValues with Msgs = { Messages.Default with Msg1 = exnSql1; Msg2 = errMsg } } 
+                           return { dbSendCenikValues with Msgs = { MessagesDomain.Default with Msg1 = exnSql1; Msg2 = errMsg } } 
                        }
 
              //************* from here downwards Json/XML ********************   
@@ -235,7 +238,7 @@ module Server =
                                                  //failwith "Simulated exception10" 
                                                  serialize sendKontaktValues "jsonKontaktValues.xml"                            
                                               let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error10") |||> tryWith |> deconstructor1
-                                              { sendKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson } }                                   
+                                              { sendKontaktValues with Msgs = { MessagesDomain.Default with Msg1 = exnJson } }                                   
                                 | Failure () ->
                                               KontaktValues.Default
 
@@ -259,7 +262,7 @@ module Server =
 
                             let (getOldKontaktValues, exnJson2) = (getOldKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error12") |||> tryWith |> deconstructor2 KontaktValues.Default
 
-                            return { getOldKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }                 
+                            return { getOldKontaktValues with Msgs = { MessagesDomain.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }                 
                         } 
 
             getDeserialisedKontaktValues =
@@ -270,7 +273,7 @@ module Server =
                             let getKontaktValuesNow x = deserialize "jsonKontaktValues.xml"                                 
                             let (getKontaktValues, exnJson1) = (getKontaktValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error13") |||> tryWith |> deconstructor2 KontaktValues.Default
 
-                            return { getKontaktValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }                   
+                            return { getKontaktValues with Msgs = { MessagesDomain.Default with Msg1 = exnJson1 } }                   
                         }
 
             sendLinkAndLinkNameValues =
@@ -283,7 +286,7 @@ module Server =
                                            //failwith "Simulated exception14" 
                                            let serializeNow x = serialize sendLinkAndLinkNameValues "jsonLinkAndLinkNameValues.xml"
                                            let exnJson = (serializeNow, (fun x -> ()), "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: Error14") |||> tryWith |> deconstructor1
-                                           { sendLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson } }     
+                                           { sendLinkAndLinkNameValues with Msgs = { MessagesDomain.Default with Msg1 = exnJson } }     
                              | Failure () ->
                                            LinkAndLinkNameValues.Default                        
 
@@ -304,7 +307,7 @@ module Server =
                            let getOldLinkAndLinkNameValuesNow x = deserialize "jsonLinkAndLinkNameValuesBackUp.xml"                                
                            let (getOldLinkAndLinkNameValues, exnJson2) = (getOldLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error16") |||> tryWith |> deconstructor2 LinkAndLinkNameValues.Default
 
-                           return { getOldLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }  
+                           return { getOldLinkAndLinkNameValues with Msgs = { MessagesDomain.Default with Msg1 = exnJson1; Msg2 = exnJson2 } }  
                        } 
 
             getDeserialisedLinkAndLinkNameValues =
@@ -315,7 +318,7 @@ module Server =
                            let getLinkAndLinkNameValuesNow x = deserialize "jsonLinkandLinkNameValues.xml"                                 
                            let (getLinkAndLinkNameValues, exnJson1) = (getLinkAndLinkNameValuesNow, (fun x -> ()), "Byly dosazeny defaultní hodnoty, neb došlo k této chybě: Error17") |||> tryWith |> deconstructor2 LinkAndLinkNameValues.Default
 
-                           return { getLinkAndLinkNameValues with Msgs = { Messages.Default with Msg1 = exnJson1 } }  
+                           return { getLinkAndLinkNameValues with Msgs = { MessagesDomain.Default with Msg1 = exnJson1 } }  
                        }
         }
 
@@ -327,8 +330,9 @@ module Server =
 
     let app =
         //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
-        let dbCenikValues = { CenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }         
-        let du = errorMsgBox (insertOrUpdate getConnection closeConnection dbCenikValues) true //true == first run
+        let dbCenikValues = { CenikValuesDomain.Default with Msgs = { MessagesDomain.Default with Msg1 = "First run" } }
+        let cenikValuesSend = cenikValuesTransferLayerSend dbCenikValues
+        let du = errorMsgBox (insertOrUpdate getConnection closeConnection cenikValuesSend) true //true == first run
         let exnSql =
             match du with
             | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
