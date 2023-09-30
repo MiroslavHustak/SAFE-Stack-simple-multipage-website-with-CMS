@@ -122,7 +122,7 @@ module SqlRF =
                                       
                                         let getValues =                                                
                                             Seq.initInfinite (fun _ -> reader.Read())
-                                            |> Seq.takeWhile ((=) true) 
+                                            |> Seq.takeWhile ((=) true)  //compare |> Seq.skipWhile ((=) false)
                                             |> Seq.collect (fun _ ->  
                                                                     seq
                                                                         {                                                                               
