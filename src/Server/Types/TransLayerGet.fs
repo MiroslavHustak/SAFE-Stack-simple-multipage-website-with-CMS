@@ -32,4 +32,33 @@ module TransLayerGet =
             Msgs = messagesTransferLayerGet cenikValuesDtoGet.MsgsDtoGet
         }
 
+    let internal kontaktValuesTransferLayerGet (kontaktValuesDtoGet: KontaktValuesDtoGet) : KontaktValuesDomain  =
+        {            
+            V001 = kontaktValuesDtoGet.V001
+            V002 = kontaktValuesDtoGet.V002
+            V003 = kontaktValuesDtoGet.V003
+            V004 = kontaktValuesDtoGet.V004
+            V005 = kontaktValuesDtoGet.V005
+            V006 = kontaktValuesDtoGet.V006
+            V007 = kontaktValuesDtoGet.V007          
+            Msgs = messagesTransferLayerGet kontaktValuesDtoGet.Msgs
+        }
+
+    let internal linkAndLinkNameValuesTransferLayerGet (linkAndLinkNameValuesDtoGet:  LinkAndLinkNameValuesDtoGet) : LinkAndLinkNameValuesDomain  =
+        {            
+            V001 = linkAndLinkNameValuesDtoGet.V001
+            V002 = linkAndLinkNameValuesDtoGet.V002
+            V003 = linkAndLinkNameValuesDtoGet.V003
+            V004 = linkAndLinkNameValuesDtoGet.V004
+            V005 = linkAndLinkNameValuesDtoGet.V005
+            V006 = linkAndLinkNameValuesDtoGet.V006
+            V001n = linkAndLinkNameValuesDtoGet.V001n
+            V002n = linkAndLinkNameValuesDtoGet.V002n
+            V003n = linkAndLinkNameValuesDtoGet.V003n
+            V004n = linkAndLinkNameValuesDtoGet.V004n
+            V005n = linkAndLinkNameValuesDtoGet.V005n
+            V006n = linkAndLinkNameValuesDtoGet.V006n
+            Msgs = messagesTransferLayerGet linkAndLinkNameValuesDtoGet.Msgs
+        }
+
         

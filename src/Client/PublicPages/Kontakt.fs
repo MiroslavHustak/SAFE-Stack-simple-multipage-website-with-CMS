@@ -17,15 +17,15 @@ module Kontakt =
 
     type Model =
         {
-            KontaktValues: KontaktValues
-            KontaktInputValues: KontaktValues
+            KontaktValues: KontaktValuesDomain
+            KontaktInputValues: KontaktValuesDomain
             ErrorMsg: string
             Id: int
         }
 
     type Msg =   
         | AskServerForKontaktValues 
-        | NewKontaktValues of KontaktValues    
+        | NewKontaktValues of KontaktValuesDomain    
 
     let private getDeserialisedKontaktValuesApi =
         Remoting.createApi ()
@@ -36,8 +36,8 @@ module Kontakt =
        
         let model =        
             {
-                KontaktValues = KontaktValues.Default        
-                KontaktInputValues = KontaktValues.Default
+                KontaktValues = KontaktValuesDomain.Default        
+                KontaktInputValues = KontaktValuesDomain.Default
                 ErrorMsg = String.Empty
                 Id = id
             }

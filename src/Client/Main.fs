@@ -51,8 +51,8 @@ module App =
             User: ApplicationUser 
             user: SharedApi.User
             Session: SharedApi.LoginResult option
-            LinkAndLinkNameValues: LinkAndLinkNameValues
-            LinkAndLinkNameInputValues: LinkAndLinkNameValues
+            LinkAndLinkNameValues: LinkAndLinkNameValuesDomain
+            LinkAndLinkNameInputValues: LinkAndLinkNameValuesDomain
         }
 
     type Msg =
@@ -68,7 +68,7 @@ module App =
         | CMSKontaktMsg of CMSKontakt.Msg
         | CMSLinkMsg of CMSLink.Msg
         | AskServerForLinkAndLinkNameValues 
-        | GetLinkAndLinkNameValues of LinkAndLinkNameValues
+        | GetLinkAndLinkNameValues of LinkAndLinkNameValuesDomain
 
     let private sendDeserialisedLinkAndLinkNameValuesApi =
         Remoting.createApi ()
@@ -213,8 +213,8 @@ module App =
                 User = Anonymous
                 user = { Username = SharedApi.Username String.Empty } //{ Username = SharedApi.Username String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
                 Session = None          
-                LinkAndLinkNameValues = LinkAndLinkNameValues.Default   
-                LinkAndLinkNameInputValues = LinkAndLinkNameValues.Default
+                LinkAndLinkNameValues = LinkAndLinkNameValuesDomain.Default   
+                LinkAndLinkNameInputValues = LinkAndLinkNameValuesDomain.Default
             }    
 
     let update (msg: Msg) (model: Model) =

@@ -15,8 +15,8 @@ module CMSKontakt =
 
     type Model =
         {
-            KontaktValues: KontaktValues
-            OldKontaktValues: KontaktValues
+            KontaktValues: KontaktValuesDomain
+            OldKontaktValues: KontaktValuesDomain
             V001Input: string
             V002Input: string
             V003Input: string
@@ -39,8 +39,8 @@ module CMSKontakt =
         | SetV007Input of string   
         | SendKontaktValuesToServer
         | SendOldKontaktValuesToServer
-        | NewKontaktValues of KontaktValues
-        | OldKontaktValues of KontaktValues
+        | NewKontaktValues of KontaktValuesDomain
+        | OldKontaktValues of KontaktValuesDomain
         | AsyncWorkIsComplete 
     
     let private sendKontaktValuesApi =
@@ -52,8 +52,8 @@ module CMSKontakt =
         
         let model =
             {
-                KontaktValues = KontaktValues.Default          
-                OldKontaktValues = KontaktValues.Default         
+                KontaktValues = KontaktValuesDomain.Default          
+                OldKontaktValues = KontaktValuesDomain.Default         
                 V001Input = String.Empty
                 V002Input = String.Empty
                 V003Input = String.Empty
@@ -87,7 +87,7 @@ module CMSKontakt =
         | SendKontaktValuesToServer ->
             try
                 try
-                    let buttonClickEvent: KontaktValues =
+                    let buttonClickEvent: KontaktValuesDomain =
                         let input current old =
                             match current = String.Empty with
                             | true  -> old

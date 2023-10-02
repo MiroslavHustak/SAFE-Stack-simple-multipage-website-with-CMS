@@ -15,8 +15,8 @@ module CMSLink =
 
     type Model =
         {
-            LinkAndLinkNameValues: LinkAndLinkNameValues
-            OldLinkAndLinkNameValues: LinkAndLinkNameValues
+            LinkAndLinkNameValues: LinkAndLinkNameValuesDomain
+            OldLinkAndLinkNameValues: LinkAndLinkNameValuesDomain
             V001LinkInput: string
             V002LinkInput: string
             V003LinkInput: string
@@ -49,8 +49,8 @@ module CMSLink =
         | SetV006LinkNameInput of string
         | SendLinkAndLinkNameValuesToServer
         | SendOldLinkAndLinkNameValuesToServer
-        | NewLinkAndLinkNameValues of LinkAndLinkNameValues
-        | OldLinkAndLinkNameValues of LinkAndLinkNameValues
+        | NewLinkAndLinkNameValues of LinkAndLinkNameValuesDomain
+        | OldLinkAndLinkNameValues of LinkAndLinkNameValuesDomain
         | AsyncWorkIsComplete 
 
     let private sendLinkAndLinkNameValuesApi =
@@ -62,8 +62,8 @@ module CMSLink =
     
         let model =
             {
-                LinkAndLinkNameValues = LinkAndLinkNameValues.Default           
-                OldLinkAndLinkNameValues = LinkAndLinkNameValues.Default           
+                LinkAndLinkNameValues = LinkAndLinkNameValuesDomain.Default           
+                OldLinkAndLinkNameValues = LinkAndLinkNameValuesDomain.Default           
                 V001LinkInput = String.Empty
                 V002LinkInput = String.Empty
                 V003LinkInput = String.Empty
@@ -107,7 +107,7 @@ module CMSLink =
         | SendLinkAndLinkNameValuesToServer ->
             try
                 try
-                    let buttonClickEvent: LinkAndLinkNameValues =   //see remark in CMSCenik.fs
+                    let buttonClickEvent: LinkAndLinkNameValuesDomain =   //see remark in CMSCenik.fs
                         let input current old =
                             match current = String.Empty with //String.IsNullOrWhiteSpace(current) || String.IsNullOrEmpty(current)
                             | true  -> old

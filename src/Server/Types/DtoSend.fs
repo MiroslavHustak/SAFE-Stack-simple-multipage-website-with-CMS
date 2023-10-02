@@ -28,4 +28,20 @@ module DtoSend =
             V007: string; V008: string; V009: string;
             Msgs: MessagesDtoSend
         }
-      
+
+    type KontaktValuesDtoSend =
+        {
+            V001: string; V002: string; V003: string;
+            V004: string; V005: string; V006: string;
+            V007: string; Msgs: MessagesDtoSend
+        }
+
+    type LinkAndLinkNameValuesDtoSend  =
+        {
+            V001: string; V002: string; V003: string;
+            V004: string; V005: string; V006: string;
+            V001n: string; V002n: string; V003n: string;
+            V004n: string; V005n: string; V006n: string;
+            Msgs: MessagesDtoSend
+        }
+  

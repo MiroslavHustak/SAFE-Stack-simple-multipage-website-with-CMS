@@ -42,7 +42,7 @@ type CenikValuesDomain =
             Msgs = MessagesDomain.Default
         }
 
-type KontaktValues =
+type KontaktValuesDomain =
     {
         V001: string; V002: string; V003: string;
         V004: string; V005: string; V006: string;
@@ -55,7 +55,7 @@ type KontaktValues =
             V007 = (char)32 |> string; Msgs = MessagesDomain.Default
         }
 
-type LinkAndLinkNameValues =
+type LinkAndLinkNameValuesDomain =
     {
         V001: string; V002: string; V003: string;
         V004: string; V005: string; V006: string;
@@ -81,12 +81,12 @@ type IGetApi =
         sendCenikValues: CenikValuesDomain -> Async<CenikValuesDomain> 
         getOldCenikValues: CenikValuesDomain -> Async<CenikValuesDomain>
         getDeserialisedCenikValues: CenikValuesDomain -> Async<CenikValuesDomain>
-        sendKontaktValues: KontaktValues -> Async<KontaktValues> 
-        getOldKontaktValues: KontaktValues -> Async<KontaktValues>
-        getDeserialisedKontaktValues: KontaktValues -> Async<KontaktValues>
-        sendLinkAndLinkNameValues: LinkAndLinkNameValues -> Async<LinkAndLinkNameValues> 
-        getOldLinkAndLinkNameValues: LinkAndLinkNameValues -> Async<LinkAndLinkNameValues>
-        getDeserialisedLinkAndLinkNameValues: LinkAndLinkNameValues -> Async<LinkAndLinkNameValues>
+        sendKontaktValues: KontaktValuesDomain -> Async<KontaktValuesDomain> 
+        getOldKontaktValues: KontaktValuesDomain -> Async<KontaktValuesDomain>
+        getDeserialisedKontaktValues: KontaktValuesDomain -> Async<KontaktValuesDomain>
+        sendLinkAndLinkNameValues: LinkAndLinkNameValuesDomain -> Async<LinkAndLinkNameValuesDomain> 
+        getOldLinkAndLinkNameValues: LinkAndLinkNameValuesDomain -> Async<LinkAndLinkNameValuesDomain>
+        getDeserialisedLinkAndLinkNameValues: LinkAndLinkNameValuesDomain -> Async<LinkAndLinkNameValuesDomain>
     }
     
 

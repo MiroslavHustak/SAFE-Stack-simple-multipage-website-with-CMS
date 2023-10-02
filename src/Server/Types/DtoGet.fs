@@ -30,4 +30,20 @@ module DtoGet =
             MsgsDtoGet: MessagesDtoGet
         }
 
+    type KontaktValuesDtoGet =
+        {
+            V001: string; V002: string; V003: string;
+            V004: string; V005: string; V006: string;
+            V007: string; Msgs: MessagesDtoGet
+        }
+
+    type LinkAndLinkNameValuesDtoGet  =
+        {
+            V001: string; V002: string; V003: string;
+            V004: string; V005: string; V006: string;
+            V001n: string; V002n: string; V003n: string;
+            V004n: string; V005n: string; V006n: string;
+            Msgs: MessagesDtoGet
+        }
+
    

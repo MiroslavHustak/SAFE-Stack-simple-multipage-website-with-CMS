@@ -1,8 +1,8 @@
 namespace TransLayerSend.Server
 
 open System
-open DtoSend.Server.DtoSend
 open SharedTypes
+open DtoSend.Server.DtoSend
 
 module TransLayerSend =
 
@@ -30,4 +30,33 @@ module TransLayerSend =
             V008 = cenikValuesDomain.V008
             V009 = cenikValuesDomain.V009
             Msgs = messagesTransferLayerSend cenikValuesDomain.Msgs
+        }
+
+    let internal kontaktValuesTransferLayerSend (kontaktValuesDomain: KontaktValuesDomain) : KontaktValuesDtoSend =
+        {            
+            V001 = kontaktValuesDomain.V001
+            V002 = kontaktValuesDomain.V002
+            V003 = kontaktValuesDomain.V003
+            V004 = kontaktValuesDomain.V004
+            V005 = kontaktValuesDomain.V005
+            V006 = kontaktValuesDomain.V006
+            V007 = kontaktValuesDomain.V007          
+            Msgs = messagesTransferLayerSend kontaktValuesDomain.Msgs
+        }
+
+    let internal linkAndLinkNameValuesTransferLayerSend (linkAndLinkNameValuesDomain:  LinkAndLinkNameValuesDomain) : LinkAndLinkNameValuesDtoSend =
+        {            
+            V001 = linkAndLinkNameValuesDomain.V001
+            V002 = linkAndLinkNameValuesDomain.V002
+            V003 = linkAndLinkNameValuesDomain.V003
+            V004 = linkAndLinkNameValuesDomain.V004
+            V005 = linkAndLinkNameValuesDomain.V005
+            V006 = linkAndLinkNameValuesDomain.V006
+            V001n = linkAndLinkNameValuesDomain.V001n
+            V002n = linkAndLinkNameValuesDomain.V002n
+            V003n = linkAndLinkNameValuesDomain.V003n
+            V004n = linkAndLinkNameValuesDomain.V004n
+            V005n = linkAndLinkNameValuesDomain.V005n
+            V006n = linkAndLinkNameValuesDomain.V006n
+            Msgs = messagesTransferLayerSend linkAndLinkNameValuesDomain.Msgs
         }
