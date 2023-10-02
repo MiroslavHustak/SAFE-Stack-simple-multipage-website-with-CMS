@@ -29,6 +29,7 @@ module DtoSend =
             Msgs: MessagesDtoSend
         }
 
+    //nevyuzito, ale ponechavam pro pripad zmeny
     type KontaktValuesDtoSend =
         {
             V001: string; V002: string; V003: string;

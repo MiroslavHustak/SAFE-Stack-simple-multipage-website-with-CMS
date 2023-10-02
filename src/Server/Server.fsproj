@@ -10,8 +10,10 @@
     <None Include="paket.references" />
     <Compile Include="Types\DtoSend.fs" />
     <Compile Include="Types\DtoGet.fs" />
+    <Compile Include="Types\DtoXml.fs" />
     <Compile Include="Types\TransLayerSend.fs" />
     <Compile Include="Types\TransLayerGet.fs" />
+    <Compile Include="Types\TransLayerXml.fs" />
     <Compile Include="Types\Strings.fs" />
     <Compile Include="Types\DiscriminatedUnions.fs" />
     <Compile Include="Types\PatternBuilders.fs" />

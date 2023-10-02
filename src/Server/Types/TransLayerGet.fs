@@ -32,6 +32,7 @@ module TransLayerGet =
             Msgs = messagesTransferLayerGet cenikValuesDtoGet.MsgsDtoGet
         }
 
+    //nevyuzito, ale ponechavam pro pripad zmeny    
     let internal kontaktValuesTransferLayerGet (kontaktValuesDtoGet: KontaktValuesDtoGet) : KontaktValuesDomain  =
         {            
             V001 = kontaktValuesDtoGet.V001
@@ -44,7 +45,7 @@ module TransLayerGet =
             Msgs = messagesTransferLayerGet kontaktValuesDtoGet.Msgs
         }
 
-    let internal linkAndLinkNameValuesTransferLayerGet (linkAndLinkNameValuesDtoGet:  LinkAndLinkNameValuesDtoGet) : LinkAndLinkNameValuesDomain  =
+    let internal linkAndLinkNameValuesTransferLayerGet (linkAndLinkNameValuesDtoGet: LinkAndLinkNameValuesDtoGet) : LinkAndLinkNameValuesDomain  =
         {            
             V001 = linkAndLinkNameValuesDtoGet.V001
             V002 = linkAndLinkNameValuesDtoGet.V002

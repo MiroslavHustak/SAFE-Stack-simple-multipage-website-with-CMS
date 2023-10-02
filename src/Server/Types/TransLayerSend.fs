@@ -32,6 +32,7 @@ module TransLayerSend =
             Msgs = messagesTransferLayerSend cenikValuesDomain.Msgs
         }
 
+    //nevyuzito, ale ponechavam pro pripad zmeny  
     let internal kontaktValuesTransferLayerSend (kontaktValuesDomain: KontaktValuesDomain) : KontaktValuesDtoSend =
         {            
             V001 = kontaktValuesDomain.V001
@@ -44,7 +45,7 @@ module TransLayerSend =
             Msgs = messagesTransferLayerSend kontaktValuesDomain.Msgs
         }
 
-    let internal linkAndLinkNameValuesTransferLayerSend (linkAndLinkNameValuesDomain:  LinkAndLinkNameValuesDomain) : LinkAndLinkNameValuesDtoSend =
+    let internal linkAndLinkNameValuesTransferLayerSend (linkAndLinkNameValuesDomain: LinkAndLinkNameValuesDomain) : LinkAndLinkNameValuesDtoSend =
         {            
             V001 = linkAndLinkNameValuesDomain.V001
             V002 = linkAndLinkNameValuesDomain.V002

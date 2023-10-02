@@ -30,6 +30,7 @@ module DtoGet =
             MsgsDtoGet: MessagesDtoGet
         }
 
+    //nevyuzito, ale ponechavam pro pripad zmeny
     type KontaktValuesDtoGet =
         {
             V001: string; V002: string; V003: string;

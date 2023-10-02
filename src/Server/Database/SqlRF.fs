@@ -9,13 +9,14 @@ open SharedTypes
 open Queries.SqlQueries
 open DiscriminatedUnions.Server
 
+open Auxiliaries.Server
+
 open DtoGet.Server.DtoGet
-open TransLayerGet.Server.TransLayerGet
 open DtoSend.Server.DtoSend
+open TransLayerGet.Server.TransLayerGet
 open TransLayerSend.Server.TransLayerSend
 
 //SQL type providers did not work in this app, they block the database
-
 module SqlRF =
       
     //**************** Sql query strings *****************
@@ -104,21 +105,11 @@ module SqlRF =
                                             | Error _ -> Error InsertOrUpdateError2                                                                  
                        
                             match reader with
-                            | Ok reader ->                                     
-                                        let inline downCast (x: obj) = // ^a -> statically resolved generic type parameter 
-                                            match x with
-                                            | :? ^a as value -> Some value 
-                                            | _              -> None
-
+                            | Ok reader ->   
                                         let extractValue fn defaultValue =
                                             match fn with     
                                             | Some value -> value, false
-                                            | None       -> defaultValue, true
-
-                                        let extractValue1 fn defaultValue =
-                                            match fn with     
-                                            | Some value -> value, false
-                                            | None       -> defaultValue, true 
+                                            | None       -> defaultValue, true                                      
                                       
                                         let getValues =                                                
                                             Seq.initInfinite (fun _ -> reader.Read())
@@ -128,17 +119,17 @@ module SqlRF =
                                                                         {                                                                               
                                                                         yield    
                                                                             {                                                       
-                                                                                IdDtoGet = extractValue (downCast reader.["Id"]) CenikValuesDomain.Default.Id
-                                                                                ValueStateDtoGet = extractValue (downCast reader.["ValueState"]) CenikValuesDomain.Default.ValueState
-                                                                                V001DtoGet = extractValue (downCast reader.["V001"]) CenikValuesDomain.Default.V001                                                                                   
-                                                                                V002DtoGet = extractValue (downCast reader.["V002"]) CenikValuesDomain.Default.V002
-                                                                                V003DtoGet = extractValue (downCast reader.["V003"]) CenikValuesDomain.Default.V003
-                                                                                V004DtoGet = extractValue (downCast reader.["V004"]) CenikValuesDomain.Default.V004
-                                                                                V005DtoGet = extractValue (downCast reader.["V005"]) CenikValuesDomain.Default.V005
-                                                                                V006DtoGet = extractValue (downCast reader.["V006"]) CenikValuesDomain.Default.V006
-                                                                                V007DtoGet = extractValue (downCast reader.["V007"]) CenikValuesDomain.Default.V007
-                                                                                V008DtoGet = extractValue (downCast reader.["V008"]) CenikValuesDomain.Default.V008
-                                                                                V009DtoGet = extractValue (downCast reader.["V009"]) CenikValuesDomain.Default.V009
+                                                                                IdDtoGet = extractValue (Casting.downCast reader.["Id"]) CenikValuesDomain.Default.Id
+                                                                                ValueStateDtoGet = extractValue (Casting.downCast reader.["ValueState"]) CenikValuesDomain.Default.ValueState
+                                                                                V001DtoGet = extractValue (Casting.downCast reader.["V001"]) CenikValuesDomain.Default.V001                                                                                   
+                                                                                V002DtoGet = extractValue (Casting.downCast reader.["V002"]) CenikValuesDomain.Default.V002
+                                                                                V003DtoGet = extractValue (Casting.downCast reader.["V003"]) CenikValuesDomain.Default.V003
+                                                                                V004DtoGet = extractValue (Casting.downCast reader.["V004"]) CenikValuesDomain.Default.V004
+                                                                                V005DtoGet = extractValue (Casting.downCast reader.["V005"]) CenikValuesDomain.Default.V005
+                                                                                V006DtoGet = extractValue (Casting.downCast reader.["V006"]) CenikValuesDomain.Default.V006
+                                                                                V007DtoGet = extractValue (Casting.downCast reader.["V007"]) CenikValuesDomain.Default.V007
+                                                                                V008DtoGet = extractValue (Casting.downCast reader.["V008"]) CenikValuesDomain.Default.V008
+                                                                                V009DtoGet = extractValue (Casting.downCast reader.["V009"]) CenikValuesDomain.Default.V009
                                                                                 MsgsDtoGet = MessagesDtoGet.Default
                                                                             }
                                                                         } 
