@@ -15,7 +15,7 @@ module CMSRozcestnik =
         }
 
     type Msg =
-         | Dummy  
+        | Dummy  
             
     let init id: Model * Cmd<Msg> =
         let model = {
