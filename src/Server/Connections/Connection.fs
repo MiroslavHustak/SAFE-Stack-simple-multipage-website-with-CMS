@@ -12,10 +12,10 @@ module Connection =
     //let [<Literal>] connStringSomee = @"" 
 
     //nterapie.somee.com //testing website
-    let [<Literal>] connStringSomee = @"workstation id=nterapie.mssql.somee.com;packet size=4096;user id=FSharpDeveloper_SQLLogin_1;pwd=1791iyi6tf;data source=nterapie.mssql.somee.com;persist security info=False;initial catalog=nterapie" 
+    let [<Literal>] connStringSomee = @"" 
 
     //localhost
-    //let [<Literal>] connStringLocal = @"Data Source=Misa\SQLEXPRESS;Initial Catalog=nterapieLocal;Integrated Security=True"
+    //let [<Literal>] connStringLocal = @""
 
     let getConnection () =
         let connection = new SqlConnection(connStringSomee)
