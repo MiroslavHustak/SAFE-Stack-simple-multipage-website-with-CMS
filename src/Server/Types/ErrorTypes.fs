@@ -1,4 +1,4 @@
-namespace DiscriminatedUnions.Server
+namespace ErrorTypes.Server
 
 type ResultSF<'TSuccess,'TFailure> =
    | Success of 'TSuccess
@@ -10,13 +10,12 @@ type SelectErrorOptions =
    | InsertOrUpdateError2
    | ReadingDbError
    | ConnectionError
-   | NoSelectError
 
 [<Struct>]
 type InsertErrorOptions =   
    | FirstRunError
    | InsertOrUpdateError
-   | NoInsertError
+   | NoError
 
 [<Struct>]
 type ErrorVerifyOptions = 

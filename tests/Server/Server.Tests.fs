@@ -1,17 +1,17 @@
 module Server.Tests
 
+open System
+open System.IO
+
 open Expecto
 
-open Shared
 open Server
+open Shared
 
 open Auxiliaries.Server.Security2
 open Auxiliaries.Server.ROP_Functions
 
-open System
-open System.IO
-
-let server =
+let private server =
     testList "Server"
         [
             //just testing a test :-), no real benefit out of this unit test
@@ -42,7 +42,7 @@ let server =
                 Expect.equal (snd expected) true "secret psw" 
         ]
 
-let all =
+let private all =
     testList "All"
         [
             Shared.Tests.shared
@@ -50,4 +50,4 @@ let all =
         ]
 
 [<EntryPoint>]
-let main _ = runTestsWithCLIArgs [] [||] all
+let internal main _ = runTestsWithCLIArgs [] [||] all

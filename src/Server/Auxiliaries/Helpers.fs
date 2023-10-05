@@ -3,6 +3,7 @@ namespace Auxiliaries.Server
 open System
 open System.IO
 open Newtonsoft.Json
+open System.Xml.Serialization
 open System.Runtime.Serialization
 
 open DtoGet.Server.DtoGet
@@ -11,12 +12,12 @@ open Auxiliaries.Server.ROP_Functions
 
 module Casting =
 
-    let inline downCast (x: obj) = 
+    let inline internal downCast (x: obj) = 
         match x with
         | :? ^a as value -> Some value 
         | _              -> None
 
-    let inline castAs<'a> (o: obj) : 'a option =    //srtp nefunguje v Saturnu
+    let inline internal castAs<'a> (o: obj) : 'a option =    //srtp nefunguje v Saturnu
         match Option.ofObj o with
         | Some (:? 'a as result) -> Some result
         | _                      -> None
@@ -31,15 +32,16 @@ module private TryParserInt =
 
 module Parsing =
 
-        let f x = let isANumber = x                                          
-                  isANumber   
+        let private f x =
+            let isANumber = x                                          
+            isANumber   
                    
-        let rec parseMe = 
+        let rec internal parseMe = 
             function            
             | TryParserInt.Int i -> f i
             | _                  -> 0  
 
-        let rec parseMeOption = 
+        let rec internal parseMeOption = 
             function            
             | TryParserInt.Int i -> f Some i
             | _                  -> None     
@@ -48,8 +50,9 @@ module Parsing =
 module Serialisation =
 
         //vyzkouseno pro kontakt data
-        //xml vyzaduje stejny typ pro serializaci a deserializaci, proto separatni DTO
-        let serializeToXml (record: 'a) (xmlFile: string) =
+        //System.Runtime.Serialization vyzaduje stejny typ pro serializaci a deserializaci, proto separatni DTO
+        //System.Xml.Serialization tady nefungoval
+        let internal serializeToXml (record: 'a) (xmlFile: string) =
 
             let filepath =
                 Path.GetFullPath(xmlFile) 
@@ -69,10 +72,10 @@ module Serialisation =
             xmlSerializer.WriteObject(stream, record)
 
             stream.Close()
-            stream.Dispose()
+            stream.Dispose()        
 
         //vyzkouseno pro links   
-        let serializeToJson (record: 'a) (jsonFile: string) =
+        let internal serializeToJson (record: 'a) (jsonFile: string) =
 
             let filepath =
                 Path.GetFullPath(jsonFile) 
@@ -87,7 +90,7 @@ module Serialisation =
             File.WriteAllText(filepath, json)
 
         //nepouzivano, ale vyzkouseno, co to udela - json v xml (ChatGPT vyrazil protest :-)), a funguje to :-) 
-        let serialize record xmlFile =
+        let internal serialize record xmlFile =
 
             let filepath =
                 Path.GetFullPath(xmlFile) 
@@ -105,8 +108,9 @@ module Serialisation =
 //tryWith to be implemented for all deserialization at the place of its using 
 module Deserialisation =
 
-    //vyzkouseno pro kontakt data  
-    let deserializeFromXml<'a> (xmlFile : string) =
+    //vyzkouseno pro kontakt data
+    //System.Runtime.Serialization (System.Xml.Serialization tady nefungoval)
+    let internal deserializeFromXml<'a> (xmlFile : string) =
                   
         let filepath =
             Path.GetFullPath(xmlFile) 
@@ -138,10 +142,10 @@ module Deserialisation =
 
                 result
         | false ->
-                failwith (sprintf "Soubor %s nenalezen" xmlFile)     
+                failwith (sprintf "Soubor %s nenalezen" xmlFile)    
 
     //vyzkouseno pro links 
-    let deserializeFromJson<'a> (jsonFile : string) =
+    let internal deserializeFromJson<'a> (jsonFile : string) =
                  
         let filepath =
             Path.GetFullPath(jsonFile) 
@@ -165,7 +169,7 @@ module Deserialisation =
                 failwith (sprintf "Soubor %s nenalezen" filepath) 
 
     //nepouzivano, ale vyzkouseno, co to udela - json v xml (ChatGPT vyrazil protest :-)), a funguje to :-)     
-    let deserialize xmlFile = 
+    let internal deserialize xmlFile = 
            
         let filepath =
             Path.GetFullPath(xmlFile) 
@@ -206,7 +210,7 @@ module Deserialisation =
 
 module CopyingFiles =  //trywith transferred to Server.fs      
         
-    let copyFiles source destination =
+    let internal copyFiles source destination =
                                                                     
         let perform x =                                    
             let sourceFilepath =

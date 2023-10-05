@@ -6,6 +6,7 @@
     <FSharpPreferNetFrameworkTools>True</FSharpPreferNetFrameworkTools>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Connections\Connection.fs" />
     <None Include="paket.references" />
     <Compile Include="Types\DtoSend.fs" />
@@ -15,9 +16,8 @@
     <Compile Include="Types\TransLayerGet.fs" />
     <Compile Include="Types\TransLayerXml.fs" />
     <Compile Include="Types\Strings.fs" />
-    <Compile Include="Types\DiscriminatedUnions.fs" />
+    <Compile Include="Types\ErrorTypes.fs" />
     <Compile Include="Types\PatternBuilders.fs" />
-    <Compile Include="Auxiliaries\Errors.fs" />
     <Compile Include="Auxiliaries\Security2.fs" />
     <Compile Include="Auxiliaries\ROP_Functions.fs" />
     <Compile Include="Auxiliaries\Helpers.fs" />
@@ -26,8 +26,11 @@
     <Compile Include="EducationalCode\Dapper.fs" />
     <Content Include="Database\Queries\Sql_Queries.txt" />
     <Compile Include="Database\Queries\Sql_Queries.fs" />
-    <Compile Include="Database\SqlRF.fs" />
-    <Compile Include="Server\Server.fs" />
+    <Compile Include="Database\Errors.fs" />
+    <Compile Include="Database\InsertOrUpdate.fs" />
+    <Compile Include="Database\Select.fs" />
+    <Compile Include="Server\ServerVerify.fs" />
+    <Compile Include="Server\ServerApi.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />

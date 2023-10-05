@@ -13,7 +13,7 @@ open System
 
 //Client/Shared test results -> to http://localhost:8081/ in a web browser.
 
-let client =
+let private client =
     testList "Client"
         [
             testCase "testingMochaClient" <| fun _ ->
@@ -36,7 +36,7 @@ let client =
                 Expect.stringContains expected "test" "testingMochaClient"//test description     
         ]
 
-let allTests =
+let private allTests =
     testList "All"
         [
 #if FABLE_COMPILER // This preprocessor directive makes editor happy
@@ -46,7 +46,7 @@ let allTests =
         ]
 
 [<EntryPoint>]
-let main args =
+let internal main args =
 #if FABLE_COMPILER
     Mocha.runTests allTests
 #else

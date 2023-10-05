@@ -4,7 +4,7 @@ module Strings =
 
     open System
 
-    let (|StringNonN|) s = 
+    let internal (|StringNonN|) s = 
         s 
         |> Option.ofObj 
         |> function 

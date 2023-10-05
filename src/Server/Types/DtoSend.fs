@@ -29,13 +29,13 @@ module DtoSend =
             Msgs: MessagesDtoSend
         }
 
-    //nevyuzito, ale ponechavam pro pripad zmeny
+    //nevyuzito, ale ponechavam pro pripad zmeny   
     type KontaktValuesDtoSend =
         {
             V001: string; V002: string; V003: string;
             V004: string; V005: string; V006: string;
             V007: string; Msgs: MessagesDtoSend
-        }
+        }     
 
     type LinkAndLinkNameValuesDtoSend  =
         {
