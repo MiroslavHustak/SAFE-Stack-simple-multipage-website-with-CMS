@@ -9,6 +9,7 @@
     <PackageReference Include="Expecto.FsCheck" Version="9.0.4" />
     <PackageReference Include="Fable.Reactstrap" Version="0.5.1" />
     <PackageReference Include="FSharp.Core" Version="6.0.7" />
+    <PackageReference Include="FsToolkit.ErrorHandling" Version="4.9.0" />
     <PackageReference Remove="FSharp.Core" Version="6.0.3" />
   </ItemGroup>
   <ItemGroup>

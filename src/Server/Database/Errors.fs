@@ -1,11 +1,13 @@
 namespace Auxiliaries.Errors
 
 open System
+
+open SharedTypes
+
 open ErrorTypes.Server
 open PatternBuilders.Server.PatternBuilders
 open Auxiliaries.Connections.Connection
 open TransLayerSend.Server.TransLayerSend
-open SharedTypes
 
 module Errors =
 
@@ -17,12 +19,7 @@ module Errors =
         | Error _ -> InsertOrUpdateError2
 
     let internal errorMsgBoxIU insertOrUpdate cond =
-    
-        let du =
-            match insertOrUpdate with
-            | Ok _    -> NoError
-            | Error _ -> InsertOrUpdateError
-                
+
         //just testing active patterns... :-)
         let (|Cond1|Cond2|Cond3|) value =
         
@@ -32,12 +29,17 @@ module Errors =
                     let! _ = (=) value NoError, Cond2                          
                     return Cond3
                 }
+    
+        let err =
+            match insertOrUpdate with
+            | Ok _    -> NoError
+            | Error _ -> InsertOrUpdateError    
                 
-        match du with
+        match err with
         | Cond2 when cond = true  -> FirstRunError 
         | Cond2 when cond = false -> InsertOrUpdateError
         | Cond1                   -> NoError
-        | Cond3 | _               -> du
+        | Cond3 | _               -> err
 
         |> function 
             | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."

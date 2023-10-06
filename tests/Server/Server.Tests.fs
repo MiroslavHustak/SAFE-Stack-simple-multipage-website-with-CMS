@@ -5,11 +5,12 @@ open System.IO
 
 open Expecto
 
+open Errors
 open Server
 open Shared
 
+open ErrorTypes.Server
 open Auxiliaries.Server.Security2
-open Auxiliaries.Server.ROP_Functions
 
 let private server =
     testList "Server"
@@ -25,21 +26,32 @@ let private server =
 
                 let expected =
 
-                    let uberHash x =
-                    
-                        match File.Exists(Path.GetFullPath(@"e:\SAFE Stack\SAFE-Nutricni-terapie4\tests\Server\uberHash.txt")) with
-                        | false -> Seq.empty                               
-                        | true  ->                              
-                                   match File.ReadAllLines(@"e:\SAFE Stack\SAFE-Nutricni-terapie4\tests\Server\uberHash.txt") |> Option.ofObj with 
-                                   | Some value -> value |> Seq.ofArray 
-                                   | None       -> Seq.empty 
-             
-                    let result = (uberHash, (fun x -> ()), String.Empty) |||> tryWith |> deconstructor0
+                    let uberHashError uberHash credential seqFn = 
+                        match uberHash with
+                        | Ok uberHash ->
+                                        match verify (uberHash |> seqFn) credential with 
+                                        | true  -> LegitimateTrue
+                                        | false -> LegitimateFalse
+                        | Error _     -> Exception
 
-                    (verify (result |> Seq.head) "......"), (verify (result |> Seq.last) "......")
+                        |> tryWithVerify () Exception  
+                          
+                    let uberHash =
+                   
+                        let f1 () = 
+                            match File.Exists(Path.GetFullPath(@"e:\SAFE Stack\SAFE-Nutricni-terapie4\tests\Server\uberHash.txt")) with
+                            | false ->
+                                    Error String.Empty                                
+                            | true  ->                              
+                                    match File.ReadAllLines(@"e:\SAFE Stack\SAFE-Nutricni-terapie4\tests\Server\uberHash.txt") |> Option.ofObj with 
+                                    | Some value -> Ok (value |> Seq.ofArray) 
+                                    | None       -> Error String.Empty                                                     
 
-                Expect.equal (fst expected) true "secret usr" 
-                Expect.equal (snd expected) true "secret psw" 
+                        tryWithResult f1 () (sprintf"%s")                        
+                    uberHash
+
+                Expect.isOk expected "secret credential"  
+                Expect.equal (expected.OkValue |> Seq.last) "....." "secret credential" 
         ]
 
 let private all =

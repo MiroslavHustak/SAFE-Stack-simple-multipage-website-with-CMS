@@ -183,6 +183,7 @@
       <PackageReference Include="Fable.Reactstrap" Version="0.5.1" />     
       <PackageReference Include="Feliz.Router" Version="3.8.0" />     
       <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />     
+      <PackageReference Include="FsToolkit.ErrorHandling" Version="4.9.0" />     
       <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />     
       <PackageReference Include="System.Text.Json" Version="6.0.3" />
       <PackageReference Include="FSharp.Core" Version="6.0.7" />

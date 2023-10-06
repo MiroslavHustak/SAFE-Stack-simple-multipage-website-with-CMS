@@ -8,7 +8,6 @@ open System.Runtime.Serialization
 
 open DtoGet.Server.DtoGet
 open DtoXml.Server.DtoXml
-open Auxiliaries.Server.ROP_Functions
 
 module Casting =
 
@@ -49,64 +48,74 @@ module Parsing =
 //tryWith to be implemented for all serialization at the place of its using 
 module Serialisation =
 
-        //vyzkouseno pro kontakt data
-        //System.Runtime.Serialization vyzaduje stejny typ pro serializaci a deserializaci, proto separatni DTO
-        //System.Xml.Serialization tady nefungoval
-        let internal serializeToXml (record: 'a) (xmlFile: string) =
+    let private optionToFailwith str = //TODO
+         function
+         | Some value -> value
+         | None       -> failwith str  
 
-            let filepath =
-                Path.GetFullPath(xmlFile) 
-                |> Option.ofObj 
-                |> optionToFailwith "Chyba při čtení cesty k xml souboru"            
+    //vyzkouseno pro kontakt data
+    //System.Runtime.Serialization vyzaduje stejny typ pro serializaci a deserializaci, proto separatni DTO
+    //System.Xml.Serialization tady nefungoval
+    let internal serializeToXml (record: 'a) (xmlFile: string) =
+
+        let filepath =
+            Path.GetFullPath(xmlFile) 
+            |> Option.ofObj 
+            |> optionToFailwith "Chyba při čtení cesty k xml souboru"            
             
-            let xmlSerializer =
-                new DataContractSerializer(typeof<'a>)        
-                |> Option.ofObj 
-                |> optionToFailwith (sprintf "%s%s" "Chyba při serializaci do " xmlFile)
+        let xmlSerializer =
+            new DataContractSerializer(typeof<'a>)        
+            |> Option.ofObj 
+            |> optionToFailwith (sprintf "%s%s" "Chyba při serializaci do " xmlFile)
 
-            let stream =
-                File.Create(filepath)
-                |> Option.ofObj
-                |> optionToFailwith (sprintf "%s%s" "Chyba při serializaci do " xmlFile)
+        let stream =
+            File.Create(filepath)
+            |> Option.ofObj
+            |> optionToFailwith (sprintf "%s%s" "Chyba při serializaci do " xmlFile)
 
-            xmlSerializer.WriteObject(stream, record)
+        xmlSerializer.WriteObject(stream, record)
 
-            stream.Close()
-            stream.Dispose()        
+        stream.Close()
+        stream.Dispose()        
 
-        //vyzkouseno pro links   
-        let internal serializeToJson (record: 'a) (jsonFile: string) =
+    //vyzkouseno pro links   
+    let internal serializeToJson (record: 'a) (jsonFile: string) =
 
-            let filepath =
-                Path.GetFullPath(jsonFile) 
-                |> Option.ofObj 
-                |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " jsonFile)
+        let filepath =
+            Path.GetFullPath(jsonFile) 
+            |> Option.ofObj 
+            |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " jsonFile)
 
-            let json =
-                JsonConvert.SerializeObject(record) 
-                |> Option.ofObj 
-                |> optionToFailwith (sprintf "%s%s" "Chyba při serializaci do " jsonFile)
+        let json =
+            JsonConvert.SerializeObject(record) 
+            |> Option.ofObj 
+            |> optionToFailwith (sprintf "%s%s" "Chyba při serializaci do " jsonFile)
 
-            File.WriteAllText(filepath, json)
+        File.WriteAllText(filepath, json)
 
-        //nepouzivano, ale vyzkouseno, co to udela - json v xml (ChatGPT vyrazil protest :-)), a funguje to :-) 
-        let internal serialize record xmlFile =
+    //nepouzivano, ale vyzkouseno, co to udela - json v xml (ChatGPT vyrazil protest :-)), a funguje to :-) 
+    let internal serialize record xmlFile =
 
-            let filepath =
-                Path.GetFullPath(xmlFile) 
-                |> Option.ofObj 
-                |> optionToFailwith "Chyba při čtení cesty k souboru json.....xml" 
+        let filepath =
+            Path.GetFullPath(xmlFile) 
+            |> Option.ofObj 
+            |> optionToFailwith "Chyba při čtení cesty k souboru json.....xml" 
 
-            let xmlSerializer =
-                new DataContractSerializer(typedefof<string>)          
-                |> Option.ofObj 
-                |> optionToFailwith "Chyba při serializaci"
+        let xmlSerializer =
+            new DataContractSerializer(typedefof<string>)          
+            |> Option.ofObj 
+            |> optionToFailwith "Chyba při serializaci"
 
-            use stream = File.Create(filepath)   
-            xmlSerializer.WriteObject(stream, JsonConvert.SerializeObject(record))            
+        use stream = File.Create(filepath)   
+        xmlSerializer.WriteObject(stream, JsonConvert.SerializeObject(record))            
 
 //tryWith to be implemented for all deserialization at the place of its using 
 module Deserialisation =
+
+    let private optionToFailwith str = //TODO
+        function
+        | Some value -> value
+        | None       -> failwith str  
 
     //vyzkouseno pro kontakt data
     //System.Runtime.Serialization (System.Xml.Serialization tady nefungoval)
@@ -208,7 +217,12 @@ module Deserialisation =
         | true  -> jsonString()              
         | false -> failwith (sprintf "Soubor %s nenalezen" xmlFile) 
 
-module CopyingFiles =  //trywith transferred to Server.fs      
+module CopyingFiles =  //trywith transferred to Server.fs
+
+    let private optionToFailwith str = //TODO
+        function
+        | Some value -> value
+        | None       -> failwith str  
         
     let internal copyFiles source destination =
                                                                     

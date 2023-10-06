@@ -1,9 +1,5 @@
 namespace ErrorTypes.Server
 
-type ResultSF<'TSuccess,'TFailure> =
-   | Success of 'TSuccess
-   | Failure of 'TFailure
-
 [<Struct>]
 type SelectErrorOptions =   
    | InsertOrUpdateError1
