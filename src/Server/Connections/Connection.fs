@@ -24,5 +24,5 @@ module Connection =
     
     let internal closeConnection (connection: SqlConnection) =
         connection.Close()
-        connection.Dispose()
+        connection.Dispose() 
 
