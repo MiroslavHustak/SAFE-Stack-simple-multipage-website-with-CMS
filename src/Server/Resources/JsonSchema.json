@@ -1,0 +1,30 @@
+{
+    "type": "object",
+    "properties": {
+        "V001": { "type": "string" },
+        "V002": { "type": "string" },
+        "V003": { "type": "string" },
+        "V004": { "type": "string" },
+        "V005": { "type": "string" },
+        "V006": { "type": "string" },
+        "V001n": { "type": "string" },
+        "V002n": { "type": "string" },
+        "V003n": { "type": "string" },
+        "V004n": { "type": "string" },
+        "V005n": { "type": "string" },
+        "V006n": { "type": "string" },
+        "Msgs": {
+            "type": "object",
+            "properties": {
+                "Msg1": { "type": "string" },
+                "Msg2": { "type": "string" },
+                "Msg3": { "type": "string" },
+                "Msg4": { "type": "string" },
+                "Msg5": { "type": "string" },
+                "Msg6": { "type": "string" }
+            },
+            "required": [ "Msg1", "Msg2", "Msg3", "Msg4", "Msg5", "Msg6" ]
+        }
+    },
+    "required": [ "V001", "V002", "V003", "V004", "V005", "V006", "V001n", "V002n", "V003n", "V004n", "V005n", "V006n", "Msgs" ]
+}

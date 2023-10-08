@@ -6,6 +6,15 @@
     <FSharpPreferNetFrameworkTools>True</FSharpPreferNetFrameworkTools>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Resources\xmlKontaktValues.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\xmlKontaktValuesBackUp.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\uberHash.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Connections\Connection.fs" />
     <None Include="paket.references" />
@@ -52,5 +61,14 @@
   <ItemGroup>
     <ProjectReference Include="..\Shared\Shared.fsproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="Resources\jsonLinkAndLinkNameValues.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Resources\jsonLinkAndLinkNameValuesBackUp.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ProjectExtensions><VisualStudio><UserProperties resources_4jsonlinkandlinknamevalues_1json__JsonSchema="https://json-schema.org/draft-07/schema" resources_4jsonlinkandlinknamevaluesbackup_1json__JsonSchema="https://json-schema.org/draft-07/schema" resources_4jsonschema_1json__JsonSchema="https://json-schema.org/draft-07/schema" /></VisualStudio></ProjectExtensions>
 </Project>

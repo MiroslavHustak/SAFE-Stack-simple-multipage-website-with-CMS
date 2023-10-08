@@ -21,6 +21,12 @@ open PatternBuilders.Server.PatternBuilders
 
 module ServerVerify =
 
+    let private pathToUberHashTxt = 
+        try
+            sprintf "%s%s%s" AppDomain.CurrentDomain.BaseDirectory "Resources" @"\uberHash.txt" //CopyAlways      
+        with
+        | ex -> failwith (sprintf "Závažná chyba na serveru !!! %s" ex.Message)  
+
     let private strContainsOnlySpace str =
         str |> Seq.forall (fun item -> item = (char)32)  //A string is a sequence of characters => use Seq.forall to test directly //(char)32 = space
 
@@ -40,7 +46,7 @@ module ServerVerify =
         let mySeq = seq { usr; psw }
         
         use sw =
-            new StreamWriter(Path.GetFullPath("uberHash.txt")) 
+            new StreamWriter(Path.GetFullPath(pathToUberHashTxt)) 
             |> Option.ofNull
             |> function
                 | Some value -> value
@@ -72,11 +78,11 @@ module ServerVerify =
 
                 let uberHash =
                     let f1 () = 
-                        match File.Exists(Path.GetFullPath("uberHash.txt")) with
+                        match File.Exists(Path.GetFullPath(pathToUberHashTxt)) with
                         | false ->
                                 Error String.Empty                                
                         | true  ->                              
-                                match File.ReadAllLines("uberHash.txt") |> Option.ofObj with //StreamReader refused to work here, that is why File.ReadAllLines was used 
+                                match File.ReadAllLines(pathToUberHashTxt) |> Option.ofObj with //StreamReader refused to work here, that is why File.ReadAllLines was used 
                                 | Some value -> Ok (value |> Seq.ofArray) 
                                 | None       -> Error String.Empty  
 

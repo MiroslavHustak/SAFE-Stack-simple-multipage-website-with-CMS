@@ -12,6 +12,12 @@ open Shared
 open ErrorTypes.Server
 open Auxiliaries.Server.Security2
 
+let private pathToUberHashTxt = 
+    try
+        sprintf "%s%s%s" AppDomain.CurrentDomain.BaseDirectory "Resources" @"\uberHash.txt" //CopyAlways      
+    with
+    | ex -> failwith (sprintf "Závažná chyba na serveru !!! %s" ex.Message)  
+
 let private server =
     testList "Server"
         [
@@ -39,11 +45,11 @@ let private server =
                     let uberHash =
                    
                         let f1 () = 
-                            match File.Exists(Path.GetFullPath(@"e:\SAFE Stack\SAFE-Nutricni-terapie4\tests\Server\uberHash.txt")) with
+                            match File.Exists(Path.GetFullPath(pathToUberHashTxt)) with
                             | false ->
                                     Error String.Empty                                
                             | true  ->                              
-                                    match File.ReadAllLines(@"e:\SAFE Stack\SAFE-Nutricni-terapie4\tests\Server\uberHash.txt") |> Option.ofObj with 
+                                    match File.ReadAllLines(pathToUberHashTxt) |> Option.ofObj with 
                                     | Some value -> Ok (value |> Seq.ofArray) 
                                     | None       -> Error String.Empty                                                     
 

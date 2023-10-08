@@ -5,7 +5,6 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="uberHash.txt" />
     <Compile Include="Server.Tests.fs" />
   </ItemGroup>
   <ItemGroup>

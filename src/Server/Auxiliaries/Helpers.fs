@@ -9,6 +9,14 @@ open System.Runtime.Serialization
 open DtoGet.Server.DtoGet
 open DtoXml.Server.DtoXml
 
+module Resources =
+
+    let internal pathToResources path = 
+        try
+            sprintf "%s%s%s" AppDomain.CurrentDomain.BaseDirectory "Resources" path //CopyAlways      
+        with
+        | ex -> failwith (sprintf "Závažná chyba na serveru !!! %s" ex.Message)
+
 module Casting =
 
     let inline internal downCast (x: obj) = 

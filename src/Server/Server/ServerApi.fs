@@ -24,6 +24,7 @@ open Auxiliaries.Server.CopyingFiles
 open Auxiliaries.Server.Serialisation
 open Auxiliaries.Server.Deserialisation
 open Auxiliaries.Connections.Connection
+open Auxiliaries.Server.Resources
 
 open DtoXml.Server.DtoXml
 open DtoGet.Server.DtoGet
@@ -32,6 +33,11 @@ open TransLayerGet.Server.TransLayerGet
 open TransLayerSend.Server.TransLayerSend
 
 module ServerApi =
+
+    let private pathToJsonBackup = pathToResources @"\jsonLinkAndLinkNameValuesBackUp.json"
+    let private pathToJson = pathToResources @"\jsonLinkAndLinkNameValues.json"
+    let private pathToXmlBackup = pathToResources @"\xmlKontaktValuesBackUp.xml"
+    let private pathToXml = pathToResources @"\xmlKontaktValues.xml"
 
     let internal IGetApi errMsg =
         {            
@@ -66,7 +72,7 @@ module ServerApi =
                             let IdOld = 3
 
                             let (dbGetNewCenikValues, exnSql2) =                              
-                                match selectValues getConnection closeConnection (insertOrUpdateError insertOrUpdate) IdNew with   
+                                match selectValues getConnection closeConnection (insertDefaultValues insertOrUpdate) IdNew with   
                                 | Ok value  -> value, String.Empty                                            
                                 | Error err -> errorMsgBoxS err
 
@@ -78,7 +84,7 @@ module ServerApi =
                            
                             //********************************************************
                             let (dbSendOldCenikValues, exnSql3) =  
-                                match selectValues getConnection closeConnection (insertOrUpdateError insertOrUpdate) IdOld with   
+                                match selectValues getConnection closeConnection (insertDefaultValues insertOrUpdate) IdOld with   
                                 | Ok value  -> value, String.Empty                                            
                                 | Error err -> errorMsgBoxS err
 
@@ -92,7 +98,7 @@ module ServerApi =
                            let IdNew = 2
                     
                            let (dbSendCenikValues, exnSql1) =                              
-                               match selectValues getConnection closeConnection (insertOrUpdateError insertOrUpdate) IdNew with   
+                               match selectValues getConnection closeConnection (insertDefaultValues insertOrUpdate) IdNew with   
                                | Ok value  -> value, String.Empty                                            
                                | Error err -> errorMsgBoxS err
                                           
@@ -111,7 +117,7 @@ module ServerApi =
                                                 let f1 () = 
                                                     //failwith "Simulated exception10"
                                                     let sendKontaktValuesDtoXml = kontaktValuesTransferLayerDomainToXml sendKontaktValues
-                                                    serializeToXml sendKontaktValuesDtoXml "xmlKontaktValues.xml"
+                                                    serializeToXml sendKontaktValuesDtoXml pathToXml
                                                     String.Empty
                                                 let f3 = sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě:"  
                                                 tryWithResult1 f1 () f3
@@ -129,11 +135,9 @@ module ServerApi =
                         {
                             let (getOldKontaktValues, exnJson) =
                                 let f1 () = 
-                                    copyFiles 
-                                    <| "xmlKontaktValues.xml"
-                                    <| "xmlKontaktValuesBackUp.xml"
+                                    copyFiles pathToXml pathToXmlBackup
                                     //failwith "Simulated exception12" 
-                                    kontaktValuesTransferLayerXmlToDomain (deserializeFromXml<KontaktValuesDtoXml> "xmlKontaktValuesBackUp.xml"), String.Empty   
+                                    kontaktValuesTransferLayerXmlToDomain (deserializeFromXml<KontaktValuesDtoXml> pathToXmlBackup), String.Empty   
                                 let f3 ex = KontaktValuesDomain.Default, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě:" ex 
                                 tryWithResult1 f1 () f3      
 
@@ -147,7 +151,7 @@ module ServerApi =
                             let (getKontaktValues, exnJson1) =
                                 let f1 () = 
                                    //failwith "Simulated exception13" 
-                                    kontaktValuesTransferLayerXmlToDomain (deserializeFromXml<KontaktValuesDtoXml> "xmlKontaktValues.xml"), String.Empty 
+                                    kontaktValuesTransferLayerXmlToDomain (deserializeFromXml<KontaktValuesDtoXml> pathToXml), String.Empty 
                                 let f3 ex = KontaktValuesDomain.Default, sprintf"%s %s" "Byly dosazeny defaultní hodnoty kontaktů, neb došlo k této chybě: " ex 
                                 tryWithResult1 f1 () f3
 
@@ -166,7 +170,7 @@ module ServerApi =
                                             let f1 () = 
                                                 //failwith "Simulated exception14"   
                                                 let sendLinkAndLinkNameValuesDtoSend = linkAndLinkNameValuesTransferLayerSend sendLinkAndLinkNameValues
-                                                serializeToJson sendLinkAndLinkNameValuesDtoSend "jsonLinkAndLinkNameValues.json"
+                                                serializeToJson sendLinkAndLinkNameValuesDtoSend pathToJson
                                                 String.Empty
                                             let f3 = sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě:"  
                                             tryWithResult1 f1 () f3     
@@ -183,11 +187,9 @@ module ServerApi =
                        {                         
                            let (getOldLinkAndLinkNameValues, exnJson) =
                                let f1 () = 
-                                   copyFiles 
-                                   <| "jsonLinkAndLinkNameValues.json"
-                                   <| "jsonLinkAndLinkNameValuesBackUp.json"
+                                   copyFiles pathToJson pathToJsonBackup
                                    //failwith "Simulated exception15"                           
-                                   linkAndLinkNameValuesTransferLayerGet (deserializeFromJson<LinkAndLinkNameValuesDtoGet> "jsonLinkAndLinkNameValuesBackUp.json"), String.Empty  
+                                   linkAndLinkNameValuesTransferLayerGet (deserializeFromJson<LinkAndLinkNameValuesDtoGet> pathToJsonBackup), String.Empty  
                                let f3 ex = LinkAndLinkNameValuesDomain.Default, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě:" ex 
                                tryWithResult1 f1 () f3                             
 
@@ -201,11 +203,8 @@ module ServerApi =
 
                            let (getLinkAndLinkNameValues, exnJson) =
                                let f1 () = 
-                                   copyFiles 
-                                   <| "jsonLinkAndLinkNameValues.json"
-                                   <| "jsonLinkAndLinkNameValuesBackUp.json"
                                    //failwith "Simulated exception17"                           
-                                   linkAndLinkNameValuesTransferLayerGet (deserializeFromJson<LinkAndLinkNameValuesDtoGet> "jsonLinkandLinkNameValues.json"), String.Empty  
+                                   linkAndLinkNameValuesTransferLayerGet (deserializeFromJson<LinkAndLinkNameValuesDtoGet> pathToJson), String.Empty  
                                let f3 ex = LinkAndLinkNameValuesDomain.Default, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě:" ex 
                                tryWithResult1 f1 () f3
 

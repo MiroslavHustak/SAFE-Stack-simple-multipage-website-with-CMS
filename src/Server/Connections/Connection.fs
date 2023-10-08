@@ -12,10 +12,10 @@ module Connection =
     //let [<Literal>] connStringSomee = @"" 
 
     //nterapie.somee.com //testing website
-    let [<Literal>] internal connStringSomee = @":-)" 
+    let [<Literal>] internal connStringSomee = @"***********************************" 
 
     //localhost
-    //let [<Literal>] internal connStringLocal = @":-)"
+    //let [<Literal>] internal connStringLocal = @"*******************************"
 
     let internal getConnection () =
         let connection = new SqlConnection(connStringSomee)

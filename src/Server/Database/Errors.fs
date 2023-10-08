@@ -11,7 +11,7 @@ open TransLayerSend.Server.TransLayerSend
 
 module Errors =
 
-    let internal insertOrUpdateError insertOrUpdate =     
+    let internal insertDefaultValues insertOrUpdate =     
         
         let cenikValuesDtoSendDefault = cenikValuesTransferLayerSend CenikValuesDomain.Default
         match insertOrUpdate getConnection closeConnection cenikValuesDtoSendDefault with
