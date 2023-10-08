@@ -3,11 +3,23 @@ namespace Auxiliaries.Server
 open System
 open System.IO
 open Newtonsoft.Json
-open System.Xml.Serialization
 open System.Runtime.Serialization
 
 open DtoGet.Server.DtoGet
 open DtoXml.Server.DtoXml
+
+module PatternBuilders = 
+
+    let private (>>=) condition nextFunc =
+        match fst condition with
+        | false -> snd condition
+        | true  -> nextFunc()   
+
+    [<Struct>]
+    type MyPatternBuilder = MyPatternBuilder with            
+        member _.Bind(condition, nextFunc) = (>>=) <| condition <| nextFunc
+        member _.Using x = x
+        member _.Return x = x
 
 module Resources =
 
@@ -250,7 +262,20 @@ module CopyingFiles =  //trywith transferred to Server.fs
             | true  -> File.Copy(sourceFilepath, destinFilepath, true)             
             | false -> failwith (sprintf "Soubor %s nenalezen" source)
 
-        perform ()   
+        perform ()
+
+module Strings = 
+
+    open System
+
+    let internal (|StringNonN|) s = 
+        s 
+        |> Option.ofObj 
+        |> function 
+            | Some value -> string value
+            | None       -> String.Empty
+
+
 (*       
 System.IO.File provides static members related to working with files, whereas System.IO.FileInfo represents a specific file and contains non-static members for working with that file.          
 Because all File methods are static, it might be more efficient to use a File method rather than a corresponding FileInfo instance method if you want to perform only one action. All File methods 

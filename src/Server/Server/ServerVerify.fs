@@ -17,7 +17,7 @@ open SharedTypes
 open Errors
 open ErrorTypes.Server
 open Auxiliaries.Server.Security2
-open PatternBuilders.Server.PatternBuilders
+open Auxiliaries.Server.PatternBuilders
 
 module ServerVerify =
 

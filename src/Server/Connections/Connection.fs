@@ -1,3 +1,6 @@
+
+
+
 namespace Auxiliaries.Connections
 
 open System
@@ -12,10 +15,9 @@ module Connection =
     //let [<Literal>] connStringSomee = @"" 
 
     //nterapie.somee.com //testing website
-    let [<Literal>] internal connStringSomee = @"***********************************" 
-
+    let [<Literal>] internal connStringSomee = "***"
     //localhost
-    //let [<Literal>] internal connStringLocal = @"*******************************"
+    //let [<Literal>] internal connStringLocal = @"Data Source=Misa\SQLEXPRESS;Initial Catalog=nterapieLocal;Integrated Security=True"
 
     let internal getConnection () =
         let connection = new SqlConnection(connStringSomee)
@@ -24,5 +26,4 @@ module Connection =
     
     let internal closeConnection (connection: SqlConnection) =
         connection.Close()
-        connection.Dispose() 
-
+        connection.Dispose()

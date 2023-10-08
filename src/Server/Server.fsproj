@@ -6,6 +6,7 @@
     <FSharpPreferNetFrameworkTools>True</FSharpPreferNetFrameworkTools>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
     <Content Include="Resources\xmlKontaktValues.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -15,7 +16,6 @@
     <Content Include="Resources\uberHash.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Connections\Connection.fs" />
     <None Include="paket.references" />
     <Compile Include="Types\DtoSend.fs" />
@@ -24,9 +24,7 @@
     <Compile Include="Types\TransLayerSend.fs" />
     <Compile Include="Types\TransLayerGet.fs" />
     <Compile Include="Types\TransLayerXml.fs" />
-    <Compile Include="Types\Strings.fs" />
     <Compile Include="Types\ErrorTypes.fs" />
-    <Compile Include="Types\PatternBuilders.fs" />
     <Compile Include="Auxiliaries\Security2.fs" />
     <Compile Include="Auxiliaries\Helpers.fs" />
     <Compile Include="EducationalCode\Security.fs" />
