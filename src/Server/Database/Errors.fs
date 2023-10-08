@@ -23,10 +23,11 @@ module Errors =
         //just testing active patterns... :-)
         let (|Cond1|Cond2|Cond3|) value =
         
-            MyPatternBuilder    
+            Builder1    
                 {    
                     let! _ = (<>) value NoError, Cond1
-                    let! _ = (=) value NoError, Cond2                          
+                    let! _ = (=) value NoError, Cond2
+                    
                     return Cond3
                 }
     

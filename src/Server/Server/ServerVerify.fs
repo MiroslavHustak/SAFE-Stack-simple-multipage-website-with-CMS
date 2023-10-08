@@ -16,17 +16,16 @@ open SharedTypes
 
 open Errors
 open ErrorTypes.Server
+
+open Auxiliaries.Server
+open Auxiliaries.Server.Resources
 open Auxiliaries.Server.Security2
 open Auxiliaries.Server.PatternBuilders
 
 module ServerVerify =
 
-    let private pathToUberHashTxt = 
-        try
-            sprintf "%s%s%s" AppDomain.CurrentDomain.BaseDirectory "Resources" @"\uberHash.txt" //CopyAlways      
-        with
-        | ex -> failwith (sprintf "Závažná chyba na serveru !!! %s" ex.Message)  
-
+    let private pathToUberHashTxt = pathToResources @"\uberHash.txt"
+    
     let private strContainsOnlySpace str =
         str |> Seq.forall (fun item -> item = (char)32)  //A string is a sequence of characters => use Seq.forall to test directly //(char)32 = space
 
@@ -57,17 +56,19 @@ module ServerVerify =
 
     let internal verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>
 
-        let uberHashError uberHash credential seqFn = 
-            match uberHash with
-            | Ok uberHash ->
-                            match verify (uberHash |> seqFn) credential with 
-                            | true  -> LegitimateTrue
-                            | false -> LegitimateFalse
-            | Error _     -> Exception
+        let uberHashError uberHash credential seqFn =
+            
+            Builder2
+                {
+                    let! uberHash = uberHash |> Result.toOption, Exception
+                    let! _ = verify (uberHash |> seqFn) credential |> Option.ofBool, LegitimateFalse
+                    
+                    return LegitimateTrue
+                }
 
-            |> tryWithVerify () Exception  
+            |> tryWithVerify () Exception                   
 
-        MyPatternBuilder    
+        Builder1    
             {
                 let rc1 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
                 let rc2 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Problém s ověřením uživatelského jména a hesla" }
@@ -77,14 +78,15 @@ module ServerVerify =
                 let psw = login.Password |> function SharedApi.Password value -> value
 
                 let uberHash =
-                    let f1 () = 
-                        match File.Exists(Path.GetFullPath(pathToUberHashTxt)) with
-                        | false ->
-                                Error String.Empty                                
-                        | true  ->                              
-                                match File.ReadAllLines(pathToUberHashTxt) |> Option.ofObj with //StreamReader refused to work here, that is why File.ReadAllLines was used 
-                                | Some value -> Ok (value |> Seq.ofArray) 
-                                | None       -> Error String.Empty  
+                    let f1 () =
+
+                        Builder2
+                            {
+                                let! _ = File.Exists(Path.GetFullPath(pathToUberHashTxt)) |> Option.ofBool, Error String.Empty
+                                let! value = File.ReadAllLines(pathToUberHashTxt) |> Option.ofObj, Error String.Empty
+
+                                return Ok (value |> Seq.ofArray) 
+                            }                       
 
                     tryWithResult f1 () (sprintf"%s")
 

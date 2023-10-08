@@ -16,10 +16,44 @@ module PatternBuilders =
         | true  -> nextFunc()   
 
     [<Struct>]
-    type MyPatternBuilder = MyPatternBuilder with            
+    type internal Builder1 = Builder1 with            
         member _.Bind(condition, nextFunc) = (>>=) <| condition <| nextFunc
         member _.Using x = x
         member _.Return x = x
+
+ //************************************************************************************* 
+
+    let private (>>==) (optionExpr, errDuCase) nextFunc =
+        match optionExpr with
+        | Some value -> nextFunc value 
+        | _          -> errDuCase  
+                
+    [<Struct>]
+    type internal Builder2 = Builder2 with    
+        member _.Bind(condition, nextFunc) = (>>==) condition nextFunc
+        member _.Return x : 'a = x
+
+module Result =
+
+    let internal toOption f : 'a option = 
+        f                      
+        |> function   
+            | Ok value -> Some value 
+            | Error _  -> None  
+
+module Option =
+
+    let internal ofBool cond = 
+           cond                      
+           |> function   
+               | true  -> Some ()  
+               | false -> None
+
+    let internal fromBool value cond : 'a option = 
+        cond                      
+        |> function   
+            | true  -> Some value  
+            | false -> None
 
 module Resources =
 
@@ -36,7 +70,7 @@ module Casting =
         | :? ^a as value -> Some value 
         | _              -> None
 
-    let inline internal castAs<'a> (o: obj) : 'a option =    //srtp nefunguje v Saturnu
+    let inline internal castAs<'a> (o: obj) : 'a option =    //TODO zjistit, cemu tady nefungoval srtp
         match Option.ofObj o with
         | Some (:? 'a as result) -> Some result
         | _                      -> None
