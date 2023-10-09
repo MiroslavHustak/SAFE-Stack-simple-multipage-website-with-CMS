@@ -12,7 +12,7 @@ module Connection =
     //let [<Literal>] connStringSomee = @"" 
 
     //nterapie.somee.com //testing website
-    let [<Literal>] internal connStringSomee =""
+    let [<Literal>] internal connStringSomee = @"" 
 
     //localhost
     //let [<Literal>] internal connStringLocal = @"Data Source=Misa\SQLEXPRESS;Initial Catalog=nterapieLocal;Integrated Security=True"

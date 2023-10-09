@@ -20,14 +20,15 @@ open Database.InsertOrUpdate
 open ErrorTypes.Server
 
 open Auxiliaries.Errors.Errors
+open Auxiliaries.Server.Resources
 open Auxiliaries.Server.CopyingFiles
 open Auxiliaries.Server.Serialisation
 open Auxiliaries.Server.Deserialisation
 open Auxiliaries.Connections.Connection
-open Auxiliaries.Server.Resources
 
 open DtoXml.Server.DtoXml
 open DtoGet.Server.DtoGet
+
 open TransLayerXml.Server.TransLayerXml
 open TransLayerGet.Server.TransLayerGet
 open TransLayerSend.Server.TransLayerSend
@@ -200,7 +201,6 @@ module ServerApi =
                fun _ ->
                    async
                        {
-
                            let (getLinkAndLinkNameValues, exnJson) =
                                let f1 () = 
                                    //failwith "Simulated exception17"                           
@@ -223,7 +223,7 @@ module ServerApi =
                             | false -> //TODO error + some action
                                     return Seq.empty  
                             | true  -> //StreamReader refused to work here, thar is why File.ReadAllLines was used                              
-                                    match File.ReadAllLines("securityToken.txt") |> Option.ofObj with
+                                    match File.ReadAllLines("securityToken.txt") |> Option.ofNull with
                                     | Some value -> return (value |> Seq.ofArray) 
                                     | None       -> return Seq.empty  //TODO error + some action                        
                         }        

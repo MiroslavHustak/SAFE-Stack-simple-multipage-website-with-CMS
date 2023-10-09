@@ -50,7 +50,7 @@ module InsertOrUpdate =
                 use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
 
                 //**************** Add values to parameters and execute commands with business logic *****************
-                match cmdExists.ExecuteScalar() |> Option.ofObj with
+                match cmdExists.ExecuteScalar() |> Option.ofNull with
                 | Some _ -> 
                             newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
                             cmdUpdate.ExecuteNonQuery() |> ignore

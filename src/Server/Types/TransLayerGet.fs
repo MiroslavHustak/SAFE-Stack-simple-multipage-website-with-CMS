@@ -15,22 +15,27 @@ module TransLayerGet =
              Msg5 = messagesDto.Msg5  
              Msg6 = messagesDto.Msg6                   
         }
+    
+    let private extractValue p =
+        match p with
+        | Some value -> value
+        | None       -> failwith "Already checked, an exception should not happen"
 
     let internal cenikValuesTransferLayerGet (cenikValuesDtoGet: CenikValuesDtoGet) : CenikValuesDomain =
         {
-            Id = fst cenikValuesDtoGet.IdDtoGet
-            ValueState = fst cenikValuesDtoGet.ValueStateDtoGet
-            V001 = fst cenikValuesDtoGet.V001DtoGet
-            V002 = fst cenikValuesDtoGet.V002DtoGet
-            V003 = fst cenikValuesDtoGet.V003DtoGet
-            V004 = fst cenikValuesDtoGet.V004DtoGet
-            V005 = fst cenikValuesDtoGet.V005DtoGet
-            V006 = fst cenikValuesDtoGet.V006DtoGet
-            V007 = fst cenikValuesDtoGet.V007DtoGet
-            V008 = fst cenikValuesDtoGet.V008DtoGet
-            V009 = fst cenikValuesDtoGet.V009DtoGet
+            Id = extractValue cenikValuesDtoGet.IdDtoGet
+            ValueState = extractValue cenikValuesDtoGet.ValueStateDtoGet
+            V001 = extractValue cenikValuesDtoGet.V001DtoGet
+            V002 = extractValue cenikValuesDtoGet.V002DtoGet
+            V003 = extractValue cenikValuesDtoGet.V003DtoGet
+            V004 = extractValue cenikValuesDtoGet.V004DtoGet
+            V005 = extractValue cenikValuesDtoGet.V005DtoGet
+            V006 = extractValue cenikValuesDtoGet.V006DtoGet
+            V007 = extractValue cenikValuesDtoGet.V007DtoGet
+            V008 = extractValue cenikValuesDtoGet.V008DtoGet
+            V009 = extractValue cenikValuesDtoGet.V009DtoGet
             Msgs = messagesTransferLayerGet cenikValuesDtoGet.MsgsDtoGet
-        }
+        }  
 
     //nevyuzito, ale ponechavam pro pripad zmeny    
     let internal kontaktValuesTransferLayerGet (kontaktValuesDtoGet: KontaktValuesDtoGet) : KontaktValuesDomain  =

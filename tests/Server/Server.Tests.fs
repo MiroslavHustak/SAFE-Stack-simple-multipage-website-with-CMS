@@ -9,8 +9,11 @@ open Errors
 open Server
 open Shared
 
+open FsToolkit.ErrorHandling
+
 open ErrorTypes.Server
 open Auxiliaries.Server.Security2
+
 
 let private pathToUberHashTxt = 
     try
@@ -49,7 +52,7 @@ let private server =
                             | false ->
                                     Error String.Empty                                
                             | true  ->                              
-                                    match File.ReadAllLines(pathToUberHashTxt) |> Option.ofObj with 
+                                    match File.ReadAllLines(pathToUberHashTxt) |> Option.ofNull with 
                                     | Some value -> Ok (value |> Seq.ofArray) 
                                     | None       -> Error String.Empty                                                     
 

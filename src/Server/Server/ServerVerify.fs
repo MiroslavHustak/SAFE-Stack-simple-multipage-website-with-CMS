@@ -58,7 +58,7 @@ module ServerVerify =
 
         let uberHashError uberHash credential seqFn =
             
-            Builder2
+            Builder2  //nelze Builder1 a Result.isOk
                 {
                     let! uberHash = uberHash |> Result.toOption, Exception
                     let! _ = verify (uberHash |> seqFn) credential |> Option.ofBool, LegitimateFalse
@@ -83,7 +83,7 @@ module ServerVerify =
                         Builder2
                             {
                                 let! _ = File.Exists(Path.GetFullPath(pathToUberHashTxt)) |> Option.ofBool, Error String.Empty
-                                let! value = File.ReadAllLines(pathToUberHashTxt) |> Option.ofObj, Error String.Empty
+                                let! value = File.ReadAllLines(pathToUberHashTxt) |> Option.ofNull, Error String.Empty
 
                                 return Ok (value |> Seq.ofArray) 
                             }                       

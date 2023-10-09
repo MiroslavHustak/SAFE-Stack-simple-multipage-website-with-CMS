@@ -23,10 +23,10 @@ module DtoGet =
 
     type CenikValuesDtoGet =
         {
-            IdDtoGet: int*bool; ValueStateDtoGet: string*bool;
-            V001DtoGet: string*bool; V002DtoGet: string*bool; V003DtoGet: string*bool;
-            V004DtoGet: string*bool; V005DtoGet: string*bool; V006DtoGet: string*bool;
-            V007DtoGet: string*bool; V008DtoGet: string*bool; V009DtoGet: string*bool;
+            IdDtoGet: int option; ValueStateDtoGet: string option;
+            V001DtoGet: string option; V002DtoGet: string option; V003DtoGet: string option;
+            V004DtoGet: string option; V005DtoGet: string option; V006DtoGet: string option;
+            V007DtoGet: string option; V008DtoGet: string option; V009DtoGet: string option;
             MsgsDtoGet: MessagesDtoGet
         }
 

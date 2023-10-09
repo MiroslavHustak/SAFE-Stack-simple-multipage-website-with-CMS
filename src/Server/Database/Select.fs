@@ -38,62 +38,51 @@ module Select =
 
                          //**************** Read values from DB *****************
                          let reader =            
-                             match cmdExists.ExecuteScalar() |> Option.ofObj with 
+                             match cmdExists.ExecuteScalar() |> Option.ofNull with 
                              | Some _ -> Ok <| cmdSelect.ExecuteReader()
                              | None   -> Error <| insertDefaultValues 
 
                          match reader with
-                         | Ok reader ->   
-                                     let extractValue fn defaultValue =
-                                         match fn with     
-                                         | Some value -> value, false
-                                         | None       -> defaultValue, true                                      
-                                   
-                                     let getValues =                                                
+                         | Ok reader ->                                      
+                                     let getValues: CenikValuesDtoGet =                                                
                                          Seq.initInfinite (fun _ -> reader.Read())
                                          |> Seq.takeWhile ((=) true)  //compare |> Seq.skipWhile ((=) false)
                                          |> Seq.collect
-                                             (fun _ ->  
-                                                    seq
-                                                        {                                                                               
-                                                        yield    
-                                                            {                                                       
-                                                                IdDtoGet = extractValue (Casting.downCast reader.["Id"]) CenikValuesDomain.Default.Id
-                                                                ValueStateDtoGet = extractValue (Casting.downCast reader.["ValueState"]) CenikValuesDomain.Default.ValueState
-                                                                V001DtoGet = extractValue (Casting.downCast reader.["V001"]) CenikValuesDomain.Default.V001                                                                                   
-                                                                V002DtoGet = extractValue (Casting.downCast reader.["V002"]) CenikValuesDomain.Default.V002
-                                                                V003DtoGet = extractValue (Casting.downCast reader.["V003"]) CenikValuesDomain.Default.V003
-                                                                V004DtoGet = extractValue (Casting.downCast reader.["V004"]) CenikValuesDomain.Default.V004
-                                                                V005DtoGet = extractValue (Casting.downCast reader.["V005"]) CenikValuesDomain.Default.V005
-                                                                V006DtoGet = extractValue (Casting.downCast reader.["V006"]) CenikValuesDomain.Default.V006
-                                                                V007DtoGet = extractValue (Casting.downCast reader.["V007"]) CenikValuesDomain.Default.V007
-                                                                V008DtoGet = extractValue (Casting.downCast reader.["V008"]) CenikValuesDomain.Default.V008
-                                                                V009DtoGet = extractValue (Casting.downCast reader.["V009"]) CenikValuesDomain.Default.V009
-                                                                MsgsDtoGet = MessagesDtoGet.Default
-                                                            }
-                                                        } 
+                                             (fun _ ->
+                                                 seq
+                                                     {                                                                               
+                                                     yield    
+                                                         {                                                       
+                                                             IdDtoGet = Casting.castAs<int> reader.["Id"] 
+                                                             ValueStateDtoGet = Casting.castAs<string> reader.["ValueState"]
+                                                             V001DtoGet = Casting.castAs<string> reader.["V001"]                                                                               
+                                                             V002DtoGet = Casting.castAs<string> reader.["V002"]
+                                                             V003DtoGet = Casting.castAs<string> reader.["V003"]
+                                                             V004DtoGet = Casting.castAs<string> reader.["V004"]
+                                                             V005DtoGet = Casting.castAs<string> reader.["V005"]
+                                                             V006DtoGet = Casting.castAs<string> reader.["V006"]
+                                                             V007DtoGet = Casting.castAs<string> reader.["V007"]
+                                                             V008DtoGet = Casting.castAs<string> reader.["V008"]
+                                                             V009DtoGet = Casting.castAs<string> reader.["V009"]
+                                                             MsgsDtoGet = MessagesDtoGet.Default
+                                                         }
+                                                     } 
                                              ) |> Seq.head //the function only places data to the head of the collection (a function with "while" does the same)
-                                     reader.Close()
-                                     reader.Dispose()
 
-                                     getValues
-                                     |> function                                        
-                                         |
-                                             {
-                                                 IdDtoGet = (_, flag1); ValueStateDtoGet = (_, flag2);
-                                                 V001DtoGet = (_, flag3); V002DtoGet = (_, flag4); V003DtoGet = (_, flag5);
-                                                 V004DtoGet = (_, flag6); V005DtoGet = (_, flag7); V006DtoGet = (_, flag8);
-                                                 V007DtoGet = (_, flag9); V008DtoGet = (_, flag10); V009DtoGet = (_, flag11)
-                                             }
-                                            ->
-                                                 flag1 || flag2 || flag3 || flag4 || flag5 ||
-                                                 flag6 || flag7 || flag8 || flag9 ||
-                                                 flag10 || flag11
-                                                                                            
+                                     reader.Close()
+                                     reader.Dispose()    
+                                                                                                         
+                                     [
+                                         getValues.IdDtoGet |> Option.isNone; getValues.ValueStateDtoGet |> Option.isNone;
+                                         getValues.V001DtoGet |> Option.isNone; getValues.V002DtoGet |> Option.isNone; getValues.V003DtoGet |> Option.isNone;
+                                         getValues.V004DtoGet |> Option.isNone; getValues.V005DtoGet |> Option.isNone; getValues.V006DtoGet |> Option.isNone;
+                                         getValues.V007DtoGet |> Option.isNone; getValues.V008DtoGet |> Option.isNone; getValues.V009DtoGet |> Option.isNone
+                                     ]
+                                     |> List.contains true
                                      |> function
                                          | true  -> Error ReadingDbError 
-                                         | false -> Ok <| cenikValuesTransferLayerGet getValues                                                
-                                    
+                                         | false -> Ok <| cenikValuesTransferLayerGet getValues
+                                         
                          | Error err ->
                                      Error err
                      finally
