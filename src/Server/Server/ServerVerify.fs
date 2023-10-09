@@ -58,7 +58,7 @@ module ServerVerify =
 
         let uberHashError uberHash credential seqFn =
             
-            Builder2  //nelze Builder1 a Result.isOk
+            pyramidOfDoom  //nelze Builder1 (pyramidOfHell) a Result.isOk
                 {
                     let! uberHash = uberHash |> Result.toOption, Exception
                     let! _ = verify (uberHash |> seqFn) credential |> Option.ofBool, LegitimateFalse
@@ -68,7 +68,7 @@ module ServerVerify =
 
             |> tryWithVerify () Exception                   
 
-        Builder1    
+        pyramidOfHell  
             {
                 let rc1 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
                 let rc2 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Problém s ověřením uživatelského jména a hesla" }
@@ -80,7 +80,7 @@ module ServerVerify =
                 let uberHash =
                     let f1 () =
 
-                        Builder2
+                        pyramidOfDoom
                             {
                                 let! _ = File.Exists(Path.GetFullPath(pathToUberHashTxt)) |> Option.ofBool, Error String.Empty
                                 let! value = File.ReadAllLines(pathToUberHashTxt) |> Option.ofNull, Error String.Empty

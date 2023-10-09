@@ -23,6 +23,8 @@ module PatternBuilders =
         member _.Using x = x
         member _.Return x = x
 
+    let internal pyramidOfHell = Builder1
+
  //************************************************************************************* 
 
     let private (>>==) (optionExpr, errDuCase) nextFunc =
@@ -34,6 +36,8 @@ module PatternBuilders =
     type internal Builder2 = Builder2 with    
         member _.Bind(condition, nextFunc) = (>>==) condition nextFunc
         member _.Return x : 'a = x
+
+    let internal pyramidOfDoom = Builder2
 
 module Result =
 
@@ -67,12 +71,13 @@ module Resources =
 
 module Casting =
 
-    let inline internal downCast (x: obj) = 
+    //for educational purposes only
+    let inline internal downCast (x: obj) = //The downCast function does not handle null values explicitly and may raise a runtime exception if x is null regardless of using srtp or generics. 
         match x with
         | :? ^a as value -> Some value 
         | _              -> None
 
-    let inline internal castAs<'a> (o: obj) : 'a option =    //TODO zjistit, cemu nefunguje srtp 
+    let internal castAs<'a> (o: obj) : 'a option =    //srtp nefunguje pro tento zpusob type casting 
         match Option.ofNull o with
         | Some (:? 'a as result) -> Some result
         | _                      -> None
