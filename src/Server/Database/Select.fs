@@ -44,7 +44,7 @@ module Select =
 
                          match reader with
                          | Ok reader ->                                      
-                                     let mySeq =                                                
+                                     let getValues: CenikValuesDtoGet option =                                                
                                          Seq.initInfinite (fun _ -> reader.Read())
                                          |> Seq.takeWhile ((=) true)  //compare |> Seq.skipWhile ((=) false)
                                          |> Seq.collect
@@ -67,14 +67,8 @@ module Select =
                                                              MsgsDtoGet = MessagesDtoGet.Default
                                                          }
                                                      } 
-                                             )
-
-                                     let getValues: CenikValuesDtoGet option =
-                                         let list = mySeq |> List.ofSeq  //seq hodilo exception, TODO podumej cemu, asi lazy evaluation
-                                         list 
-                                         |> List.isEmpty 
-                                         |> function true -> None | false -> Some (list |> List.head)     //the function only places data to the head of the collection (a function with "while" does the same)
-                                                                             
+                                             ) |> List.ofSeq |> List.tryHead //the function only places data to the head of the collection (a function with "while" does the same)
+                                   
                                      reader.Close()
                                      reader.Dispose()
 
