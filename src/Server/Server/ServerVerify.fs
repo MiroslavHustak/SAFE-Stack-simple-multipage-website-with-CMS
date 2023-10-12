@@ -61,6 +61,7 @@ module ServerVerify =
             pyramidOfDoom  //nelze Builder1 (pyramidOfHell) a Result.isOk
                 {
                     let! uberHash = uberHash |> Result.toOption, Exception
+                    let! _ = not (uberHash |> Seq.isEmpty) |> Option.ofBool, Exception
                     let! _ = verify (uberHash |> seqFn) credential |> Option.ofBool, LegitimateFalse
                     
                     return LegitimateTrue

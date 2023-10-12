@@ -44,7 +44,7 @@ module Select =
 
                          match reader with
                          | Ok reader ->                                      
-                                     let getValues: CenikValuesDtoGet =                                                
+                                     let mySeq =                                                
                                          Seq.initInfinite (fun _ -> reader.Read())
                                          |> Seq.takeWhile ((=) true)  //compare |> Seq.skipWhile ((=) false)
                                          |> Seq.collect
@@ -67,28 +67,38 @@ module Select =
                                                              MsgsDtoGet = MessagesDtoGet.Default
                                                          }
                                                      } 
-                                             ) |> Seq.head //the function only places data to the head of the collection (a function with "while" does the same)
+                                             )
 
+                                     let getValues: CenikValuesDtoGet option =
+                                         let list = mySeq |> List.ofSeq  //seq hodilo exception, TODO podumej cemu, asi lazy evaluation
+                                         list 
+                                         |> List.isEmpty 
+                                         |> function true -> None | false -> Some (list |> List.head)     //the function only places data to the head of the collection (a function with "while" does the same)
+                                                                             
                                      reader.Close()
-                                     reader.Dispose()    
-                                                                                                         
-                                     [
-                                         getValues.IdDtoGet |> Option.isNone; getValues.ValueStateDtoGet |> Option.isNone;
-                                         getValues.V001DtoGet |> Option.isNone; getValues.V002DtoGet |> Option.isNone; getValues.V003DtoGet |> Option.isNone;
-                                         getValues.V004DtoGet |> Option.isNone; getValues.V005DtoGet |> Option.isNone; getValues.V006DtoGet |> Option.isNone;
-                                         getValues.V007DtoGet |> Option.isNone; getValues.V008DtoGet |> Option.isNone; getValues.V009DtoGet |> Option.isNone
-                                     ]
-                                     |> List.contains true
-                                     |> function
-                                         | true  -> Error ReadingDbError 
-                                         | false -> Ok <| cenikValuesTransferLayerGet getValues
-                                         
+                                     reader.Dispose()
+
+                                     match getValues with
+                                     | Some getValues ->                                                                                                          
+                                                       [
+                                                           getValues.IdDtoGet |> Option.isNone; getValues.ValueStateDtoGet |> Option.isNone;
+                                                           getValues.V001DtoGet |> Option.isNone; getValues.V002DtoGet |> Option.isNone; getValues.V003DtoGet |> Option.isNone;
+                                                           getValues.V004DtoGet |> Option.isNone; getValues.V005DtoGet |> Option.isNone; getValues.V006DtoGet |> Option.isNone;
+                                                           getValues.V007DtoGet |> Option.isNone; getValues.V008DtoGet |> Option.isNone; getValues.V009DtoGet |> Option.isNone
+                                                       ]
+                                                       |> List.contains true
+                                                       |> function
+                                                           | true  -> Error ReadingDbError 
+                                                           | false -> Ok <| cenikValuesTransferLayerGet getValues
+                                     | None           ->
+                                                       Error ReadingDbError                                         
                          | Error err ->
                                      Error err
                      finally
                          closeConnection connection                        
                  with
                  | _ -> Error ReadingDbError 
+                         
 
              getValues
 
