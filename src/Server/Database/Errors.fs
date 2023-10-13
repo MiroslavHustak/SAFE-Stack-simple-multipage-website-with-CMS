@@ -14,6 +14,7 @@ module Errors =
     let internal insertDefaultValues insertOrUpdate =     
         
         let cenikValuesDtoSendDefault = cenikValuesTransferLayerSend CenikValuesDomain.Default
+
         match insertOrUpdate getConnection closeConnection cenikValuesDtoSendDefault with
         | Ok _    -> InsertOrUpdateError1
         | Error _ -> InsertOrUpdateError2
@@ -23,7 +24,7 @@ module Errors =
         //just testing active patterns... :-)
         let (|Cond1|Cond2|Cond3|) value =
         
-            Builder1    
+            pyramidOfHell    
                 {    
                     let! _ = (<>) value NoError, Cond1
                     let! _ = (=) value NoError, Cond2
@@ -48,6 +49,7 @@ module Errors =
             | NoError             -> String.Empty
 
     let internal errorMsgBoxS err =
+
         match err with
         | InsertOrUpdateError1 -> CenikValuesDomain.Default, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
         | InsertOrUpdateError2 -> CenikValuesDomain.Default, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
