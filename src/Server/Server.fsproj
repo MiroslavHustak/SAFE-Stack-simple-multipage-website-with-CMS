@@ -27,6 +27,7 @@
     <Compile Include="Types\ErrorTypes.fs" />
     <Compile Include="Auxiliaries\Security2.fs" />
     <Compile Include="Auxiliaries\Helpers.fs" />
+    <Compile Include="Settings\Settings.fs" />
     <Compile Include="EducationalCode\Security.fs" />
     <Compile Include="EducationalCode\Auxiliaries\DapperHelper.fs" />
     <Compile Include="EducationalCode\Dapper.fs" />

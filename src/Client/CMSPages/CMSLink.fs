@@ -59,7 +59,7 @@ module CMSLink =
         |> Remoting.buildProxy<IGetApi>
 
     let init id : Model * Cmd<Msg> =
-    
+
         let model =
             {
                 LinkAndLinkNameValues = LinkAndLinkNameValuesDomain.Default           
@@ -83,6 +83,7 @@ module CMSLink =
         model, Cmd.ofMsg SendOldLinkAndLinkNameValuesToServer
 
     let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+
         match msg with
         | SetV001LinkInput value -> { model with V001LinkInput = value }, Cmd.none
         | SetV002LinkInput value -> { model with V002LinkInput = value }, Cmd.none
@@ -175,7 +176,7 @@ module CMSLink =
 
         let completeContent() =
 
-            let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
+            let td n = ([ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq) |> List.map (fun item -> item)
 
             javaScriptMessageBox model.ErrorMsg
 

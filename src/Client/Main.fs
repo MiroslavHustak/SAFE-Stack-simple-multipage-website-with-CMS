@@ -85,14 +85,16 @@ module App =
             let applicationUser = 
                 match model.Session with
                 | Some value ->
-                                match value with
-                                | SharedApi.UsernameOrPasswordIncorrect problem -> Anonymous 
-                                | SharedApi.LoggedIn user                       -> LoggedIn user  
-                | None       -> Anonymous
+                              match value with
+                              | SharedApi.UsernameOrPasswordIncorrect problem -> Anonymous 
+                              | SharedApi.LoggedIn user                       -> LoggedIn user  
+                | None       ->
+                              Anonymous
                 
             {
-                model with CurrentRoute = optRoute //currentRoute //Not necessary as User = applicationUser in pattern matching will take care of the correct routing
-                                          User = applicationUser                                          
+                model with
+                           CurrentRoute = optRoute //currentRoute //Not necessary as User = applicationUser in pattern matching will take care of the correct routing
+                           User = applicationUser                                          
             }    
 
         (*
@@ -272,15 +274,17 @@ module App =
                 let cmd = Cmd.OfAsync.perform sendDeserialisedLinkAndLinkNameValuesApi.getDeserialisedLinkAndLinkNameValues loadEvent GetLinkAndLinkNameValues
                 model, cmd
         
-        | _, GetLinkAndLinkNameValues value -> { model with LinkAndLinkNameValues =
-                                                                                    {
-                                                                                        V001 = value.V001; V002 = value.V002; V003 = value.V003;
-                                                                                        V004 = value.V004; V005 = value.V005; V006 = value.V006;
-                                                                                        V001n = value.V001n; V002n = value.V002n; V003n = value.V003n;
-                                                                                        V004n = value.V004n; V005n = value.V005n; V006n = value.V006n;
-                                                                                        Msgs = value.Msgs 
-                                                                                    }                                                       
-                                               }, Cmd.none
+        | _, GetLinkAndLinkNameValues value ->
+                { model with
+                             LinkAndLinkNameValues =
+                                {
+                                    V001 = value.V001; V002 = value.V002; V003 = value.V003;
+                                    V004 = value.V004; V005 = value.V005; V006 = value.V006;
+                                    V001n = value.V001n; V002n = value.V002n; V003n = value.V003n;
+                                    V004n = value.V004n; V005n = value.V005n; V006n = value.V006n;
+                                    Msgs = value.Msgs 
+                                }                                                       
+                }, Cmd.none
                                             
         | _, msg -> model, Cmd.none
             //Browser.console.warn("Message discarded:\n", string msg)    

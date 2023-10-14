@@ -15,26 +15,16 @@ open Shared
 open SharedTypes
 
 open Errors
+open Settings
 open ErrorTypes.Server
 
 open Auxiliaries.Server
 open Auxiliaries.Server.Resources
 open Auxiliaries.Server.Security2
+open Auxiliaries.Server.Miscellaneous
 open Auxiliaries.Server.PatternBuilders
 
 module ServerVerify =
-
-    let private pathToUberHashTxt = pathToResources @"\uberHash.txt"
-    
-    let private strContainsOnlySpace str =
-        str |> Seq.forall (fun item -> item = (char)32)  //A string is a sequence of characters => use Seq.forall to test directly //(char)32 = space
-
-    let private isValidLogin inputUsrString inputPswString =
-        not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)
-
-    let private isValidCenik param = ()   //TODO validation upon request from the user 
-    let private isValidKontakt param = () //TODO validation upon request from the user 
-    let private isValidLink param = ()    //TODO validation upon request from the user
 
     //************************************************************************
     //TODO create a separate solution and include a try with block
@@ -55,6 +45,8 @@ module ServerVerify =
     //************************************************************************
 
     let internal verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>
+
+        let isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)            
 
         let uberHashError uberHash credential seqFn =
             
@@ -80,15 +72,13 @@ module ServerVerify =
 
                 let uberHash =
                     let f1 () =
-
                         pyramidOfDoom
                             {
                                 let! _ = File.Exists(Path.GetFullPath(pathToUberHashTxt)) |> Option.ofBool, Error String.Empty
                                 let! value = File.ReadAllLines(pathToUberHashTxt) |> Option.ofNull, Error String.Empty
 
                                 return Ok (value |> Seq.ofArray) 
-                            }                       
-
+                            } 
                     tryWithResult f1 () (sprintf"%s")
 
                 let! _ = uberHash |> Result.isOk, SharedApi.UsernameOrPasswordIncorrect rc1                
@@ -103,20 +93,24 @@ module ServerVerify =
                                                                         
                 return SharedApi.LoggedIn { Username = login.Username } //{ Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             }
-    
-      //TODO validation upon request from the user 
+
+
+//************** TODO validation upon request from the user *************************
+
+    let private isValidCenik param = ()   
+    let private isValidKontakt param = () 
+    let private isValidLink param = ()
+
     let verifyCenikValues (cenikValues: CenikValuesDomain) =
         match isValidCenik () with
         | ()  -> Ok ()        
         //| _ -> Error _
 
-     //TODO validation upon request from the user 
     let verifyKontaktValues (kontaktValues: KontaktValuesDomain) =
        match isValidKontakt () with
        | ()  -> Ok ()        
        //| _ -> Error _
 
-    //TODO validation upon request from the user 
     let verifyLinkAndLinkNameValues (linkValues: LinkAndLinkNameValuesDomain) =
        match isValidLink () with
        | ()  -> Ok ()        

@@ -18,6 +18,7 @@ module Sluzby =
         | DummyMsg
 
     let init id : Model * Cmd<Msg> =
+
         let model = { Id = id }
         model, Cmd.none
 

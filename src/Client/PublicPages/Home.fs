@@ -21,6 +21,7 @@ module Home =
         | DummyMsgText   
 
     let init () : Model * Cmd<Msg> =
+
         let model =
             {
                 Dummy = ()

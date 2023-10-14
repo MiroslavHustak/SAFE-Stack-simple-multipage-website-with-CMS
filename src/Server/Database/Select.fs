@@ -91,8 +91,7 @@ module Select =
                      finally
                          closeConnection connection                        
                  with
-                 | _ -> Error ReadingDbError 
-                         
+                 | _ -> Error ReadingDbError                          
 
              getValues
 

@@ -53,6 +53,7 @@ module CMSCenik =
         |> Remoting.buildProxy<IGetApi>
 
     let init id : Model * Cmd<Msg> =
+
         let model =
             {
                 CenikValues = CenikValuesDomain.Default           
@@ -73,6 +74,7 @@ module CMSCenik =
         model, Cmd.ofMsg SendOldCenikValuesToServer
 
     let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+
         match msg with
         //SetInput takhle nelze - viz poznamka ve view
         //| SetInput value -> { model with CenikInputValues = { V001 = value.V001; ....atd. } }, Cmd.none
@@ -163,7 +165,7 @@ module CMSCenik =
 
         let completeContent() =
 
-            let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
+            let td n = ([ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq) |> List.map (fun item -> item)
 
             javaScriptMessageBox model.ErrorMsg
 

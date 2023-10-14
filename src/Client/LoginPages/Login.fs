@@ -52,13 +52,14 @@ module Login =
 
     let init id : Model * Cmd<Msg> =
 
-        let model = {
-                        User = FirstTimeRunAnonymous
-                        problem = { line1 = String.Empty; line2 = String.Empty }
-                        InputUsr = String.Empty
-                        InputPsw = String.Empty
-                        Id = id
-                    }
+        let model =
+            {
+                User = FirstTimeRunAnonymous
+                problem = { line1 = String.Empty; line2 = String.Empty }
+                InputUsr = String.Empty
+                InputPsw = String.Empty
+                Id = id
+            }
         model, Cmd.none
 
     let update (msg: Msg) (model: Model): Model * Cmd<Msg> * ExternalMsg =

@@ -84,29 +84,29 @@ module Casting =
 
 module private TryParserInt =
 
-        let tryParseWith (tryParseFunc: string -> bool * _) = tryParseFunc >> function
-            | true, value -> Some value
-            | false, _    -> None
+    let tryParseWith (tryParseFunc: string -> bool * _) = tryParseFunc >> function
+        | true, value -> Some value
+        | false, _    -> None
 
-        let parseInt = tryParseWith <| System.Int32.TryParse
+    let parseInt = tryParseWith <| System.Int32.TryParse
 
-        let (|Int|_|) = parseInt        
+    let (|Int|_|) = parseInt        
 
 module Parsing =
 
-        let private f x =
-            let isANumber = x                                          
-            isANumber   
+    let private f x =
+        let isANumber = x                                          
+        isANumber   
                    
-        let internal parseMe = 
-            function            
-            | TryParserInt.Int i -> f i
-            | _                  -> 0  
+    let internal parseMe = 
+        function            
+        | TryParserInt.Int i -> f i
+        | _                  -> 0  
 
-        let internal parseMeOption = 
-            function            
-            | TryParserInt.Int i -> f Some i
-            | _                  -> None     
+    let internal parseMeOption = 
+        function            
+        | TryParserInt.Int i -> f Some i
+        | _                  -> None     
 
 //tryWith to be implemented for all serialization at the place of its using 
 module Serialisation =
@@ -307,7 +307,7 @@ module CopyingFiles =  //trywith transferred to Server.fs
 
         perform ()
 
-module Strings = 
+module Miscellaneous = 
 
     open System
 
@@ -317,6 +317,11 @@ module Strings =
         |> function 
             | Some value -> string value
             | None       -> String.Empty
+
+    let internal strContainsOnlySpace str =
+        str |> Seq.forall (fun item -> item = (char)32)  //A string is a sequence of characters => use Seq.forall to test directly //(char)32 = space*
+
+    
 
 
 (*       

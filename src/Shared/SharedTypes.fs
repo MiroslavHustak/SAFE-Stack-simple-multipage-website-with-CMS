@@ -19,11 +19,11 @@ type MessagesDomain =
         Msg6: string
     }
     static member Default =
-           {
-               Msg1 = String.Empty; Msg2 = String.Empty;
-               Msg3 = String.Empty; Msg4 = String.Empty;
-               Msg5 = String.Empty; Msg6 = String.Empty
-           }
+        {
+            Msg1 = String.Empty; Msg2 = String.Empty;
+            Msg3 = String.Empty; Msg4 = String.Empty;
+            Msg5 = String.Empty; Msg6 = String.Empty
+        }
 
 type CenikValuesDomain =
     {

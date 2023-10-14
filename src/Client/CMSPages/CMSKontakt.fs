@@ -68,6 +68,7 @@ module CMSKontakt =
         model, Cmd.ofMsg SendOldKontaktValuesToServer
 
     let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+
         match msg with
         | SetV001Input value -> { model with V001Input = value }, Cmd.none
         | SetV002Input value -> { model with V002Input = value }, Cmd.none
@@ -149,7 +150,7 @@ module CMSKontakt =
 
         let completeContent() =
 
-            let td n = ( [ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq ) |> List.map (fun item -> item)
+            let td n = ([ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq) |> List.map (fun item -> item)
 
             javaScriptMessageBox model.ErrorMsg
 

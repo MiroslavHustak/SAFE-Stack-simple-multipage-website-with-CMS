@@ -18,12 +18,15 @@ module CMSRozcestnik =
         | Dummy  
             
     let init id: Model * Cmd<Msg> =
-        let model = {
-                        Id = id                
-                    }
+
+        let model =
+            {
+                Id = id                
+            }
         model, Cmd.none
 
     let update (msg: Msg) (model: Model): Model * Cmd<Msg> =
+
         match msg with
         | Dummy -> model, Cmd.none 
 

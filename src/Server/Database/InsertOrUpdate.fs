@@ -52,16 +52,16 @@ module InsertOrUpdate =
                 //**************** Add values to parameters and execute commands with business logic *****************
                 match cmdExists.ExecuteScalar() |> Option.ofNull with
                 | Some _ -> 
-                            newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
-                            cmdUpdate.ExecuteNonQuery() |> ignore
-                            Ok () 
+                          newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
+                          cmdUpdate.ExecuteNonQuery() |> ignore
+                          Ok () 
                 | None   -> 
-                            cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
-                            newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
-                            cmdInsert.ExecuteNonQuery() |> ignore
-                            Ok ()
+                          cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
+                          newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
+                          cmdInsert.ExecuteNonQuery() |> ignore
+                          Ok ()
             finally
                 closeConnection connection
         with
-        | _ -> Error InsertOrUpdateError //uzivatel nepotrebuje znat detailni popis chyby     
+        | _ -> Error InsertOrUpdateError 
 

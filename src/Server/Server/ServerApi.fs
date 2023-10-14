@@ -12,6 +12,7 @@ open Shared
 open SharedTypes
 
 open Errors
+open Settings
 open ServerVerify
 
 open Database.Select
@@ -34,11 +35,6 @@ open TransLayerGet.Server.TransLayerGet
 open TransLayerSend.Server.TransLayerSend
 
 module ServerApi =
-
-    let private pathToJsonBackup = pathToResources @"\jsonLinkAndLinkNameValuesBackUp.json"
-    let private pathToJson = pathToResources @"\jsonLinkAndLinkNameValues.json"
-    let private pathToXmlBackup = pathToResources @"\xmlKontaktValuesBackUp.xml"
-    let private pathToXml = pathToResources @"\xmlKontaktValues.xml"
 
     let internal IGetApi errMsg =
         {            
@@ -124,7 +120,7 @@ module ServerApi =
                                                 tryWithResult1 f1 () f3
                                                
                                             { sendKontaktValues with Msgs = { MessagesDomain.Default with Msg1 = exnJson } }                                   
-                                | Error _ ->
+                                | Error _  ->
                                             KontaktValuesDomain.Default
 
                             return sendNewKontaktValues

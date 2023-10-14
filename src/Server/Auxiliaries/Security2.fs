@@ -51,31 +51,32 @@ module Security2 =
         let parts = Convert.FromBase64String(hashedPassword)
 
         match parts.Length <> 54 || parts.[0] <> byte 0 with
-        | true  -> false
+        | true  ->
+                false
         | false ->
-                   let salt = Array.zeroCreate<byte> saltSize
-                   Buffer.BlockCopy(parts, 1, salt, 0, saltSize)
+                let salt = Array.zeroCreate<byte> saltSize
+                Buffer.BlockCopy(parts, 1, salt, 0, saltSize)
 
-                   let bytes = Array.zeroCreate<byte> subkeyLength
-                   Buffer.BlockCopy(parts, 17, bytes, 0, subkeyLength)
+                let bytes = Array.zeroCreate<byte> subkeyLength
+                Buffer.BlockCopy(parts, 17, bytes, 0, subkeyLength)
 
-                   let iters = Array.zeroCreate<byte> sizeof<int>
-                   Buffer.BlockCopy(parts, 50, iters, 0, sizeof<int>)
+                let iters = Array.zeroCreate<byte> sizeof<int> //"iters" will not end up as an empty array. It will always contain at least one byte.
+                Buffer.BlockCopy(parts, 50, iters, 0, sizeof<int>)
 
-                   let iters =
-                       match BitConverter.IsLittleEndian with
-                       | true  -> iters
-                       | false -> iters |> Array.rev
+                let iters =
+                    match BitConverter.IsLittleEndian with
+                    | true  -> iters
+                    | false -> iters |> Array.rev //No need for checking for an empty array - see above.
 
-                   let iterations = BitConverter.ToInt32(iters, 0)
-                   use algo = new Rfc2898DeriveBytes(password, salt, iterations)
-                   let challengeBytes = algo.GetBytes(32)
+                let iterations = BitConverter.ToInt32(iters, 0)
+                use algo = new Rfc2898DeriveBytes(password, salt, iterations)
+                let challengeBytes = algo.GetBytes(32)
                              
-                   let x = Seq.compareWith (fun a b -> match a = b with true -> 0 | false -> 1) bytes challengeBytes 
+                let x = Seq.compareWith (fun a b -> match a = b with true -> 0 | false -> 1) bytes challengeBytes 
 
-                   match x with
-                   | v when v = 0 -> true
-                   | _            -> false
+                match x with
+                | v when v = 0 -> true
+                | _            -> false
      
             
 
