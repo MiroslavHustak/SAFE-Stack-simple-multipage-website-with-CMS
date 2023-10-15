@@ -11,30 +11,26 @@ open DtoGet.Server.DtoGet
 open DtoXml.Server.DtoXml
 
 module PatternBuilders = 
-
-    let private (>>=) condition nextFunc =
-        match fst condition with
-        | false -> snd condition
-        | true  -> nextFunc()   
-
+      
     [<Struct>]
     type internal Builder1 = Builder1 with            
-        member _.Bind(condition, nextFunc) = (>>=) <| condition <| nextFunc
+        member _.Bind(condition, nextFunc) =
+            match fst condition with
+            | false -> snd condition
+            | true  -> nextFunc() 
         member _.Using x = x
         member _.Return x = x
 
     let internal pyramidOfHell = Builder1
 
  //************************************************************************************* 
-
-    let private (>>==) (optionExpr, errDuCase) nextFunc =
-        match optionExpr with
-        | Some value -> nextFunc value 
-        | _          -> errDuCase  
                 
     [<Struct>]
     type internal Builder2 = Builder2 with    
-        member _.Bind(condition, nextFunc) = (>>==) condition nextFunc
+        member _.Bind((optionExpr, errDuCase), nextFunc) =
+            match optionExpr with
+            | Some value -> nextFunc value 
+            | _          -> errDuCase  
         member _.Return x : 'a = x
 
     let internal pyramidOfDoom = Builder2
