@@ -57,6 +57,11 @@ module Option =
             | true  -> Some value  
             | false -> None
 
+    let internal toFailwith str = 
+        function
+        | Some value -> value
+        | None       -> failwith str  
+
 module Resources =
 
     let internal pathToResources path = 
@@ -106,12 +111,7 @@ module Parsing =
 
 //tryWith to be implemented for all serialization at the place of its using 
 module Serialisation =
-
-    let private optionToFailwith str = //TODO
-         function
-         | Some value -> value
-         | None       -> failwith str  
-
+   
     //vyzkouseno pro kontakt data
     //System.Runtime.Serialization vyzaduje stejny typ pro serializaci a deserializaci, proto separatni DTO
     //System.Xml.Serialization tady nefungoval
@@ -120,17 +120,17 @@ module Serialisation =
         let filepath =
             Path.GetFullPath(xmlFile) 
             |> Option.ofNull
-            |> optionToFailwith "Chyba při čtení cesty k xml souboru"            
+            |> Option.toFailwith "Chyba při čtení cesty k xml souboru"            
             
         let xmlSerializer =
             new DataContractSerializer(typeof<'a>)        
             |> Option.ofNull
-            |> optionToFailwith (sprintf "%s%s" "Chyba při serializaci do " xmlFile)
+            |> Option.toFailwith (sprintf "%s%s" "Chyba při serializaci do " xmlFile)
 
         let stream =
             File.Create(filepath)
             |> Option.ofNull
-            |> optionToFailwith (sprintf "%s%s" "Chyba při serializaci do " xmlFile)
+            |> Option.toFailwith (sprintf "%s%s" "Chyba při serializaci do " xmlFile)
 
         xmlSerializer.WriteObject(stream, record)
 
@@ -143,12 +143,12 @@ module Serialisation =
         let filepath =
             Path.GetFullPath(jsonFile) 
             |> Option.ofNull
-            |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " jsonFile)
+            |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " jsonFile)
 
         let json =
             JsonConvert.SerializeObject(record) 
             |> Option.ofNull 
-            |> optionToFailwith (sprintf "%s%s" "Chyba při serializaci do " jsonFile)
+            |> Option.toFailwith (sprintf "%s%s" "Chyba při serializaci do " jsonFile)
 
         File.WriteAllText(filepath, json)
 
@@ -158,23 +158,18 @@ module Serialisation =
         let filepath =
             Path.GetFullPath(xmlFile) 
             |> Option.ofNull
-            |> optionToFailwith "Chyba při čtení cesty k souboru json.....xml" 
+            |> Option.toFailwith "Chyba při čtení cesty k souboru json.....xml" 
 
         let xmlSerializer =
             new DataContractSerializer(typedefof<string>)          
             |> Option.ofNull 
-            |> optionToFailwith "Chyba při serializaci"
+            |> Option.toFailwith "Chyba při serializaci"
 
         use stream = File.Create(filepath)   
         xmlSerializer.WriteObject(stream, JsonConvert.SerializeObject(record))            
 
 //tryWith to be implemented for all deserialization at the place of its using 
 module Deserialisation =
-
-    let private optionToFailwith str = //TODO
-        function
-        | Some value -> value
-        | None       -> failwith str  
 
     //vyzkouseno pro kontakt data
     //System.Runtime.Serialization (System.Xml.Serialization tady nefungoval)
@@ -183,7 +178,7 @@ module Deserialisation =
         let filepath =
             Path.GetFullPath(xmlFile) 
             |> Option.ofNull 
-            |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " xmlFile)
+            |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " xmlFile)
 
         let fInfodat: FileInfo = new FileInfo(filepath)  
         match fInfodat.Exists with 
@@ -191,19 +186,19 @@ module Deserialisation =
                 let xmlSerializer =
                     new DataContractSerializer(typeof<'a>) 
                     |> Option.ofNull
-                    |> optionToFailwith (sprintf "%s%s" "Chyba při serializaci z " xmlFile)
+                    |> Option.toFailwith (sprintf "%s%s" "Chyba při serializaci z " xmlFile)
 
                 let stream =
                     File.OpenRead(filepath)
                     |> Option.ofNull
-                    |> optionToFailwith (sprintf "%s%s" "Chyba při deserializaci z " xmlFile)
+                    |> Option.toFailwith (sprintf "%s%s" "Chyba při deserializaci z " xmlFile)
 
                 let result =
                     xmlSerializer.ReadObject(stream)  
                     |> Option.ofNull
-                    |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile)
+                    |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile)
                     |> Casting.castAs<KontaktValuesDtoXml> 
-                    |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru (downcasting) " xmlFile)
+                    |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru (downcasting) " xmlFile)
 
                 stream.Close()
                 stream.Dispose()
@@ -218,7 +213,7 @@ module Deserialisation =
         let filepath =
             Path.GetFullPath(jsonFile) 
             |> Option.ofNull 
-            |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " jsonFile) 
+            |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " jsonFile) 
 
         let fInfodat: FileInfo = new FileInfo(filepath)  
         match fInfodat.Exists with 
@@ -226,12 +221,12 @@ module Deserialisation =
                 let json =
                     File.ReadAllText(filepath)
                     |> Option.ofNull 
-                    |> optionToFailwith (sprintf "%s%s" "Chyba při deserializaci z " jsonFile)
+                    |> Option.toFailwith (sprintf "%s%s" "Chyba při deserializaci z " jsonFile)
 
                 let result =
                     JsonConvert.DeserializeObject<'a>(json)
                     |> Casting.castAs<LinkAndLinkNameValuesDtoGet> 
-                    |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru (downcasting) " jsonFile)
+                    |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru (downcasting) " jsonFile)
                 result   
         | false ->
                 failwith (sprintf "Soubor %s nenalezen" filepath) 
@@ -242,31 +237,31 @@ module Deserialisation =
         let filepath =
             Path.GetFullPath(xmlFile) 
             |> Option.ofNull
-            |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " xmlFile) 
+            |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " xmlFile) 
           
         let jsonString() = 
 
             let xmlSerializer =
                 new DataContractSerializer(typedefof<string>) 
                 |> Option.ofNull 
-                |> optionToFailwith "Chyba při serializaci"
+                |> Option.toFailwith "Chyba při serializaci"
 
             let fileStream =
                 File.ReadAllBytes(filepath)  
                 |> Option.ofNull 
-                |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile)
+                |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile)
 
             use memoryStream = new MemoryStream(fileStream)
 
             let resultObj =
                 xmlSerializer.ReadObject(memoryStream)  
                 |> Option.ofNull
-                |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile)
+                |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru " xmlFile)
 
             let resultString =
                 unbox resultObj  
                 |> Option.ofNull
-                |> optionToFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru (unboxing) " xmlFile)    
+                |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení dat ze souboru (unboxing) " xmlFile)    
 
             let jsonString = JsonConvert.DeserializeObject<'a>(resultString) 
             jsonString
@@ -277,11 +272,6 @@ module Deserialisation =
         | false -> failwith (sprintf "Soubor %s nenalezen" xmlFile) 
 
 module CopyingFiles =  //trywith transferred to Server.fs
-
-    let private optionToFailwith str = //TODO
-        function
-        | Some value -> value
-        | None       -> failwith str  
         
     let internal copyFiles source destination =
                                                                     
@@ -289,12 +279,12 @@ module CopyingFiles =  //trywith transferred to Server.fs
             let sourceFilepath =
                 Path.GetFullPath(source) 
                 |> Option.ofNull
-                |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " source)
+                |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " source)
 
             let destinFilepath =
                 Path.GetFullPath(destination) 
                 |> Option.ofNull 
-                |> optionToFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " source) 
+                |> Option.toFailwith (sprintf "%s%s" "Chyba při čtení cesty k souboru " source) 
                     
             let fInfodat: FileInfo = new FileInfo(sourceFilepath)  
             match fInfodat.Exists with 
