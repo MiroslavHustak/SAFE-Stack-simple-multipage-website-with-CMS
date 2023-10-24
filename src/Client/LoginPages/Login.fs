@@ -89,9 +89,9 @@ module Login =
 
         let proponClick =
             prop.onClick (fun e ->
-                                    e.preventDefault()
-                                    dispatch SendUsrPswToServer
-                            )
+                                e.preventDefault()
+                                dispatch SendUsrPswToServer
+                         )
 
         let submitInput =
             Html.input [

@@ -5,7 +5,7 @@ open System
 open SharedTypes
 
 open ErrorTypes.Server
-open Auxiliaries.Server.PatternBuilders
+open Auxiliaries.Server.CEBuilders
 open Auxiliaries.Connections.Connection
 open TransLayerSend.Server.TransLayerSend
 

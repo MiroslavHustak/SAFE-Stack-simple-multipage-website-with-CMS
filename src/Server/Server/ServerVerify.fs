@@ -22,7 +22,7 @@ open Auxiliaries.Server
 open Auxiliaries.Server.Resources
 open Auxiliaries.Server.Security2
 open Auxiliaries.Server.Miscellaneous
-open Auxiliaries.Server.PatternBuilders
+open Auxiliaries.Server.CEBuilders
 
 module ServerVerify =
 

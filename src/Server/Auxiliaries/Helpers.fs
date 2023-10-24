@@ -10,7 +10,7 @@ open FsToolkit.ErrorHandling
 open DtoGet.Server.DtoGet
 open DtoXml.Server.DtoXml
 
-module PatternBuilders = 
+module CEBuilders = 
       
     [<Struct>]
     type internal Builder1 = Builder1 with            
