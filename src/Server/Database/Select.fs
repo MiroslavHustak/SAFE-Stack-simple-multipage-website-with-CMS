@@ -49,7 +49,7 @@ module Select =
                                          |> Seq.takeWhile ((=) true)  //compare |> Seq.skipWhile ((=) false)
                                          |> Seq.collect
                                              (fun _ ->
-                                                 seq
+                                                 seq //|> List.ofSeq |> List.tryHead
                                                      {                                                                               
                                                      yield    
                                                          {                                                       
@@ -75,15 +75,15 @@ module Select =
                                      match getValues with
                                      | Some getValues ->                                                                                                          
                                                        [
-                                                           getValues.IdDtoGet |> Option.isNone; getValues.ValueStateDtoGet |> Option.isNone;
-                                                           getValues.V001DtoGet |> Option.isNone; getValues.V002DtoGet |> Option.isNone; getValues.V003DtoGet |> Option.isNone;
-                                                           getValues.V004DtoGet |> Option.isNone; getValues.V005DtoGet |> Option.isNone; getValues.V006DtoGet |> Option.isNone;
-                                                           getValues.V007DtoGet |> Option.isNone; getValues.V008DtoGet |> Option.isNone; getValues.V009DtoGet |> Option.isNone
+                                                           getValues.IdDtoGet |> Option.isSome; getValues.ValueStateDtoGet |> Option.isSome;
+                                                           getValues.V001DtoGet |> Option.isSome; getValues.V002DtoGet |> Option.isSome; getValues.V003DtoGet |> Option.isSome;
+                                                           getValues.V004DtoGet |> Option.isSome; getValues.V005DtoGet |> Option.isSome; getValues.V006DtoGet |> Option.isSome;
+                                                           getValues.V007DtoGet |> Option.isSome; getValues.V008DtoGet |> Option.isSome; getValues.V009DtoGet |> Option.isSome
                                                        ]
-                                                       |> List.contains true
+                                                       |> List.forall (fun item -> (=) item true)
                                                        |> function
-                                                           | true  -> Error ReadingDbError 
-                                                           | false -> Ok <| cenikValuesTransferLayerGet getValues
+                                                           | true  -> Ok <| cenikValuesTransferLayerGet getValues
+                                                           | false -> Error ReadingDbError 
                                      | None           ->
                                                        Error ReadingDbError                                         
                          | Error err ->
