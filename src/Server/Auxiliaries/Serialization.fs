@@ -1,6 +1,5 @@
 namespace Auxiliaries.Server
 
-open System
 open System.IO
 open Newtonsoft.Json
 open System.Runtime.Serialization
@@ -31,7 +30,8 @@ module Serialisation =
                 let stream = File.Create(filepath) |> Option.ofNull
                 let! stream = stream, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " xmlFile)
 
-                xmlSerializer.WriteObject(stream, record)                
+                xmlSerializer.WriteObject(stream, record)
+                
                 stream.Close()
                 stream.Dispose()                    
 

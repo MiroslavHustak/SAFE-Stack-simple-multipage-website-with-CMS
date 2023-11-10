@@ -6,22 +6,25 @@ open FsToolkit.ErrorHandling
 
 module CopyingFiles =  //trywith transferred to Server.fs
         
-    let internal copyFiles source destination =
+    let internal copyFiles source destination test =
                                                                     
         let perform x =
 
             pyramidOfDoom
                 {
                     let sourceFilepath = Path.GetFullPath(source) |> Option.ofNull 
-                    let! sourceFilepath = sourceFilepath, Error (sprintf "%s%s" "Chyba při čtení cesty k souboru " source)
+                    let! sourceFilepath = sourceFilepath, Error (sprintf "%s%s" "Kontaktuj programátora, chyba při čtení cesty k souboru " source)
 
                     let destinFilepath = Path.GetFullPath(destination) |> Option.ofNull  
-                    let! destinFilepath = destinFilepath, Error (sprintf "%s%s" "Chyba při čtení cesty k souboru " source)
+                    let! destinFilepath = destinFilepath, Error (sprintf "%s%s" "Kontaktuj programátora, chyba při čtení cesty k souboru " source)
 
                     let fInfodat: FileInfo = new FileInfo(sourceFilepath)
-                    let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Soubor %s nenalezen" source)                    
+                    let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Kontaktuj programátora, soubor %s nenalezen" source)
+                    //let! _ =  None, Error (sprintf "Kontaktuj programátora, soubor %s nenalezen" source)
 
-                    return Ok <| File.Copy(sourceFilepath, destinFilepath, true)
+                    match test with
+                    | true  -> return Ok ()
+                    | false -> return Ok <| File.Copy(sourceFilepath, destinFilepath, true)
                 }           
 
         perform ()

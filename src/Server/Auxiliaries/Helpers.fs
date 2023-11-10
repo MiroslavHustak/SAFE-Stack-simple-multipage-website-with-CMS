@@ -44,8 +44,6 @@ module CEBuilders =
 
     let internal pyramidOfInferno = Builder3
 
-open CEBuilders
-
 module Result =
 
     let internal toOption f : 'a option = 
@@ -81,7 +79,7 @@ module Resources =
             //sprintf "%s%s%s" AppDomain.CurrentDomain.BaseDirectory "Resources" path //nefunguje, haze to do debug
             Path.Combine("Resources", path) //CopyAlways
         with
-        | ex -> failwith (sprintf "Závažná chyba na serveru !!! %s" ex.Message)
+        | ex -> failwith (sprintf "Kontaktuj programátora, závažná chyba na serveru !!! %s" ex.Message)
 
 module Casting =
 
