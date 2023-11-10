@@ -27,8 +27,3 @@ module DtoXml =
             V004: string; V005: string; V006: string;
             V007: string; Msgs: MessagesDtoXml
         }
-
-  
-
-   
-

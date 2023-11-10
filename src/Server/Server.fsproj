@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <FSharpPreferNetFrameworkTools>True</FSharpPreferNetFrameworkTools>
-  </PropertyGroup>
+  </PropertyGroup>  
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Content Include="Resources\xmlKontaktValues.xml">
@@ -27,6 +27,8 @@
     <Compile Include="Types\ErrorTypes.fs" />
     <Compile Include="Auxiliaries\Security2.fs" />
     <Compile Include="Auxiliaries\Helpers.fs" />
+    <Compile Include="Auxiliaries\CopyFiles.fs" />
+    <Compile Include="Auxiliaries\Serialization.fs" />
     <Compile Include="Settings\Settings.fs" />
     <Compile Include="EducationalCode\Security.fs" />
     <Compile Include="EducationalCode\Auxiliaries\DapperHelper.fs" />
@@ -50,7 +52,7 @@
     <PackageReference Include="FSharp.Control.AsyncSeq" Version="3.2.1" />
     <PackageReference Include="FSharp.Data" Version="5.0.2" />
     <PackageReference Include="FSharp.Data.SqlClient" Version="2.1.2" />
-    <PackageReference Include="FsToolkit.ErrorHandling" Version="4.9.0" />
+    <PackageReference Include="FsToolkit.ErrorHandling" Version="4.10.0" />
     <PackageReference Include="jose-jwt" Version="4.0.1" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
@@ -61,12 +63,13 @@
     <ProjectReference Include="..\Shared\Shared.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Update="Resources\jsonLinkAndLinkNameValues.json">
+    <Resource Include="Resources\jsonLinkAndLinkNameValues.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Resources\jsonLinkAndLinkNameValuesBackUp.json">
+    </Resource>
+    <Resource Include="Resources\jsonLinkAndLinkNameValuesBackUp.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </Resource>
+    <Resource Include="Resources\JsonSchema.json" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
   <ProjectExtensions><VisualStudio><UserProperties resources_4jsonlinkandlinknamevalues_1json__JsonSchema="https://json-schema.org/draft-07/schema" resources_4jsonlinkandlinknamevaluesbackup_1json__JsonSchema="https://json-schema.org/draft-07/schema" resources_4jsonschema_1json__JsonSchema="https://json-schema.org/draft-07/schema" /></VisualStudio></ProjectExtensions>

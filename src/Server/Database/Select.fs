@@ -43,30 +43,30 @@ module Select =
                              | None   -> Error <| insertDefaultValues 
 
                          match reader with
-                         | Ok reader ->                                      
+                         | Ok reader ->
                                      let getValues: CenikValuesDtoGet option =                                                
                                          Seq.initInfinite (fun _ -> reader.Read())
                                          |> Seq.takeWhile ((=) true)  //compare |> Seq.skipWhile ((=) false)
                                          |> Seq.collect
                                              (fun _ ->
-                                                 seq //|> List.ofSeq |> List.tryHead
-                                                     {                                                                               
-                                                     yield    
-                                                         {                                                       
-                                                             IdDtoGet = Casting.castAs<int> reader.["Id"] 
-                                                             ValueStateDtoGet = Casting.castAs<string> reader.["ValueState"]
-                                                             V001DtoGet = Casting.castAs<string> reader.["V001"]                                                                               
-                                                             V002DtoGet = Casting.castAs<string> reader.["V002"]
-                                                             V003DtoGet = Casting.castAs<string> reader.["V003"]
-                                                             V004DtoGet = Casting.castAs<string> reader.["V004"]
-                                                             V005DtoGet = Casting.castAs<string> reader.["V005"]
-                                                             V006DtoGet = Casting.castAs<string> reader.["V006"]
-                                                             V007DtoGet = Casting.castAs<string> reader.["V007"]
-                                                             V008DtoGet = Casting.castAs<string> reader.["V008"]
-                                                             V009DtoGet = Casting.castAs<string> reader.["V009"]
-                                                             MsgsDtoGet = MessagesDtoGet.Default
-                                                         }
-                                                     } 
+                                                     seq //|> List.ofSeq |> List.tryHead
+                                                         {                                                                               
+                                                         yield    
+                                                             {                                                       
+                                                                 IdDtoGet = Casting.castAs<int> reader.["Id"] 
+                                                                 ValueStateDtoGet = Casting.castAs<string> reader.["ValueState"]
+                                                                 V001DtoGet = Casting.castAs<string> reader.["V001"]                                                                               
+                                                                 V002DtoGet = Casting.castAs<string> reader.["V002"]
+                                                                 V003DtoGet = Casting.castAs<string> reader.["V003"]
+                                                                 V004DtoGet = Casting.castAs<string> reader.["V004"]
+                                                                 V005DtoGet = Casting.castAs<string> reader.["V005"]
+                                                                 V006DtoGet = Casting.castAs<string> reader.["V006"]
+                                                                 V007DtoGet = Casting.castAs<string> reader.["V007"]
+                                                                 V008DtoGet = Casting.castAs<string> reader.["V008"]
+                                                                 V009DtoGet = Casting.castAs<string> reader.["V009"]
+                                                                 MsgsDtoGet = MessagesDtoGet.Default
+                                                             }
+                                                         } 
                                              ) |> List.ofSeq |> List.tryHead //the function only places data to the head of the collection (a function with "while" does the same)
                                    
                                      reader.Close()
