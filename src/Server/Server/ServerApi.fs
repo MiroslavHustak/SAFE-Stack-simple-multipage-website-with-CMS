@@ -110,19 +110,18 @@ module ServerApi =
                         {
                             let sendNewKontaktValues: KontaktValuesDomain = 
                                 match verifyKontaktValues sendKontaktValues with
-                                | Ok ()    ->   
-                                            let result =
-                                                let f3 = sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: "
-                                                let f1 () = 
-                                                    //failwith "Simulated exception10"
-                                                    let sendKontaktValuesDtoXml = kontaktValuesTransferLayerDomainToXml sendKontaktValues
-                                                    match copyFiles pathToXml pathToXmlBackup true with
-                                                    | Ok _      -> serializeToXml sendKontaktValuesDtoXml pathToXml
-                                                    | Error err -> Error (f3 err)                                                                                                       
-                                                tryWithResult f1 () f3
-                                            match result with
-                                            | Ok _      -> sendKontaktValues  
-                                            | Error err -> { sendKontaktValues with Msgs = { MessagesDomain.Default with Msg1 = err } }                                                                             
+                                | Ok ()    ->                                            
+                                            let f3 = sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: "
+                                            let f1 () = 
+                                                //failwith "Simulated exception10"
+                                                let sendKontaktValuesDtoXml = kontaktValuesTransferLayerDomainToXml sendKontaktValues
+                                                match copyFiles pathToXml pathToXmlBackup true with
+                                                | Ok _      -> serializeToXml sendKontaktValuesDtoXml pathToXml
+                                                | Error err -> Error (f3 err)                                                                                                       
+                                            tryWithResult f1 () f3
+                                            |> function
+                                                | Ok _      -> sendKontaktValues  
+                                                | Error err -> { sendKontaktValues with Msgs = { MessagesDomain.Default with Msg1 = err } }                                                                             
                                 | Error _  ->
                                             KontaktValuesDomain.Default
 
@@ -182,21 +181,20 @@ module ServerApi =
                       {
                          let sendNewLinkAndLinkNameValues: LinkAndLinkNameValuesDomain = 
                              match verifyLinkAndLinkNameValues sendLinkAndLinkNameValues with
-                             | Ok ()   ->  
-                                        let result =
-                                            let f3 = sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: "
-                                            let f1 () = 
-                                                //failwith "Simulated exception14"   
-                                                let sendLinkAndLinkNameValuesDtoSend = linkAndLinkNameValuesTransferLayerSend sendLinkAndLinkNameValues                                               
-                                                match copyFiles pathToJson pathToJsonBackup true with
-                                                | Ok _      -> serializeToJson sendLinkAndLinkNameValuesDtoSend pathToJson
-                                                | Error err -> Error (f3 err)                                                   
-                                            tryWithResult f1 () f3
-                                        match result with
-                                        | Ok _      -> sendLinkAndLinkNameValues  
-                                        | Error err -> { sendLinkAndLinkNameValues with Msgs = { MessagesDomain.Default with Msg1 = err } }    
+                             | Ok ()   -> 
+                                        let f3 = sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: "
+                                        let f1 () = 
+                                            //failwith "Simulated exception14"   
+                                            let sendLinkAndLinkNameValuesDtoSend = linkAndLinkNameValuesTransferLayerSend sendLinkAndLinkNameValues                                               
+                                            match copyFiles pathToJson pathToJsonBackup true with
+                                            | Ok _      -> serializeToJson sendLinkAndLinkNameValuesDtoSend pathToJson
+                                            | Error err -> Error (f3 err)                                                   
+                                        tryWithResult f1 () f3
+                                        |> function
+                                            | Ok _      -> sendLinkAndLinkNameValues  
+                                            | Error err -> { sendLinkAndLinkNameValues with Msgs = { MessagesDomain.Default with Msg1 = err } }    
                              | Error _ ->
-                                        LinkAndLinkNameValuesDomain.Default                        
+                                        LinkAndLinkNameValuesDomain.Default
 
                          return sendNewLinkAndLinkNameValues
                       }
@@ -253,24 +251,18 @@ module ServerApi =
                 
             getSecurityToken =
                 fun getSecurityToken ->  //TODO try with
-                    async
-                        {       
-                            match File.Exists(Path.GetFullPath("securityToken.txt")) with
-                            | false -> //TODO error + some action
-                                    return Seq.empty  
-                            | true  -> //StreamReader refused to work here, thar is why File.ReadAllLines was used                              
-                                    match File.ReadAllLines("securityToken.txt") |> Option.ofNull with
-                                    | Some value -> return (value |> Seq.ofArray) 
-                                    | None       -> return Seq.empty  //TODO error + some action                        
-                        }        
+                                     async
+                                         {       
+                                            //some code
+                                         }        
                  
             deleteSecurityTokenFile =
                 fun deleteSecurityTokenFile ->  //TODO try with
-                    async
-                        {
-                            File.Delete(Path.GetFullPath("securityToken.txt"))
-                            return ()
-                        }   
+                                            async
+                                                {
+                                                    File.Delete(Path.GetFullPath("securityToken.txt"))
+                                                    return ()
+                                                }   
             *)
         }
 
