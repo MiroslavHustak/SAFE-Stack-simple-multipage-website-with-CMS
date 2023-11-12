@@ -12,15 +12,11 @@ module CopyingFiles =  //trywith transferred to Server.fs
 
             pyramidOfDoom
                 {
-                    let sourceFilepath = Path.GetFullPath(source) |> Option.ofNull 
-                    let! sourceFilepath = sourceFilepath, Error (sprintf "%s%s" "Kontaktuj programátora, chyba při čtení cesty k souboru " source)
-
-                    let destinFilepath = Path.GetFullPath(destination) |> Option.ofNull  
-                    let! destinFilepath = destinFilepath, Error (sprintf "%s%s" "Kontaktuj programátora, chyba při čtení cesty k souboru " source)
+                    let! sourceFilepath = Path.GetFullPath(source) |> Option.ofNull, Error (sprintf "%s%s" "Kontaktuj programátora, chyba při čtení cesty k souboru " source)
+                    let! destinFilepath = Path.GetFullPath(destination) |> Option.ofNull, Error (sprintf "%s%s" "Kontaktuj programátora, chyba při čtení cesty k souboru " source)
 
                     let fInfodat: FileInfo = new FileInfo(sourceFilepath)
                     let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Kontaktuj programátora, soubor %s nenalezen" source)
-                    //let! _ =  None, Error (sprintf "Kontaktuj programátora, soubor %s nenalezen" source)
 
                     match test with
                     | true  -> return Ok ()
