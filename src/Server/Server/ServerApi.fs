@@ -21,7 +21,7 @@ open Database.InsertOrUpdate
 open ErrorTypes.Server
 
 open Auxiliaries.Errors.Errors
-open Auxiliaries.Server.Resources
+open Auxiliaries.Server.CEBuilders
 open Auxiliaries.Server.CopyingFiles
 open Auxiliaries.Server.Serialisation
 open Auxiliaries.Server.Deserialisation
@@ -33,7 +33,6 @@ open DtoGet.Server.DtoGet
 open TransLayerXml.Server.TransLayerXml
 open TransLayerGet.Server.TransLayerGet
 open TransLayerSend.Server.TransLayerSend
-open Auxiliaries.Server.CEBuilders
 
 module ServerApi =
 

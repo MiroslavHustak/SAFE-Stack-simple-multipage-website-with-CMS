@@ -19,10 +19,9 @@ open Settings
 open ErrorTypes.Server
 
 open Auxiliaries.Server
-open Auxiliaries.Server.Resources
 open Auxiliaries.Server.Security2
-open Auxiliaries.Server.Miscellaneous
 open Auxiliaries.Server.CEBuilders
+open Auxiliaries.Server.Miscellaneous
 
 module ServerVerify =
 
