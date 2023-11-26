@@ -72,11 +72,10 @@ module Security2 =
                 use algo = new Rfc2898DeriveBytes(password, salt, iterations)
                 let challengeBytes = algo.GetBytes(32)
                              
-                let x = Seq.compareWith (fun a b -> match a = b with true -> 0 | false -> 1) bytes challengeBytes 
-
-                match x with
-                | v when v = 0 -> true
-                | _            -> false
+                Seq.compareWith (fun a b -> match a = b with true -> 0 | false -> 1) bytes challengeBytes 
+                |> function
+                    | v when v = 0 -> true
+                    | _            -> false
      
             
 

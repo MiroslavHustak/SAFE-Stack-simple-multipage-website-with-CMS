@@ -18,13 +18,13 @@
     </Content>
     <Compile Include="Connections\Connection.fs" />
     <None Include="paket.references" />
-    <Compile Include="Types\DtoSend.fs" />
-    <Compile Include="Types\DtoGet.fs" />
-    <Compile Include="Types\DtoXml.fs" />
-    <Compile Include="Types\TransLayerSend.fs" />
-    <Compile Include="Types\TransLayerGet.fs" />
-    <Compile Include="Types\TransLayerXml.fs" />
     <Compile Include="Types\ErrorTypes.fs" />
+    <Compile Include="DomainModelling\DTOs\DtoSend.fs" />
+    <Compile Include="DomainModelling\DTOs\DtoGet.fs" />
+    <Compile Include="DomainModelling\DTOs\DtoXml.fs" />
+    <Compile Include="DomainModelling\TransformationLayers\TransLayerSend.fs" />
+    <Compile Include="DomainModelling\TransformationLayers\TransLayerGet.fs" />
+    <Compile Include="DomainModelling\TransformationLayers\TransLayerXml.fs" />
     <Compile Include="Auxiliaries\Security2.fs" />
     <Compile Include="Auxiliaries\Helpers.fs" />
     <Compile Include="Auxiliaries\CopyFiles.fs" />

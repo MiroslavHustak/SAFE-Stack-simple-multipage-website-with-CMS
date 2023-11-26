@@ -48,9 +48,9 @@ module Errors =
             | InsertOrUpdateError -> "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k chybě při načítání hodnot z databáze." 
             | NoError             -> String.Empty
 
-    let internal errorMsgBoxS err =
-
-        match err with
+    let internal errorMsgBoxS =
+        
+        function
         | InsertOrUpdateError1 -> CenikValuesDomain.Default, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
         | InsertOrUpdateError2 -> CenikValuesDomain.Default, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
         | ReadingDbError       -> CenikValuesDomain.Default, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."

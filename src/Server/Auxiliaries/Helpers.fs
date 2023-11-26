@@ -46,31 +46,27 @@ module CEBuilders =
 
 module Result =
 
-    let internal toOption f : 'a option = 
-        f                      
-        |> function   
-            | Ok value -> Some value 
-            | Error _  -> None  
+    let internal toOption = 
+        function   
+        | Ok value -> Some value 
+        | Error _  -> None  
 
 module Option =
 
-    let internal ofBool cond = 
-           cond                      
-           |> function   
-               | true  -> Some ()  
-               | false -> None
+    let internal ofBool = 
+        function   
+        | true  -> Some ()  
+        | false -> None
 
-    let internal fromBool value cond : 'a option = 
-        cond                      
-        |> function   
-            | true  -> Some value  
-            | false -> None
+    let internal fromBool value = 
+        function   
+        | true  -> Some value  
+        | false -> None
 
-    let internal toResult err f : Result<'a, 'b> = 
-        f                      
-        |> function   
-            | Some value -> Ok value 
-            | None       -> Error err     
+    let internal toResult err = 
+        function   
+        | Some value -> Ok value 
+        | None       -> Error err     
 
 module Resources =
 
