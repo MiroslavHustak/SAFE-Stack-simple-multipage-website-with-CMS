@@ -9,7 +9,7 @@ module Connection =
     //Switch between the databases (always comment out the option you will not use)
    
     //nutricniterapie.somee.com
-    //let [<Literal>] connStringSomee = @"" 
+    //let [<Literal>] connStringSomee = @"put in a connection string" 
 
     //nterapie.somee.com //testing website
     let [<Literal>] internal connStringSomee = @"" 
