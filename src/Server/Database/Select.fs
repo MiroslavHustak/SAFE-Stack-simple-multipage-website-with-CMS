@@ -16,7 +16,7 @@ open Auxiliaries.Errors.Errors
 open DtoGet.Server.DtoGet
 open TransLayerGet.Server.TransLayerGet
 
-//SQL type providers did not work in this app, they block the database
+//SQL type providers did not work in this app, they blocked the database
 module Select = 
     
     let internal selectValues getConnection closeConnection insertDefaultValues idInt =

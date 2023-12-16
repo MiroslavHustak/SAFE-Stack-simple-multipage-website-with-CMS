@@ -2,6 +2,7 @@ namespace Auxiliaries.Errors
 
 open System
 
+open Shared
 open SharedTypes
 
 open ErrorTypes.Server
@@ -9,11 +10,12 @@ open Auxiliaries.Server.CEBuilders
 open Auxiliaries.Connections.Connection
 open TransLayerSend.Server.TransLayerSend
 
+
 module Errors =
 
     let internal insertDefaultValues insertOrUpdate =     
         
-        let cenikValuesDtoSendDefault = cenikValuesTransferLayerSend CenikValuesDomain.Default
+        let cenikValuesDtoSendDefault = cenikValuesTransferLayerSend SharedCenikValues.cenikValuesDomainDefault
 
         match insertOrUpdate getConnection closeConnection cenikValuesDtoSendDefault with
         | Ok _    -> InsertOrUpdateError1
@@ -51,7 +53,7 @@ module Errors =
     let internal errorMsgBoxS =
         
         function
-        | InsertOrUpdateError1 -> CenikValuesDomain.Default, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
-        | InsertOrUpdateError2 -> CenikValuesDomain.Default, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
-        | ReadingDbError       -> CenikValuesDomain.Default, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
-        | ConnectionError      -> CenikValuesDomain.Default, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
+        | InsertOrUpdateError1 -> SharedCenikValues.cenikValuesDomainDefault, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
+        | InsertOrUpdateError2 -> SharedCenikValues.cenikValuesDomainDefault, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
+        | ReadingDbError       -> SharedCenikValues.cenikValuesDomainDefault, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
+        | ConnectionError      -> SharedCenikValues.cenikValuesDomainDefault, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."

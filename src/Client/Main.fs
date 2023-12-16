@@ -215,8 +215,8 @@ module App =
                 User = Anonymous
                 user = { Username = SharedApi.Username String.Empty } //{ Username = SharedApi.Username String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
                 Session = None          
-                LinkAndLinkNameValues = LinkAndLinkNameValuesDomain.Default   
-                LinkAndLinkNameInputValues = LinkAndLinkNameValuesDomain.Default
+                LinkAndLinkNameValues = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault   
+                LinkAndLinkNameInputValues = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
             }    
 
     let update (msg: Msg) (model: Model) =

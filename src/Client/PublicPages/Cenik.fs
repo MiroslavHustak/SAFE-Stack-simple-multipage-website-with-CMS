@@ -36,8 +36,8 @@ module Cenik =
 
         let model =
            {
-               CenikValues = CenikValuesDomain.Default       
-               CenikInputValues = CenikValuesDomain.Default
+               CenikValues = SharedCenikValues.cenikValuesDomainDefault     
+               CenikInputValues = SharedCenikValues.cenikValuesDomainDefault
                ErrorMsg = String.Empty
                Id = id
            }

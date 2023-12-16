@@ -53,10 +53,10 @@ module ServerApi =
                                            let cenikValuesSend = cenikValuesTransferLayerSend dbNewCenikValues
                                            let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) cond
                                             
-                                           { dbNewCenikValues with Msgs = { MessagesDomain.Default with Msg1 = exnSql } }
+                                           { dbNewCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql } }
                                                                            
                                 | Error _ ->
-                                           CenikValuesDomain.Default
+                                           SharedCenikValues.cenikValuesDomainDefault
 
                           return sendNewCenikValues
                       }
@@ -67,7 +67,7 @@ module ServerApi =
                         {                     
                             let IdNew = 2
                             let IdOld = 3
-
+                            
                             let (dbGetNewCenikValues, exnSql2) =                              
                                 match selectValues getConnection closeConnection (insertDefaultValues insertOrUpdate) IdNew with   
                                 | Ok value  -> value, String.Empty                                            
@@ -83,9 +83,9 @@ module ServerApi =
                             let (dbSendOldCenikValues, exnSql3) =  
                                 match selectValues getConnection closeConnection (insertDefaultValues insertOrUpdate) IdOld with   
                                 | Ok value  -> value, String.Empty                                            
-                                | Error err -> errorMsgBoxS err
+                                | Error err -> errorMsgBoxS err 
 
-                            return { dbSendOldCenikValues with Msgs = { MessagesDomain.Default with Msg1 = exnSql; Msg2 = exnSql2; Msg3 = exnSql3 } }
+                            return { dbSendOldCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql; Msg2 = exnSql2; Msg3 = exnSql3 } }
                         }
 
             getDeserialisedCenikValues = 
@@ -99,7 +99,7 @@ module ServerApi =
                                | Ok value  -> value, String.Empty                                            
                                | Error err -> errorMsgBoxS err
                                           
-                           return { dbSendCenikValues with Msgs = { MessagesDomain.Default with Msg1 = exnSql1; Msg2 = errMsg } } 
+                           return { dbSendCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql1; Msg2 = errMsg } } 
                        }
 
             //************* testing XML ********************          
@@ -120,9 +120,9 @@ module ServerApi =
                                             tryWithResult f1 () f3
                                             |> function
                                                 | Ok _      -> sendKontaktValues  
-                                                | Error err -> { sendKontaktValues with Msgs = { MessagesDomain.Default with Msg1 = err } }                                                                             
+                                                | Error err -> { sendKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                                                                             
                                 | Error _  ->
-                                            KontaktValuesDomain.Default
+                                            SharedKontaktValues.kontaktValuesDomainDefault
 
                             return sendNewKontaktValues
                         }
@@ -137,17 +137,17 @@ module ServerApi =
                                     pyramidOfInferno
                                         {
                                             let copy = copyFiles pathToXml pathToXmlBackup false
-                                            let! _ = copy, KontaktValuesDomain.Default
+                                            let! _ = copy, SharedKontaktValues.kontaktValuesDomainDefault
 
                                             let deserialize = deserializeFromXml<KontaktValuesDtoXml> pathToXmlBackup
-                                            let! deserialize = deserialize, KontaktValuesDomain.Default
+                                            let! deserialize = deserialize, SharedKontaktValues.kontaktValuesDomainDefault
 
                                             return kontaktValuesTransferLayerXmlToDomain deserialize, String.Empty
                                         }                                  
-                                let f3 ex = KontaktValuesDomain.Default, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
+                                let f3 ex = SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
                                 tryWithResult1 f1 () f3      
 
-                            return { getOldKontaktValues with Msgs = { MessagesDomain.Default with Msg1 = err } }                 
+                            return { getOldKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                 
                         } 
 
             getDeserialisedKontaktValues =
@@ -160,17 +160,17 @@ module ServerApi =
                                     pyramidOfInferno
                                         {
                                             let copy = copyFiles pathToXml pathToXmlBackup true
-                                            let! _ = copy, KontaktValuesDomain.Default
+                                            let! _ = copy, SharedKontaktValues.kontaktValuesDomainDefault
 
                                             let deserialize = deserializeFromXml<KontaktValuesDtoXml> pathToXmlBackup
-                                            let! deserialize = deserialize, KontaktValuesDomain.Default
+                                            let! deserialize = deserialize, SharedKontaktValues.kontaktValuesDomainDefault
 
                                             return kontaktValuesTransferLayerXmlToDomain deserialize, String.Empty
                                         }                                  
-                                let f3 ex = KontaktValuesDomain.Default, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
+                                let f3 ex = SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
                                 tryWithResult1 f1 () f3      
 
-                            return { getKontaktValues with Msgs = { MessagesDomain.Default with Msg1 = err } }                   
+                            return { getKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                   
                         }
 
             //************* testing JSON ********************                               
@@ -191,9 +191,9 @@ module ServerApi =
                                         tryWithResult f1 () f3
                                         |> function
                                             | Ok _      -> sendLinkAndLinkNameValues  
-                                            | Error err -> { sendLinkAndLinkNameValues with Msgs = { MessagesDomain.Default with Msg1 = err } }    
+                                            | Error err -> { sendLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }    
                              | Error _ ->
-                                        LinkAndLinkNameValuesDomain.Default
+                                        SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
                          return sendNewLinkAndLinkNameValues
                       }
@@ -208,17 +208,17 @@ module ServerApi =
                                    pyramidOfInferno
                                        {
                                            let copy = copyFiles pathToJson pathToJsonBackup false
-                                           let! _ = copy, LinkAndLinkNameValuesDomain.Default
+                                           let! _ = copy, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
                                            let deserialize = deserializeFromJson<LinkAndLinkNameValuesDtoGet> pathToJsonBackup
-                                           let! deserialize = deserialize, LinkAndLinkNameValuesDomain.Default
+                                           let! deserialize = deserialize, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
                                            return linkAndLinkNameValuesTransferLayerGet deserialize, String.Empty
                                        }                                      
-                               let f3 ex = LinkAndLinkNameValuesDomain.Default, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
+                               let f3 ex = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
                                tryWithResult1 f1 () f3
 
-                           return { getOldLinkAndLinkNameValues with Msgs = { MessagesDomain.Default with Msg1 = err } }  
+                           return { getOldLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }  
                        } 
 
             getDeserialisedLinkAndLinkNameValues =
@@ -231,17 +231,17 @@ module ServerApi =
                                    pyramidOfInferno
                                        {
                                            let copy = copyFiles pathToJson pathToJsonBackup true
-                                           let! _ = copy, LinkAndLinkNameValuesDomain.Default
+                                           let! _ = copy, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
                                            let deserialize = deserializeFromJson<LinkAndLinkNameValuesDtoGet> pathToJsonBackup
-                                           let! deserialize = deserialize, LinkAndLinkNameValuesDomain.Default
+                                           let! deserialize = deserialize, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
                                            return linkAndLinkNameValuesTransferLayerGet deserialize, String.Empty
                                        }                                      
-                               let f3 ex = LinkAndLinkNameValuesDomain.Default, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
+                               let f3 ex = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
                                tryWithResult1 f1 () f3
 
-                           return { getLinkAndLinkNameValues with Msgs = { MessagesDomain.Default with Msg1 = err } }  
+                           return { getLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }  
                        }
 
             (*
@@ -273,7 +273,7 @@ module ServerApi =
 
     let app =
         //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
-        let dbCenikValues = { CenikValuesDomain.Default with Msgs = { MessagesDomain.Default with Msg1 = "First run" } }
+        let dbCenikValues = { SharedCenikValues.cenikValuesDomainDefault with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = "First run" } }
         let cenikValuesSend = cenikValuesTransferLayerSend dbCenikValues
         let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) true //true == first run
 

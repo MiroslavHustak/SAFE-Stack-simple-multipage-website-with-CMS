@@ -62,8 +62,8 @@ module CMSLink =
 
         let model =
             {
-                LinkAndLinkNameValues = LinkAndLinkNameValuesDomain.Default           
-                OldLinkAndLinkNameValues = LinkAndLinkNameValuesDomain.Default           
+                LinkAndLinkNameValues = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault           
+                OldLinkAndLinkNameValues = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault           
                 V001LinkInput = String.Empty
                 V002LinkInput = String.Empty
                 V003LinkInput = String.Empty

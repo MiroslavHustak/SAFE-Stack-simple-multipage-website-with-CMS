@@ -36,8 +36,8 @@ module Kontakt =
        
         let model =        
             {
-                KontaktValues = KontaktValuesDomain.Default        
-                KontaktInputValues = KontaktValuesDomain.Default
+                KontaktValues = SharedKontaktValues.kontaktValuesDomainDefault        
+                KontaktInputValues = SharedKontaktValues.kontaktValuesDomainDefault
                 ErrorMsg = String.Empty
                 Id = id
             }

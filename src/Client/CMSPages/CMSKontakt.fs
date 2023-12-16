@@ -52,8 +52,8 @@ module CMSKontakt =
         
         let model =
             {
-                KontaktValues = KontaktValuesDomain.Default          
-                OldKontaktValues = KontaktValuesDomain.Default         
+                KontaktValues = SharedKontaktValues.kontaktValuesDomainDefault        
+                OldKontaktValues = SharedKontaktValues.kontaktValuesDomainDefault      
                 V001Input = String.Empty
                 V002Input = String.Empty
                 V003Input = String.Empty
