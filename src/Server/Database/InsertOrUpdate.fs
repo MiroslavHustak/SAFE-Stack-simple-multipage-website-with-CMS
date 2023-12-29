@@ -9,6 +9,7 @@ open Auxiliaries.Server
 
 open Queries.SqlQueries
 open DtoSend.Server.DtoSend
+open Auxiliaries.Server.CEBuilders
 
 module InsertOrUpdate = 
 
@@ -45,22 +46,46 @@ module InsertOrUpdate =
                     ]       
 
                 //**************** SqlCommands *****************
-                use cmdExists = new SqlCommand(queryExists idString, connection)
-                use cmdInsert = new SqlCommand(queryInsert, connection)
-                use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
+                let result =
+                    pyramidOfDoom 
+                         {
+                             let! cmdExists = new SqlCommand(queryExists idString, connection) |> Option.ofNull, Error InsertOrUpdateError                                    
+                             let! cmdInsert = new SqlCommand(queryInsert, connection) |> Option.ofNull, Error InsertOrUpdateError
+                             let! cmdUpdate = new SqlCommand(queryUpdate idString, connection) |> Option.ofNull, Error InsertOrUpdateError
 
-                //**************** Add values to parameters and execute commands with business logic *****************
-                match cmdExists.ExecuteScalar() |> Option.ofNull with
-                | Some _ -> 
-                          newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
-                          cmdUpdate.ExecuteNonQuery() |> ignore
-                          Ok () 
-                | None   -> 
-                          cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
-                          newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
-                          cmdInsert.ExecuteNonQuery() |> ignore
-                          Ok ()
-            finally
+                             return Ok (cmdExists, cmdInsert, cmdUpdate)                     
+                         }
+                               
+                match result with                
+                | Error _  ->
+                             Error InsertOrUpdateError
+                | Ok value ->
+                             let (cmdExists, cmdInsert, cmdUpdate) = value
+
+                             use cmdExists = cmdExists
+                             use cmdInsert = cmdInsert
+                             use cmdUpdate = cmdUpdate
+
+                             //use cmdExists = new SqlCommand(queryExists idString, connection) 
+                             //use cmdInsert = new SqlCommand(queryInsert, connection)
+                             //use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
+
+                                //**************** Add values to parameters and execute commands with business logic *****************
+                             match cmdExists.ExecuteScalar() |> Option.ofNull with
+                             | Some _ -> 
+                                       newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
+                                       let rowsAffected = cmdUpdate.ExecuteNonQuery()
+                                       match rowsAffected with
+                                       | 0 -> Error InsertOrUpdateError 
+                                       | _ -> Ok ()                      
+                             | None   -> 
+                                       cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
+                                       newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
+                                       let rowsAffected = cmdInsert.ExecuteNonQuery()
+                                       match rowsAffected with
+                                       | 0 -> Error InsertOrUpdateError 
+                                       | _ -> Ok ()    
+            finally               
                 closeConnection connection
         with
         | _ -> Error InsertOrUpdateError 
