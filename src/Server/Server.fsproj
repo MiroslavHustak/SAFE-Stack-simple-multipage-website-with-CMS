@@ -22,6 +22,7 @@
     <Compile Include="DomainModelling\DTOs\DtoSend.fs" />
     <Compile Include="DomainModelling\DTOs\DtoGet.fs" />
     <Compile Include="DomainModelling\DTOs\DtoXml.fs" />
+    <Compile Include="DomainModelling\DTOs\DtoDefault.fs" />
     <Compile Include="DomainModelling\TransformationLayers\TransLayerSend.fs" />
     <Compile Include="DomainModelling\TransformationLayers\TransLayerGet.fs" />
     <Compile Include="DomainModelling\TransformationLayers\TransLayerXml.fs" />

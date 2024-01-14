@@ -15,16 +15,7 @@ module InsertOrUpdate =
 
     //**************** Sql query strings *****************
     //See the file SQL Queries.fs
-
-    //**************** Sql commands - templates *****************
-    (*
-    use cmdExists = new SqlCommand(queryExists idString, connection)
-    use cmdInsert = new SqlCommand(queryInsert, connection)
-    use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
-    use cmdDeleteAll = new SqlCommand(queryDeleteAll, connection)
-    use cmdDelete = new SqlCommand(queryDelete idString, connection) 
-    *)
-
+       
     //**************** Sql queries - inner functions  *****************
     let internal insertOrUpdate getConnection closeConnection (sendCenikValues : CenikValuesDtoSend) =
 
@@ -46,47 +37,28 @@ module InsertOrUpdate =
                     ]       
 
                 //**************** SqlCommands *****************
-                let result =
-                    pyramidOfDoom 
-                         {
-                             let! cmdExists = new SqlCommand(queryExists idString, connection) |> Option.ofNull, Error InsertOrUpdateError                                    
-                             let! cmdInsert = new SqlCommand(queryInsert, connection) |> Option.ofNull, Error InsertOrUpdateError
-                             let! cmdUpdate = new SqlCommand(queryUpdate idString, connection) |> Option.ofNull, Error InsertOrUpdateError
-
-                             return Ok (cmdExists, cmdInsert, cmdUpdate)                     
-                         }
-                               
-                match result with                
-                | Error _  ->
-                             Error InsertOrUpdateError
-                | Ok value ->
-                             let (cmdExists, cmdInsert, cmdUpdate) = value
-
-                             use cmdExists = cmdExists
-                             use cmdInsert = cmdInsert
-                             use cmdUpdate = cmdUpdate
-
-                             //use cmdExists = new SqlCommand(queryExists idString, connection) 
-                             //use cmdInsert = new SqlCommand(queryInsert, connection)
-                             //use cmdUpdate = new SqlCommand(queryUpdate idString, connection)
-
-                                //**************** Add values to parameters and execute commands with business logic *****************
-                             match cmdExists.ExecuteScalar() |> Option.ofNull with
-                             | Some _ -> 
-                                       newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
-                                       let rowsAffected = cmdUpdate.ExecuteNonQuery()
-                                       match rowsAffected with
-                                       | 0 -> Error InsertOrUpdateError 
-                                       | _ -> Ok ()                      
-                             | None   -> 
-                                       cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
-                                       newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
-                                       let rowsAffected = cmdInsert.ExecuteNonQuery()
-                                       match rowsAffected with
-                                       | 0 -> Error InsertOrUpdateError 
-                                       | _ -> Ok ()    
+                use cmdExists = new SqlCommand(queryExists idString, connection) //non-nullable, ex caught with tryWith                                   
+                use cmdInsert = new SqlCommand(queryInsert, connection) //non-nullable, ex caught with tryWith 
+                use cmdUpdate = new SqlCommand(queryUpdate idString, connection)//non-nullable, ex caught with tryWith 
+                                
+                //**************** Add values to parameters and execute commands with business logic *****************
+                //Objects handled with extra care due to potential type-related concerns (you can call it paranoia :-)). 
+                match cmdExists.ExecuteScalar() |> Option.ofNull with
+                | Some _ -> 
+                        newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
+                        let rowsAffected = cmdUpdate.ExecuteNonQuery() //non-nullable, ex caught with tryWith 
+                        match rowsAffected with
+                        | 0 -> Error InsertOrUpdateError 
+                        | _ -> Ok ()                      
+                | None   -> 
+                        cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
+                        newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
+                        let rowsAffected = cmdInsert.ExecuteNonQuery() //non-nullable, ex caught with tryWith 
+                        match rowsAffected with
+                        | 0 -> Error InsertOrUpdateError 
+                        | _ -> Ok ()    
             finally               
-                closeConnection connection
+                closeConnection connection //just in case :-) 
         with
         | _ -> Error InsertOrUpdateError 
 

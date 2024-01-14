@@ -32,14 +32,15 @@ module ServerVerify =
         let usr = uberHash "" //delete username before bundling
         let psw = uberHash "" //delete password before bundling
         let mySeq = seq { usr; psw }
-        
-        use sw =
-            new StreamWriter(Path.GetFullPath(pathToUberHashTxt)) 
-            |> Option.ofNull
-            |> function
-                | Some value -> value
-                | None       -> //Check the "uberHash.txt" file manually 
-                                new StreamWriter(Path.GetFullPath("")) 
+
+        use sw = 
+            match Path.GetFullPath(pathToUberHashTxt) |> Option.ofNull with
+            | Some value ->
+                          new StreamWriter(Path.GetFullPath(pathToUberHashTxt)) //non-nullable, ex caught with tryWith
+            | None       ->
+                          //to be manually verified at this code location 
+                          new StreamWriter(Path.GetFullPath(String.Empty)) //ex caught with tryWith      
+           
         mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
     //************************************************************************
 
@@ -71,10 +72,12 @@ module ServerVerify =
 
                 let uberHash =
                     let f1 () =
-                        pyramidOfDoom
+                        pyramidOfDoom 
                             {
                                 let! _ = File.Exists(Path.GetFullPath(pathToUberHashTxt)) |> Option.ofBool, Error String.Empty
-                                let! value = File.ReadAllLines(pathToUberHashTxt) |> Option.ofNull, Error String.Empty
+                                let value = File.ReadAllLines(pathToUberHashTxt) //non-nullable, ex caught with tryWith
+                                //array item --> string -> Strings handled with extra care due to potential type-related concerns (you can call it paranoia :-)).
+                                let! _ = not (value |> Array.map (fun item -> item |> Option.ofNull) |> Array.exists (fun item -> item.IsNone)) |> Option.ofBool, Error String.Empty
 
                                 return Ok (value |> Seq.ofArray) 
                             } 

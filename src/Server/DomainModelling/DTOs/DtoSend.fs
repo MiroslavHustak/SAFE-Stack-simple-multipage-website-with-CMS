@@ -13,13 +13,7 @@ module DtoSend =
             Msg5: string
             Msg6: string
         }
-        static member Default =
-            {
-                Msg1 = String.Empty; Msg2 = String.Empty;
-                Msg3 = String.Empty; Msg4 = String.Empty;
-                Msg5 = String.Empty; Msg6 = String.Empty
-            }
-
+        
     type CenikValuesDtoSend =
         {
             Id: int; ValueState: string;
@@ -29,7 +23,7 @@ module DtoSend =
             Msgs: MessagesDtoSend
         }
 
-    //nevyuzito, ale ponechavam pro pripad zmeny   
+    // Defined but currently unused; retained for potential future requirements or updates.  
     type KontaktValuesDtoSend =
         {
             V001: string; V002: string; V003: string;

@@ -79,13 +79,14 @@ module Resources =
 
 module Casting =
 
-    //for educational purposes only
-    let inline internal downCast (x: obj) = //The downCast function does not handle null values explicitly and may raise a runtime exception if x is null regardless of using srtp or generics. 
+    //for educational purposes only 
+    let inline internal downCast (x: obj) = //With this function, null values are not explicitly handled, potential runtime exception if 'x' is null. 
         match x with
         | :? ^a as value -> Some value 
         | _              -> None
 
-    let internal castAs<'a> (o: obj) : 'a option =    //srtp nefunguje pro tento zpusob type casting 
+    //Objects handled with extra care due to potential type-related concerns (you can call it paranoia :-)).
+    let internal castAs<'a> (o: obj) : 'a option =    //SRTPs are not applicable for this specific type casting.
         match Option.ofNull o with
         | Some (:? 'a as result) -> Some result
         | _                      -> None

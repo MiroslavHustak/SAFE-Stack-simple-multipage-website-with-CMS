@@ -49,12 +49,8 @@ let private server =
                    
                         let f1 () = 
                             match File.Exists(Path.GetFullPath(pathToUberHashTxt)) with
-                            | false ->
-                                    Error String.Empty                                
-                            | true  ->                              
-                                    match File.ReadAllLines(pathToUberHashTxt) |> Option.ofNull with 
-                                    | Some value -> Ok (value |> Seq.ofArray) 
-                                    | None       -> Error String.Empty                                                     
+                            | false -> Error String.Empty                                
+                            | true  -> Ok (File.ReadAllLines(pathToUberHashTxt) |> Seq.ofArray)                                                                                 
 
                         tryWithResult f1 () (sprintf"%s")                        
                     uberHash

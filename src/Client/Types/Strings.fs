@@ -5,7 +5,7 @@ open FsToolkit.ErrorHandling
 
 module Strings =
 
-    let (|StringNonN|) s = 
+    let (|StringNonN|) s = //for educational purposes, not used yet
         s 
         |> Option.ofNull 
         |> function 

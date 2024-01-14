@@ -32,7 +32,7 @@ module TransLayerSend =
             Msgs = messagesTransferLayerSend cenikValuesDomain.Msgs
         }
 
-    //nevyuzito, ale ponechavam pro pripad zmeny  
+    // Defined but currently unused; retained for potential future requirements or updates.    
     let internal kontaktValuesTransferLayerSend (kontaktValuesDomain: KontaktValuesDomain) : KontaktValuesDtoSend =
         {            
             V001 = kontaktValuesDomain.V001

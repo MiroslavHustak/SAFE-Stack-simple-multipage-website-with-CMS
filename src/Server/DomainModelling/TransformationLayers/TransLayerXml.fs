@@ -39,16 +39,16 @@ module TransLayerXml =
         }
 
     let internal kontaktValuesTransferLayerDomainToXml (kontaktValuesDomainToXml: KontaktValuesDomain) : KontaktValuesDtoXml =
-           {            
-               V001 = kontaktValuesDomainToXml.V001
-               V002 = kontaktValuesDomainToXml.V002
-               V003 = kontaktValuesDomainToXml.V003
-               V004 = kontaktValuesDomainToXml.V004
-               V005 = kontaktValuesDomainToXml.V005
-               V006 = kontaktValuesDomainToXml.V006
-               V007 = kontaktValuesDomainToXml.V007          
-               Msgs = messagesTransferLayerDomainToXml kontaktValuesDomainToXml.Msgs
-           }
+        {            
+            V001 = kontaktValuesDomainToXml.V001
+            V002 = kontaktValuesDomainToXml.V002
+            V003 = kontaktValuesDomainToXml.V003
+            V004 = kontaktValuesDomainToXml.V004
+            V005 = kontaktValuesDomainToXml.V005
+            V006 = kontaktValuesDomainToXml.V006
+            V007 = kontaktValuesDomainToXml.V007          
+            Msgs = messagesTransferLayerDomainToXml kontaktValuesDomainToXml.Msgs
+        }
     
 
    

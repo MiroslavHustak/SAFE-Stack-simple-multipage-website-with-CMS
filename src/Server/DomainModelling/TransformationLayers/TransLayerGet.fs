@@ -37,7 +37,7 @@ module TransLayerGet =
             Msgs = messagesTransferLayerGet cenikValuesDtoGet.MsgsDtoGet
         }  
 
-    //nevyuzito, ale ponechavam pro pripad zmeny    
+    // Defined but currently unused; retained for potential future requirements or updates.     
     let internal kontaktValuesTransferLayerGet (kontaktValuesDtoGet: KontaktValuesDtoGet) : KontaktValuesDomain  =
         {            
             V001 = kontaktValuesDtoGet.V001

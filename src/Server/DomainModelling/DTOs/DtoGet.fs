@@ -1,7 +1,6 @@
 namespace DtoGet.Server
 
 open System
-open SharedTypes
 
 module DtoGet =
 
@@ -14,13 +13,7 @@ module DtoGet =
             Msg5: string
             Msg6: string
         }
-        static member Default =
-            {
-                Msg1 = String.Empty; Msg2 = String.Empty;
-                Msg3 = String.Empty; Msg4 = String.Empty;
-                Msg5 = String.Empty; Msg6 = String.Empty
-            }
-
+       
     type CenikValuesDtoGet =
         {
             IdDtoGet: int option; ValueStateDtoGet: string option;
@@ -30,7 +23,7 @@ module DtoGet =
             MsgsDtoGet: MessagesDtoGet
         }
 
-    //nevyuzito, ale ponechavam pro pripad zmeny   
+    // Defined but currently unused; retained for potential future requirements or updates.     
     type KontaktValuesDtoGet =
         {
             V001: string; V002: string; V003: string;

@@ -17,7 +17,8 @@ module Connection =
     //localhost
     //let [<Literal>] internal connStringLocal = @"Data Source=Misa\SQLEXPRESS;Initial Catalog=nterapieLocal;Integrated Security=True"
 
-    let internal getConnection () =
+    //shall be in a tryWith block
+    let internal getConnection () =        
         let connection = new SqlConnection(connStringSomee)
         connection.Open()
         connection

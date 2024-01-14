@@ -100,7 +100,7 @@ module CMSCenik =
                 try
                     let buttonClickEvent: CenikValuesDomain =                   
                         let input current old =                  
-                            match strContainsOnlySpace current || current = String.Empty with
+                            match strContainsOnlySpace current || String.IsNullOrEmpty current with //nebo String.IsNullOrWhiteSpace current || String.IsNullOrEmpty current
                             | true  -> old
                             | false -> current 
                         SharedCenikValues.create //Unit type would suffice, nevertheless sending CenikValues and empty values to the server preserved in order to use the existing code on Server and Shared 
