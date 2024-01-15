@@ -47,7 +47,8 @@ module Select =
                                  {
                                      //Objects handled with extra care due to potential type-related concerns (you can call it paranoia :-)). 
                                      let! _ = cmdExists.ExecuteScalar() |> Option.ofNull, Error insertDefaultValues
-                                     let! reader = cmdSelect.ExecuteReader() |> Option.ofNull, Error insertDefaultValues
+                                     let reader = cmdSelect.ExecuteReader()  //non-nullable, ex caught with tryWith (monadic operation discontinued)   
+
                                      return Ok reader
                                  }
                                       
