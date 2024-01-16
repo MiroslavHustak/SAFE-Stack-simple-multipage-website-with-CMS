@@ -47,16 +47,16 @@ module InsertOrUpdate =
                 | Some _ -> 
                         newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
                         let rowsAffected = cmdUpdate.ExecuteNonQuery() //non-nullable, ex caught with tryWith 
-                        match rowsAffected with
-                        | 0 -> Error InsertOrUpdateError 
-                        | _ -> Ok ()                      
+                        match rowsAffected > 0 with
+                        | false -> Error InsertOrUpdateError 
+                        | true  -> Ok ()                          
                 | None   -> 
                         cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
                         newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
                         let rowsAffected = cmdInsert.ExecuteNonQuery() //non-nullable, ex caught with tryWith 
-                        match rowsAffected with
-                        | 0 -> Error InsertOrUpdateError 
-                        | _ -> Ok ()    
+                        match rowsAffected > 0 with
+                        | false -> Error InsertOrUpdateError 
+                        | true  -> Ok ()    
             finally               
                 closeConnection connection //just in case :-) 
         with
