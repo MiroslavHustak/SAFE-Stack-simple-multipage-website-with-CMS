@@ -4,16 +4,14 @@ open System
 open System.IO
 
 open Expecto
+open FsToolkit.ErrorHandling
 
 open Errors
 open Server
 open Shared
 
-open FsToolkit.ErrorHandling
-
 open ErrorTypes.Server
-open Auxiliaries.Server.Security2
-
+open Helpers.Server.Security2
 
 let private pathToUberHashTxt = 
     try

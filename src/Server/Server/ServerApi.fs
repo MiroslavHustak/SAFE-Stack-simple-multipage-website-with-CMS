@@ -16,16 +16,17 @@ open Settings
 open ServerVerify
 
 open Database.Select
+open Database.Errors.Errors
 open Database.InsertOrUpdate
 
 open ErrorTypes.Server
 
-open Auxiliaries.Errors.Errors
-open Auxiliaries.Server.CEBuilders
-open Auxiliaries.Server.CopyingFiles
-open Auxiliaries.Server.Serialisation
-open Auxiliaries.Server.Deserialisation
-open Auxiliaries.Connections.Connection
+open Connections.Connection
+
+open Helpers.Server.CEBuilders
+open Helpers.Server.CopyingFiles
+open Helpers.Server.Serialisation
+open Helpers.Server.Deserialisation
 
 open DtoXml.Server.DtoXml
 open DtoGet.Server.DtoGet
@@ -94,11 +95,11 @@ module ServerApi =
                        {           
                            let IdNew = 2
                     
-                           let (dbSendCenikValues, exnSql1) =                              
+                           let (dbSendCenikValues, exnSql1) =                                                          
                                match selectValues getConnection closeConnection (insertDefaultValues insertOrUpdate) IdNew with   
                                | Ok value  -> value, String.Empty                                            
                                | Error err -> errorMsgBoxS err
-                                          
+                                                                    
                            return { dbSendCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql1; Msg2 = errMsg } } 
                        }
 

@@ -1,4 +1,4 @@
-namespace Auxiliaries.Server
+namespace Helpers.Server
 
 open System
 open System.IO
@@ -85,7 +85,7 @@ module Casting =
         | :? ^a as value -> Some value 
         | _              -> None
 
-    //Objects handled with extra care due to potential type-related concerns (you can call it paranoia :-)).
+    //Objects handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).
     let internal castAs<'a> (o: obj) : 'a option =    //SRTPs are not applicable for this specific type casting.
         match Option.ofNull o with
         | Some (:? 'a as result) -> Some result

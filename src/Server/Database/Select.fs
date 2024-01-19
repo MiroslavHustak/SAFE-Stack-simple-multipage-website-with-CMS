@@ -10,18 +10,20 @@ open SharedTypes
 open ErrorTypes.Server
 open Queries.SqlQueries
 
-open Auxiliaries.Server
-open Auxiliaries.Server.CEBuilders
+open Helpers.Server
+open Helpers.Server.CEBuilders
 
 open DtoGet.Server.DtoGet
 open DtoDefault.Server.DtoDefault
 open TransLayerGet.Server.TransLayerGet
 
+open Connections
+
+
 //SQL type providers did not work in this app (they blocked the Somee database)
 module Select = 
 
     //******************************************************************************************************************
-    //for learning and testing purposes
     let internal selectValues getConnection closeConnection insertDefaultValues idInt =
         
          try
@@ -45,7 +47,7 @@ module Select =
                          let reader =  
                              pyramidOfDoom
                                  {
-                                     //Objects handled with extra care due to potential type-related concerns (you can call it paranoia :-)). 
+                                     //Objects handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
                                      let! _ = cmdExists.ExecuteScalar() |> Option.ofNull, Error insertDefaultValues
                                      let reader = cmdSelect.ExecuteReader()  //non-nullable, ex caught with tryWith (monadic operation discontinued)   
 
@@ -109,3 +111,4 @@ module Select =
 
          with
          | _ -> Error ConnectionError
+                              

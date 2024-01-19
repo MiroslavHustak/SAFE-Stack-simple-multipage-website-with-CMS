@@ -15,13 +15,15 @@ open Shared
 open SharedTypes
 
 open Errors
+open Database.Errors
+
 open Settings
 open ErrorTypes.Server
 
-open Auxiliaries.Server
-open Auxiliaries.Server.Security2
-open Auxiliaries.Server.CEBuilders
-open Auxiliaries.Server.Miscellaneous
+open Helpers.Server
+open Helpers.Server.Security2
+open Helpers.Server.CEBuilders
+open Helpers.Server.Miscellaneous
 
 module ServerVerify =
 
@@ -76,7 +78,7 @@ module ServerVerify =
                             {
                                 let! _ = File.Exists(Path.GetFullPath(pathToUberHashTxt)) |> Option.ofBool, Error String.Empty
                                 let value = File.ReadAllLines(pathToUberHashTxt) //non-nullable, ex caught with tryWith
-                                //array item --> string -> Strings handled with extra care due to potential type-related concerns (you can call it paranoia :-)).
+                                //array item --> string -> Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).
                                 let! _ = not (value |> Array.map (fun item -> item |> Option.ofNull) |> Array.exists (fun item -> item.IsNone)) |> Option.ofBool, Error String.Empty
 
                                 return Ok (value |> Seq.ofArray) 

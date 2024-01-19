@@ -26,10 +26,10 @@
     <Compile Include="DomainModelling\TransformationLayers\TransLayerSend.fs" />
     <Compile Include="DomainModelling\TransformationLayers\TransLayerGet.fs" />
     <Compile Include="DomainModelling\TransformationLayers\TransLayerXml.fs" />
-    <Compile Include="Auxiliaries\Security2.fs" />
-    <Compile Include="Auxiliaries\Helpers.fs" />
-    <Compile Include="Auxiliaries\CopyFiles.fs" />
-    <Compile Include="Auxiliaries\Serialization.fs" />
+    <Compile Include="Helpers\Security2.fs" />
+    <Compile Include="Helpers\Helpers.fs" />
+    <Compile Include="Helpers\CopyFiles.fs" />
+    <Compile Include="Helpers\Serialization.fs" />
     <Compile Include="Settings\Settings.fs" />
     <Compile Include="EducationalCode\Security.fs" />
     <Compile Include="EducationalCode\Auxiliaries\DapperHelper.fs" />

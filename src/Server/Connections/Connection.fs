@@ -1,4 +1,4 @@
-namespace Auxiliaries.Connections
+namespace Connections
 
 open System
 open System.IO

@@ -1,7 +1,7 @@
 namespace Server
 
 open System
-open Auxiliaries.Server.Resources
+open Helpers.Server.Resources
 
 module Settings =
 

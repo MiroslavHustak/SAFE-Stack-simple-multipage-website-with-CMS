@@ -4,12 +4,14 @@ open System
 open System.Data.SqlClient
 open FsToolkit.ErrorHandling
 
+open Database.Errors
 open ErrorTypes.Server
-open Auxiliaries.Server
 
 open Queries.SqlQueries
 open DtoSend.Server.DtoSend
-open Auxiliaries.Server.CEBuilders
+
+open Helpers.Server
+open Helpers.Server.CEBuilders
 
 module InsertOrUpdate = 
 
@@ -42,7 +44,7 @@ module InsertOrUpdate =
                 use cmdUpdate = new SqlCommand(queryUpdate idString, connection)//non-nullable, ex caught with tryWith 
                                 
                 //**************** Add values to parameters and execute commands with business logic *****************
-                //Objects handled with extra care due to potential type-related concerns (you can call it paranoia :-)). 
+                //Objects handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
                 match cmdExists.ExecuteScalar() |> Option.ofNull with
                 | Some _ -> 
                         newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 

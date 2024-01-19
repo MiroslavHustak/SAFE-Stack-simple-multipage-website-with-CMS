@@ -1,4 +1,4 @@
-namespace Auxiliaries.Errors
+namespace Database.Errors
 
 open System
 
@@ -6,10 +6,9 @@ open Shared
 open SharedTypes
 
 open ErrorTypes.Server
-open Auxiliaries.Server.CEBuilders
-open Auxiliaries.Connections.Connection
+open Connections.Connection
+open Helpers.Server.CEBuilders
 open TransLayerSend.Server.TransLayerSend
-
 
 module Errors =
 

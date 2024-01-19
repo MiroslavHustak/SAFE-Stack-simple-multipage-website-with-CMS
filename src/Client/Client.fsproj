@@ -112,6 +112,7 @@
         <Content Include="public\Content\css_pirobox\shadow\c_r.png" />
         <Content Include="public\Content\css_pirobox\shadow\img_bg.png" />
         <Content Include="public\Content\css_pirobox\shadow\link_out.gif" />
+        
         <Content Include="public\Content\css_pirobox\shadow\link_out.png" />
         <Content Include="public\Content\css_pirobox\shadow\link_out_h.gif" />
         <Content Include="public\Content\css_pirobox\shadow\link_out_h.png" />
