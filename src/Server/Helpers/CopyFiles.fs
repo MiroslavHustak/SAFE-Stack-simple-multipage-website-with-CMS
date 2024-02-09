@@ -4,23 +4,31 @@ open System.IO
 open CEBuilders
 open FsToolkit.ErrorHandling
 
-module CopyingFiles =  //trywith transferred to Server.fs
-        
-    let internal copyFiles source destination test =
-                                                                    
-        let perform x =
+module CopyingFiles =
+    
+    let private processFile source destination action =
+                         
+        pyramidOfDoom 
+            {
+                let! sourceFilepath = Path.GetFullPath(source) |> Option.ofStringObj, Error <| sprintf "Chyba při čtení cesty k %s" source
+                let! destinFilepath = Path.GetFullPath(destination) |> Option.ofStringObj, Error <| sprintf "Chyba při čtení cesty k %s" destination
+                let! _ = (new FileInfo(sourceFilepath)).Exists |> Option.ofBool, Error <| sprintf "Zdrojový soubor %s neexistuje" sourceFilepath
 
-            pyramidOfDoom
-                {
-                    //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).
-                    let! sourceFilepath = Path.GetFullPath(source) |> Option.ofNull, Error (sprintf "%s%s" "Kontaktuj programátora, chyba při čtení cesty k souboru " source)
-                    let! destinFilepath = Path.GetFullPath(destination) |> Option.ofNull, Error (sprintf "%s%s" "Kontaktuj programátora, chyba při čtení cesty k souboru " source)
-                    let! _ = (new FileInfo(sourceFilepath)).Exists |> Option.ofBool, Error (sprintf "Kontaktuj programátora, soubor %s nenalezen" source)
+                return Ok <| action sourceFilepath destinFilepath
+            }           
 
-                    match test with
-                    | true  -> return Ok ()
-                    | false -> return Ok <| File.Copy(sourceFilepath, destinFilepath, true)
-                }           
+    let internal copyFiles source destination overwrite =
+        try
+            let action sourceFilepath destinFilepath = File.Copy(sourceFilepath, destinFilepath, overwrite) 
+                in processFile source destination action
+        with
+        | ex -> Error <| sprintf "Chyba při kopírování souboru %s do %s. %s." source destination (string ex.Message)
 
-        perform ()
-
+    (*  
+    let internal moveFiles source destination =
+        try
+            let action sourceFilepath destinFilepath = File.Move(sourceFilepath, destinFilepath, true) 
+                in processFile source destination action
+        with
+        | _ -> Error <| sprintf "Chyba při přemísťování souboru %s do %s" source destination
+    *)  

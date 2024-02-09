@@ -137,7 +137,7 @@ module ServerApi =
                                     //failwith "Simulated exception12"
                                     pyramidOfInferno
                                         {
-                                            let copy = copyFiles pathToXml pathToXmlBackup false
+                                            let copy = copyFiles pathToXml pathToXmlBackup true
                                             let! _ = copy, SharedKontaktValues.kontaktValuesDomainDefault
 
                                             let deserialize = deserializeFromXml<KontaktValuesDtoXml> pathToXmlBackup
@@ -208,7 +208,7 @@ module ServerApi =
                                    //failwith "Simulated exception15"
                                    pyramidOfInferno
                                        {
-                                           let copy = copyFiles pathToJson pathToJsonBackup false
+                                           let copy = copyFiles pathToJson pathToJsonBackup true
                                            let! _ = copy, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
                                            let deserialize = deserializeFromJson<LinkAndLinkNameValuesDtoGet> pathToJsonBackup
