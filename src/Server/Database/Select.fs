@@ -34,19 +34,21 @@ module Select =
 
                  try
                      try
-                         let idString = string idInt
                          //failwith "Simulated exception SqlSelectValues" 
 
                          //**************** SqlCommands *****************
                          
-                         use cmdExists = new SqlCommand(queryExists idString, connection) //non-nullable, ex caught with tryWith                                     
-                         use cmdSelect = new SqlCommand(querySelect idString, connection) //non-nullable, ex caught with tryWith                                                   
+                         use cmdExists = new SqlCommand(queryExists, connection) //non-nullable, ex caught with tryWith                                     
+                         use cmdSelect = new SqlCommand(querySelect, connection) //non-nullable, ex caught with tryWith                                                   
                         
                          //**************** Read values from DB *****************
 
                          let reader =  
                              pyramidOfDoom
                                  {
+                                     cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
+                                     cmdSelect.Parameters.AddWithValue("@Id", idInt) |> ignore
+
                                      //Objects handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
                                      let! _ = cmdExists.ExecuteScalar() |> Option.ofNull, Error insertDefaultValues
                                      let reader = cmdSelect.ExecuteReader()  //non-nullable, ex caught with tryWith (monadic operation discontinued)   

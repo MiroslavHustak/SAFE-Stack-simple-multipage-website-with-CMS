@@ -139,7 +139,7 @@ module CMSCenik =
                                   V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
                                   V007 = valueNew.V007; V008 = valueNew.V008; V009 = valueNew.V009;
                                   Msgs = valueNew.Msgs
-                              };                           
+                              }                           
                            ErrorMsg =
                                let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3   
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3

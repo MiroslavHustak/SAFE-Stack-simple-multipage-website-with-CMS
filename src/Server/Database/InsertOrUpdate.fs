@@ -28,7 +28,6 @@ module InsertOrUpdate =
             try
                 let idInt = sendCenikValues.Id //idInt = Primary Key for new/old/fixed value state
                 let valState = sendCenikValues.ValueState
-                let idString = string idInt        
    
                 //**************** Parameters for command.Parameters.AddWithValue("@val", some value) *****************
                 let newParamList =
@@ -39,14 +38,17 @@ module InsertOrUpdate =
                     ]       
 
                 //**************** SqlCommands *****************
-                use cmdExists = new SqlCommand(queryExists idString, connection) //non-nullable, ex caught with tryWith                                   
+                use cmdExists = new SqlCommand(queryExists, connection) //non-nullable, ex caught with tryWith                                   
                 use cmdInsert = new SqlCommand(queryInsert, connection) //non-nullable, ex caught with tryWith 
-                use cmdUpdate = new SqlCommand(queryUpdate idString, connection)//non-nullable, ex caught with tryWith 
-                                
+                use cmdUpdate = new SqlCommand(queryUpdate, connection)//non-nullable, ex caught with tryWith
+
                 //**************** Add values to parameters and execute commands with business logic *****************
-                //Objects handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
+                cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
+
+                //Objects handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).
                 match cmdExists.ExecuteScalar() |> Option.ofNull with
-                | Some _ -> 
+                | Some _ ->
+                        cmdUpdate.Parameters.AddWithValue("@Id", idInt) |> ignore
                         newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore) 
                         let rowsAffected = cmdUpdate.ExecuteNonQuery() //non-nullable, ex caught with tryWith 
                         match rowsAffected > 0 with
