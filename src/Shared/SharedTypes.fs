@@ -9,6 +9,12 @@ type LoginInfo =
         Password: SharedApi.Password
     }
 
+//****************************************************************************
+
+(*
+From the "client" point of view - data transfer object
+From the "server" point of view - domain model
+*)
 type MessagesDomain =
     {
         Msg1: string

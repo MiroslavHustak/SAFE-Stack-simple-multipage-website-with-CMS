@@ -3,10 +3,9 @@ namespace TransLayerGet.Server
 open System
 
 open SharedTypes
-open DtoGet.Server.DtoGet
-
-open ErrorTypes.Server
 open Helpers.Server
+open ErrorTypes.Server
+open DtoGet.Server.DtoGet
 
 module TransLayerGet =
 
@@ -63,7 +62,8 @@ module TransLayerGet =
                               Msgs = messagesTransferLayerGet cenikValuesDtoGet.MsgsDtoGet
                           }
                           
-            | true -> Error ReadingDbError      
+            | true ->
+                    Error ReadingDbError      
 
     // Defined but currently unused; retained for potential future requirements or updates.     
     let internal kontaktValuesTransferLayerGet (kontaktValuesDtoGet: KontaktValuesDtoGet) : KontaktValuesDomain  =

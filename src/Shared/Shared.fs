@@ -16,6 +16,8 @@ module SharedMessageDefaultValues =
             Msg5 = String.Empty; Msg6 = String.Empty
         }
 
+//"create" -> client-side transformation layer
+
 module SharedLoginValues =
 
     let create username password = 
@@ -34,7 +36,7 @@ module SharedCenikValues =
             V007 = "600"; V008 = "450"; V009 = "450";
             Msgs = SharedMessageDefaultValues.messageDefault
         }
-
+          
     let create id valState v001 v002 v003 v004 v005 v006 v007 v008 v009 =
         {
             Id = id; ValueState = valState;
