@@ -1,4 +1,4 @@
-namespace Helpers.Server
+namespace Serialization.Server
 
 open System.IO
 open Newtonsoft.Json
@@ -6,7 +6,8 @@ open System.Runtime.Serialization
 
 open FsToolkit.ErrorHandling
 
-open CEBuilders
+open Helpers.Server
+open Helpers.Server.CEBuilders
 
 open DtoGet.Server.DtoGet
 open DtoXml.Server.DtoXml

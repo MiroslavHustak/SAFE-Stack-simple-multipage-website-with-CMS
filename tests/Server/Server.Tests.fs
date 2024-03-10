@@ -22,13 +22,13 @@ let private pathToUberHashTxt =
 let private server =
     testList "Server"
         [
-            //just testing a test :-), no real benefit out of this unit test
+            //just testing a test :-), no real benefit out of this test
             testCase "testingExpectoServer" <| fun _ ->
 
                 let expected = 5
                 Expect.isLessThanOrEqual expected (2+3) "2+3 = 5"//test description
 
-            //real unit test 
+            //real test 
             testCase "uberHashServer" <| fun _ ->
 
                 let expected =

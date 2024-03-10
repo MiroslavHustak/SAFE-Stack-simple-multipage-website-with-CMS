@@ -19,6 +19,9 @@
     <Compile Include="Connections\Connection.fs" />
     <None Include="paket.references" />
     <Compile Include="Types\ErrorTypes.fs" />
+    <Compile Include="Helpers\Security2.fs" />
+    <Compile Include="Helpers\Helpers.fs" />
+    <Compile Include="Helpers\CopyFiles.fs" />
     <Compile Include="DomainModelling\DTOs\DtoSend.fs" />
     <Compile Include="DomainModelling\DTOs\DtoGet.fs" />
     <Compile Include="DomainModelling\DTOs\DtoXml.fs" />
@@ -26,10 +29,7 @@
     <Compile Include="DomainModelling\TransformationLayers\TransLayerSend.fs" />
     <Compile Include="DomainModelling\TransformationLayers\TransLayerGet.fs" />
     <Compile Include="DomainModelling\TransformationLayers\TransLayerXml.fs" />
-    <Compile Include="Helpers\Security2.fs" />
-    <Compile Include="Helpers\Helpers.fs" />
-    <Compile Include="Helpers\CopyFiles.fs" />
-    <Compile Include="Helpers\Serialization.fs" />
+    <Compile Include="Serialization\Serialization.fs" />
     <Compile Include="Settings\Settings.fs" />
     <Compile Include="EducationalCode\Security.fs" />
     <Compile Include="EducationalCode\Auxiliaries\DapperHelper.fs" />

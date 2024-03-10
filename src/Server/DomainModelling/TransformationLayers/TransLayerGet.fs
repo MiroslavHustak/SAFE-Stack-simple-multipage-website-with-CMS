@@ -1,8 +1,12 @@
 namespace TransLayerGet.Server
 
 open System
+
 open SharedTypes
 open DtoGet.Server.DtoGet
+
+open ErrorTypes.Server
+open Helpers.Server
 
 module TransLayerGet =
 
@@ -15,27 +19,51 @@ module TransLayerGet =
              Msg5 = messagesDto.Msg5  
              Msg6 = messagesDto.Msg6                   
         }
-    
-    let private extractValue p =
-        match p with
-        | Some value -> value
-        | None       -> failwith "Already checked, an exception should not happen"
 
-    let internal cenikValuesTransferLayerGet (cenikValuesDtoGet: CenikValuesDtoGet) : CenikValuesDomain =
-        {
-            Id = extractValue cenikValuesDtoGet.IdDtoGet
-            ValueState = extractValue cenikValuesDtoGet.ValueStateDtoGet
-            V001 = extractValue cenikValuesDtoGet.V001DtoGet
-            V002 = extractValue cenikValuesDtoGet.V002DtoGet
-            V003 = extractValue cenikValuesDtoGet.V003DtoGet
-            V004 = extractValue cenikValuesDtoGet.V004DtoGet
-            V005 = extractValue cenikValuesDtoGet.V005DtoGet
-            V006 = extractValue cenikValuesDtoGet.V006DtoGet
-            V007 = extractValue cenikValuesDtoGet.V007DtoGet
-            V008 = extractValue cenikValuesDtoGet.V008DtoGet
-            V009 = extractValue cenikValuesDtoGet.V009DtoGet
-            Msgs = messagesTransferLayerGet cenikValuesDtoGet.MsgsDtoGet
-        }  
+    let internal cenikValuesTransferLayerGet (cenikValuesDtoGet: CenikValuesDtoGet) =              
+
+        let listInt = 
+            [
+                Casting.castAs<int> cenikValuesDtoGet.IdDtoGet;               
+            ]
+
+        let listString =    
+            [
+                Casting.castAs<string> cenikValuesDtoGet.ValueStateDtoGet;
+                Casting.castAs<string> cenikValuesDtoGet.V001DtoGet;
+                Casting.castAs<string> cenikValuesDtoGet.V002DtoGet;
+                Casting.castAs<string> cenikValuesDtoGet.V003DtoGet;
+                Casting.castAs<string> cenikValuesDtoGet.V004DtoGet;
+                Casting.castAs<string> cenikValuesDtoGet.V005DtoGet;
+                Casting.castAs<string> cenikValuesDtoGet.V006DtoGet;
+                Casting.castAs<string> cenikValuesDtoGet.V007DtoGet;
+                Casting.castAs<string> cenikValuesDtoGet.V008DtoGet;
+                Casting.castAs<string> cenikValuesDtoGet.V009DtoGet
+            ]
+
+        (listInt |> List.contains None || listString |> List.contains None)
+        |> function
+            | false  ->
+                      let listInt = listInt |> List.choose id
+                      let listString = listString |> List.choose id
+                 
+                      Ok
+                          {
+                              Id = listInt.Head
+                              ValueState = listString.Head
+                              V001 = listString |> List.item 1
+                              V002 = listString |> List.item 2
+                              V003 = listString |> List.item 3
+                              V004 = listString |> List.item 4
+                              V005 = listString |> List.item 5
+                              V006 = listString |> List.item 6
+                              V007 = listString |> List.item 7
+                              V008 = listString |> List.item 8
+                              V009 = listString |> List.item 9
+                              Msgs = messagesTransferLayerGet cenikValuesDtoGet.MsgsDtoGet
+                          }
+                          
+            | true -> Error ReadingDbError      
 
     // Defined but currently unused; retained for potential future requirements or updates.     
     let internal kontaktValuesTransferLayerGet (kontaktValuesDtoGet: KontaktValuesDtoGet) : KontaktValuesDomain  =
