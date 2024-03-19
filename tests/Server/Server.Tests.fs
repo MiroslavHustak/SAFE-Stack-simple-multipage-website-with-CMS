@@ -6,7 +6,6 @@ open System.IO
 open Expecto
 open FsToolkit.ErrorHandling
 
-open Errors
 open Server
 open Shared
 
@@ -33,24 +32,26 @@ let private server =
 
                 let expected =
 
-                    let uberHashError uberHash credential seqFn = 
-                        match uberHash with
-                        | Ok uberHash ->
-                                        match verify (uberHash |> seqFn) credential with 
-                                        | true  -> LegitimateTrue
-                                        | false -> LegitimateFalse
-                        | Error _     -> Exception
+                    let uberHashError uberHash credential seqFn =
 
-                        |> tryWithVerify () Exception  
+                        try
+                            match uberHash with
+                            | Ok uberHash ->
+                                            match verify (uberHash |> seqFn) credential with 
+                                            | true  -> LegitimateTrue
+                                            | false -> LegitimateFalse
+                            | Error _     -> Exception
+                        with
+                        | _ -> Exception  
                           
                     let uberHash =
-                   
-                        let f1 () = 
+                        try 
                             match File.Exists(Path.GetFullPath(pathToUberHashTxt)) with
                             | false -> Error String.Empty                                
-                            | true  -> Ok (File.ReadAllLines(pathToUberHashTxt) |> Seq.ofArray)                                                                                 
+                            | true  -> Ok (File.ReadAllLines(pathToUberHashTxt) |> Seq.ofArray)     
+                        with
+                        | ex -> Error (string ex.Message)                        
 
-                        tryWithResult f1 () (sprintf"%s")                        
                     uberHash
 
                 Expect.isOk expected "secret credential"  

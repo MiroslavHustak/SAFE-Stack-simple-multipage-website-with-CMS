@@ -112,14 +112,15 @@ module ServerApi =
                             let sendNewKontaktValues: KontaktValuesDomain = 
                                 match verifyKontaktValues sendKontaktValues with
                                 | Ok ()    ->                                            
-                                            let f3 = sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: "
-                                            let f1 () = 
+                                            try
                                                 //failwith "Simulated exception10"
                                                 let sendKontaktValuesDtoXml = kontaktValuesTransferLayerDomainToXml sendKontaktValues
                                                 match copyFiles pathToXml pathToXmlBackup true with
                                                 | Ok _      -> serializeToXml sendKontaktValuesDtoXml pathToXml
-                                                | Error err -> Error (f3 err)                                                                                                       
-                                            tryWithResult f1 () f3
+                                                | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                                                                       
+                                            with
+                                            | ex -> Error (string ex.Message)
+
                                             |> function
                                                 | Ok _      -> sendKontaktValues  
                                                 | Error err -> { sendKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                                                                             
@@ -134,8 +135,7 @@ module ServerApi =
                     async
                         {
                             let (getOldKontaktValues, err) =
-                                let f1 () =
-                                    //failwith "Simulated exception12"
+                                try
                                     pyramidOfInferno
                                         {
                                             let copy = copyFiles pathToXml pathToXmlBackup true
@@ -145,10 +145,10 @@ module ServerApi =
                                             let! deserialize = deserialize, SharedKontaktValues.kontaktValuesDomainDefault
 
                                             return kontaktValuesTransferLayerXmlToDomain deserialize, String.Empty
-                                        }                                  
-                                let f3 ex = SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
-                                tryWithResult1 f1 () f3      
-
+                                        }                  
+                                with
+                                | ex -> SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message)
+                             
                             return { getOldKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                 
                         } 
 
@@ -157,7 +157,7 @@ module ServerApi =
                     async
                         {                                              
                             let (getKontaktValues, err) =
-                                let f1 () =
+                                try
                                     //failwith "Simulated exception12"
                                     pyramidOfInferno
                                         {
@@ -169,8 +169,8 @@ module ServerApi =
 
                                             return kontaktValuesTransferLayerXmlToDomain deserialize, String.Empty
                                         }                                  
-                                let f3 ex = SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
-                                tryWithResult1 f1 () f3      
+                                with
+                                | ex -> SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message) 
 
                             return { getKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                   
                         }
@@ -179,18 +179,19 @@ module ServerApi =
             sendLinkAndLinkNameValues =
                fun sendLinkAndLinkNameValues ->
                    async
-                      {
+                      {                       
                          let sendNewLinkAndLinkNameValues: LinkAndLinkNameValuesDomain = 
                              match verifyLinkAndLinkNameValues sendLinkAndLinkNameValues with
-                             | Ok ()   -> 
-                                        let f3 = sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: "
-                                        let f1 () = 
+                             | Ok ()   ->                                       
+                                        try 
                                             //failwith "Simulated exception14"   
                                             let sendLinkAndLinkNameValuesDtoSend = linkAndLinkNameValuesTransferLayerSend sendLinkAndLinkNameValues                                               
                                             match copyFiles pathToJson pathToJsonBackup true with
                                             | Ok _      -> serializeToJson sendLinkAndLinkNameValuesDtoSend pathToJson
-                                            | Error err -> Error (f3 err)                                                   
-                                        tryWithResult f1 () f3
+                                            | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                   
+                                        with
+                                        | ex -> Error (string ex.Message)
+
                                         |> function
                                             | Ok _      -> sendLinkAndLinkNameValues  
                                             | Error err -> { sendLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }    
@@ -205,7 +206,7 @@ module ServerApi =
                    async
                        {                         
                            let (getOldLinkAndLinkNameValues, err) =
-                               let f1 () =
+                               try
                                    //failwith "Simulated exception15"
                                    pyramidOfInferno
                                        {
@@ -217,8 +218,8 @@ module ServerApi =
 
                                            return linkAndLinkNameValuesTransferLayerGet deserialize, String.Empty
                                        }                                      
-                               let f3 ex = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
-                               tryWithResult1 f1 () f3
+                               with
+                               | ex -> SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message) 
 
                            return { getOldLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }  
                        } 
@@ -228,7 +229,7 @@ module ServerApi =
                    async
                        {
                            let (getLinkAndLinkNameValues, err) =
-                               let f1 () =
+                               try
                                    //failwith "Simulated exception15"
                                    pyramidOfInferno
                                        {
@@ -240,8 +241,8 @@ module ServerApi =
 
                                            return linkAndLinkNameValuesTransferLayerGet deserialize, String.Empty
                                        }                                      
-                               let f3 ex = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " ex 
-                               tryWithResult1 f1 () f3
+                               with
+                               | ex -> SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message)  
 
                            return { getLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }  
                        }

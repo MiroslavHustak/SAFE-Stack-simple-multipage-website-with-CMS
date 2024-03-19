@@ -51,17 +51,18 @@ module ServerVerify =
         let isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)            
 
         let uberHashError uberHash credential seqFn =
-            
-            pyramidOfDoom  //nelze Builder1 (pyramidOfHell) a Result.isOk
-                {
-                    let! uberHash = uberHash |> Result.toOption, Exception
-                    let! _ = not (uberHash |> Seq.isEmpty) |> Option.ofBool, Exception
-                    let! _ = verify (uberHash |> seqFn) credential |> Option.ofBool, LegitimateFalse
-                    
-                    return LegitimateTrue
-                }
 
-            |> tryWithVerify () Exception                   
+            try
+                pyramidOfDoom  //nelze Builder1 (pyramidOfHell) a Result.isOk
+                    {
+                        let! uberHash = uberHash |> Result.toOption, Exception
+                        let! _ = not (uberHash |> Seq.isEmpty) |> Option.ofBool, Exception
+                        let! _ = verify (uberHash |> seqFn) credential |> Option.ofBool, LegitimateFalse
+                    
+                        return LegitimateTrue
+                    }
+            with
+            | ex -> Exception                   
 
         pyramidOfHell  
             {
@@ -73,7 +74,7 @@ module ServerVerify =
                 let psw = login.Password |> function SharedApi.Password value -> value
 
                 let uberHash =
-                    let f1 () =
+                    try
                         pyramidOfDoom 
                             {
                                 let! _ = File.Exists(Path.GetFullPath(pathToUberHashTxt)) |> Option.ofBool, Error String.Empty
@@ -83,7 +84,8 @@ module ServerVerify =
 
                                 return Ok (value |> Seq.ofArray) 
                             } 
-                    tryWithResult f1 () (sprintf"%s")
+                    with
+                    | ex -> Error (string ex.Message)
 
                 let! _ = uberHash |> Result.isOk, SharedApi.UsernameOrPasswordIncorrect rc1                
                 let! _ = isValidLogin usr psw, SharedApi.UsernameOrPasswordIncorrect rc3
