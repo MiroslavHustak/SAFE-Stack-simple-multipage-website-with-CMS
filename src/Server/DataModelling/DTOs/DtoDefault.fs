@@ -21,7 +21,7 @@ module DtoDefault =
      
     let MessagesDtoGetDefault =        
         {
-            DtoGet.Server.DtoGet.Msg1 = String.Empty
+            DtoGet.Server.DtoGet.Msg1 = String.Empty 
             DtoGet.Server.DtoGet.Msg2 = String.Empty
             DtoGet.Server.DtoGet.Msg3 = String.Empty
             DtoGet.Server.DtoGet.Msg4 = String.Empty

@@ -22,7 +22,7 @@ module Serialisation =
         
         pyramidOfDoom //z duvodu jednotnosti a pripadneho rozsireni
             {
-                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNull //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
+                let filepath = Path.GetFullPath(xmlFile) |> Option.ofStringObj //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
                 let! filepath = filepath, Error "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k xml souboru"
 
                 let xmlSerializer = new DataContractSerializer(typeof<'a>) //non-nullable, ex caught with tryWith 
@@ -42,7 +42,7 @@ module Serialisation =
 
         pyramidOfDoom 
             {
-                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNull //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
+                let filepath = Path.GetFullPath(jsonFile) |> Option.ofStringObj //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
                 let! filepath = filepath, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k souboru " jsonFile)
 
                 let json = JsonConvert.SerializeObject(record) |> Option.ofNull //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
@@ -63,7 +63,7 @@ module Deserialisation =
 
         pyramidOfDoom
             {
-                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNull //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
+                let filepath = Path.GetFullPath(xmlFile) |> Option.ofStringObj //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
 
                 let fInfodat: FileInfo = new FileInfo(filepath)
@@ -79,7 +79,7 @@ module Deserialisation =
                 stream.Close()
                 stream.Dispose() 
 
-                let result = read |> Casting.castAs<KontaktValuesDtoXml> 
+                let result = read |> Casting.castAs<KontaktValuesDtoXml> //casting is necessary here, even ChatGPT has not figured out anything better
                 let! result = result, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení dat ze souboru (downcasting) " xmlFile)
 
                 return Ok result
@@ -90,7 +90,7 @@ module Deserialisation =
 
         pyramidOfDoom
             {
-                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNull //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
+                let filepath = Path.GetFullPath(jsonFile) |> Option.ofStringObj //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " jsonFile)
 
                 let fInfodat: FileInfo = new FileInfo(filepath)
@@ -99,7 +99,7 @@ module Deserialisation =
                 let json = File.ReadAllText(filepath) |> Option.ofNull //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
                 let! json = json, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při deserializaci ze souboru " jsonFile) 
 
-                let result = JsonConvert.DeserializeObject<'a>(json) |> Casting.castAs<LinkAndLinkNameValuesDtoGet>  
+                let result = JsonConvert.DeserializeObject<'a>(json) |> Option.ofNull //The type is established when calling deserializeFromJson<'a>, casting is not necessary here //|> Casting.castAs<LinkAndLinkNameValuesDtoGet>  
                 let! result = result, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení dat ze souboru (downcasting) " jsonFile)
 
                 return Ok result

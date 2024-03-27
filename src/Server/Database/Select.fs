@@ -64,21 +64,36 @@ module Select =
                                       |> Seq.collect
                                           (fun _ ->
                                                   seq 
-                                                      {                                                                               
+                                                      {
+                                                          
+                                                          let indexId = reader.GetOrdinal("Id")                                                                  
+                                                          let indexValueState = reader.GetOrdinal("ValueState")
+                                                          let v001Index = reader.GetOrdinal("V001")
+                                                          let v001Index = reader.GetOrdinal("V001")
+                                                          let v002Index = reader.GetOrdinal("V002")
+                                                          let v003Index = reader.GetOrdinal("V003")
+                                                          let v004Index = reader.GetOrdinal("V004")
+                                                          let v005Index = reader.GetOrdinal("V005")
+                                                          let v006Index = reader.GetOrdinal("V006")
+                                                          let v007Index = reader.GetOrdinal("V007")
+                                                          let v008Index = reader.GetOrdinal("V008")
+                                                          let v009Index = reader.GetOrdinal("V009")
+
                                                           yield    
-                                                              {                                                       
-                                                                  IdDtoGet = reader.["Id"] 
-                                                                  ValueStateDtoGet = reader.["ValueState"]
-                                                                  V001DtoGet = reader.["V001"]                                                                               
-                                                                  V002DtoGet = reader.["V002"]
-                                                                  V003DtoGet = reader.["V003"]
-                                                                  V004DtoGet = reader.["V004"]
-                                                                  V005DtoGet = reader.["V005"]
-                                                                  V006DtoGet = reader.["V006"]
-                                                                  V007DtoGet = reader.["V007"]
-                                                                  V008DtoGet = reader.["V008"]
-                                                                  V009DtoGet = reader.["V009"]
-                                                                  MsgsDtoGet = MessagesDtoGetDefault
+                                                              {
+                                                                  IdDtoGet = reader.GetInt32(indexId) |> Option.ofNull
+                                                                  ValueStateDtoGet = reader.GetString(indexValueState) |> Option.ofNull
+                                                                  V001DtoGet = reader.GetString(v001Index) |> Option.ofNull
+                                                                  V002DtoGet = reader.GetString(v002Index) |> Option.ofNull
+                                                                  V003DtoGet = reader.GetString(v003Index) |> Option.ofNull
+                                                                  V004DtoGet = reader.GetString(v004Index) |> Option.ofNull 
+                                                                  V005DtoGet = reader.GetString(v005Index) |> Option.ofNull
+                                                                  V006DtoGet = reader.GetString(v006Index) |> Option.ofNull
+                                                                  V007DtoGet = reader.GetString(v007Index) |> Option.ofNull
+                                                                  V008DtoGet = reader.GetString(v008Index) |> Option.ofNull
+                                                                  V009DtoGet = reader.GetString(v009Index) |> Option.ofNull
+
+                                                                  MsgsDtoGet = MessagesDtoGetDefault |> Option.ofNull
                                                               }
                                                       } 
                                         )

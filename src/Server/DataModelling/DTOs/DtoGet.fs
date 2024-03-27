@@ -16,11 +16,11 @@ module DtoGet =
        
     type CenikValuesDtoGet =
         {
-            IdDtoGet: obj; ValueStateDtoGet: obj;
-            V001DtoGet: obj; V002DtoGet: obj; V003DtoGet: obj;
-            V004DtoGet: obj; V005DtoGet: obj; V006DtoGet: obj;
-            V007DtoGet: obj; V008DtoGet: obj; V009DtoGet: obj;
-            MsgsDtoGet: MessagesDtoGet
+            IdDtoGet: int option; ValueStateDtoGet: string option;
+            V001DtoGet: string option; V002DtoGet: string option; V003DtoGet: string option;
+            V004DtoGet: string option; V005DtoGet: string option; V006DtoGet: string option;
+            V007DtoGet: string option; V008DtoGet: string option; V009DtoGet: string option;
+            MsgsDtoGet: MessagesDtoGet option
         }
 
     // Defined but currently unused; retained for potential future requirements or updates.     
