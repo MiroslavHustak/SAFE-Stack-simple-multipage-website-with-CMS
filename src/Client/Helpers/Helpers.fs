@@ -1,4 +1,4 @@
-namespace Auxiliaries.Client
+namespace Helpers.Client
 
 open System
     

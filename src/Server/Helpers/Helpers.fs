@@ -44,17 +44,7 @@ module CEBuilders =
 
     let internal pyramidOfInferno = Builder3
 
-    //************************************************************************************* 
-    [<Struct>]
-    type internal MyTypeBuilder (param: string option) =        
-         member _.Bind(condition, nextFunc) = 
-             match condition with
-             | false -> nextFunc() 
-             | true  -> param
-         member _.Return x = x  
-     
-    let internal strictStringCheck = MyTypeBuilder 
-
+  
 module Result =
 
     let internal toOption = 
@@ -81,22 +71,22 @@ module Option =
 
     let internal ofStringObj (value: 'nullableValue) = //NullOrEmpty
 
-        CEBuilders.strictStringCheck None
+        CEBuilders.pyramidOfHell
             {
-                let!_ = System.Object.ReferenceEquals(value, null) 
+                let!_ = System.Object.ReferenceEquals(value, null), None 
                 let value = string value 
-                let! _ = String.IsNullOrEmpty(value) 
+                let! _ = String.IsNullOrEmpty(value), None 
 
                 return Some value
             }
 
     let internal ofStringObjXXL (value: 'nullableValue) = //NullOrEmpty, NullOrWhiteSpace
     
-        CEBuilders.strictStringCheck None
+        CEBuilders.pyramidOfHell
             {
-                let!_ = System.Object.ReferenceEquals(value, null) 
+                let!_ = System.Object.ReferenceEquals(value, null), None 
                 let value = string value 
-                let! _ = String.IsNullOrEmpty(value) || String.IsNullOrWhiteSpace(value)
+                let! _ = String.IsNullOrEmpty(value) || String.IsNullOrWhiteSpace(value), None
     
                 return Some value
             }

@@ -11,7 +11,7 @@ open SharedTypes
 
 open Records.Client
 open HtmlFeliz.Layout
-open Auxiliaries.Client.Helper
+open Helpers.Client.Helper
 
 module Kontakt =
 

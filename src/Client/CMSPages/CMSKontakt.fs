@@ -9,7 +9,7 @@ open Fable.Remoting.Client
 
 open Shared
 open SharedTypes
-open Auxiliaries.Client.Helper
+open Helpers.Client.Helper
 
 module CMSKontakt = 
 

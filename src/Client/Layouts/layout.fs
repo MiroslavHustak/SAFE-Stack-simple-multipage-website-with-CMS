@@ -6,7 +6,7 @@ open Feliz
 
 open SharedTypes
 open Records.Client
-open Auxiliaries.Client.Helper
+open Helpers.Client.Helper
 
 module Layout = 
 
