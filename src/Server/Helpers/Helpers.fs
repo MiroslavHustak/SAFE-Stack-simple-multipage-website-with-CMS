@@ -59,7 +59,7 @@ module Option =
         | true  -> Some ()  
         | false -> None
 
-    let internal fromBool value = 
+    let internal fromBool value =  
         function   
         | true  -> Some value  
         | false -> None
@@ -69,7 +69,7 @@ module Option =
         | Some value -> Ok value 
         | None       -> Error err
 
-    let internal ofStringObj (value: 'nullableValue) = //NullOrEmpty
+    let internal ofNullEmpty (value: 'nullableValue) = //NullOrEmpty
 
         CEBuilders.pyramidOfHell
             {
@@ -80,7 +80,7 @@ module Option =
                 return Some value
             }
 
-    let internal ofStringObjXXL (value: 'nullableValue) = //NullOrEmpty, NullOrWhiteSpace
+    let internal ofNullEmptySpace (value: 'nullableValue) = //NullOrEmpty, NullOrWhiteSpace
     
         CEBuilders.pyramidOfHell
             {
@@ -102,54 +102,15 @@ module Resources =
 
 module Casting =
 
-    //for educational purposes only 
-    let inline internal downCast (x: obj) = //With this function, null values are not explicitly handled, potential runtime exception if 'x' is null. 
-        match x with
-        | :? ^a as value -> Some value 
-        | _              -> None
-
-    //Objects handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).
+    //For xml deserialization
     let internal castAs<'a> (o: obj) : 'a option =    //SRTPs are not applicable for this specific type casting.
         match Option.ofNull o with
         | Some (:? 'a as result) -> Some result
         | _                      -> None
 
-module private TryParserInt =
-
-    let tryParseWith (tryParseFunc: string -> bool * _) = tryParseFunc >> function
-        | true, value -> Some value
-        | false, _    -> None
-
-    let parseInt = tryParseWith <| System.Int32.TryParse
-
-    let (|Int|_|) = parseInt        
-
-module Parsing =
-
-    let private f x =
-        let isANumber = x                                          
-        isANumber   
-                   
-    let internal parseMe = 
-        function            
-        | TryParserInt.Int i -> f i
-        | _                  -> 0  
-
-    let internal parseMeOption = 
-        function            
-        | TryParserInt.Int i -> f Some i
-        | _                  -> None     
-
 module Miscellaneous = 
 
     open System
-
-    let internal (|StringNonN|) s = 
-        s 
-        |> Option.ofNull 
-        |> function 
-            | Some value -> string value
-            | None       -> String.Empty
 
     let internal strContainsOnlySpace str =
         str |> Seq.forall (fun item -> item = (char)32)  //A string is a sequence of characters => use Seq.forall to test directly //(char)32 = space*

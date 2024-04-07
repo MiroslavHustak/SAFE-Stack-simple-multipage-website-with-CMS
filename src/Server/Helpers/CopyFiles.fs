@@ -10,8 +10,8 @@ module CopyingFiles =
                          
         pyramidOfDoom 
             {
-                let! sourceFilepath = Path.GetFullPath(source) |> Option.ofStringObj, Error <| sprintf "Chyba při čtení cesty k %s" source
-                let! destinFilepath = Path.GetFullPath(destination) |> Option.ofStringObj, Error <| sprintf "Chyba při čtení cesty k %s" destination
+                let! sourceFilepath = Path.GetFullPath(source) |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" source
+                let! destinFilepath = Path.GetFullPath(destination) |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" destination
                 let! _ = (new FileInfo(sourceFilepath)).Exists |> Option.ofBool, Error <| sprintf "Zdrojový soubor %s neexistuje" sourceFilepath
 
                 return Ok <| action sourceFilepath destinFilepath
