@@ -31,9 +31,9 @@ module SharedCenikValues =
     let cenikValuesDomainDefault = //fixed values
         {
             Id = 1; ValueState = "fixed";
-            V001 = "300"; V002 = "300"; V003 = "2 200";
-            V004 = "250"; V005 = "230"; V006 = "400";
-            V007 = "600"; V008 = "450"; V009 = "450";
+            V001 = "500"; V002 = "300"; V003 = "2500";
+            V004 = "250"; V005 = String.Empty; V006 = String.Empty;
+            V007 = String.Empty; V008 = "450"; V009 = "450";
             Msgs = SharedMessageDefaultValues.messageDefault
         }
           
@@ -89,9 +89,9 @@ module SharedLinkAndLinkNameValues =
             V001 = "https://blog.kaloricketabulky.cz/2013/08/nutricni-terapeut-vs-vyzivovy-poradce-kdo-nam-muze-radit-s-vyzivou/";
             V002 = "http://www.aktivityprozdravi.cz/zdravotni-problemy/civilizacni-psychologicke-a-jine-nemoci/civilizacni-choroby-a-nas-zivotni-styl";
             V003 = "https://www.novinky.cz/zena/zdravi/403392-obezita-je-problem-ktery-lide-casto-prehlizeji.html";
-            V004 = "https://www.euronabycerny.com/eshop/jetbar-tycinky"; V005 = "https://www.morevsrdcievropy.cz";
+            V004 = String.Empty; V005 = "https://www.morevsrdcievropy.cz";
             V006 = "https://www.facebook.com/nutricniterapie/";
-            V001n = "Kdo nám může radit s výživou?"; V002n = "Civilizační choroby"; V003n = "Problém obezity"; V004n = "Tyčinky Eurona JETBAR";
+            V001n = "Kdo nám může radit s výživou?"; V002n = "Civilizační choroby"; V003n = "Problém obezity"; V004n = String.Empty;
             V005n = "Moře v srdci Evropy"; V006n = "Facebook"; Msgs = SharedMessageDefaultValues.messageDefault  
         }
     

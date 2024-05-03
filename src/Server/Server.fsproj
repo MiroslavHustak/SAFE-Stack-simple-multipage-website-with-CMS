@@ -63,13 +63,15 @@
     <ProjectReference Include="..\Shared\Shared.fsproj" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\jsonLinkAndLinkNameValues.json">
+    <Content Update="Resources\jsonLinkAndLinkNameValues.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\jsonLinkAndLinkNameValuesBackUp.json">
+    </Content>
+    <Content Update="Resources\jsonLinkAndLinkNameValuesBackUp.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\JsonSchema.json" />
+    </Content>
+    <Content Update="Resources\JsonSchema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
   <ProjectExtensions><VisualStudio><UserProperties resources_4jsonlinkandlinknamevalues_1json__JsonSchema="https://json-schema.org/draft-07/schema" resources_4jsonlinkandlinknamevaluesbackup_1json__JsonSchema="https://json-schema.org/draft-07/schema" resources_4jsonschema_1json__JsonSchema="https://json-schema.org/draft-07/schema" /></VisualStudio></ProjectExtensions>

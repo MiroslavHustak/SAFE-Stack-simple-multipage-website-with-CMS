@@ -7,7 +7,7 @@ open FsToolkit.ErrorHandling
 module CopyingFiles =
     
     let private processFile source destination action =
-                         
+                                                
         pyramidOfDoom 
             {
                 let! sourceFilepath = Path.GetFullPath(source) |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" source
@@ -18,6 +18,7 @@ module CopyingFiles =
             }           
 
     let internal copyFiles source destination overwrite =
+
         try
             let action sourceFilepath destinFilepath = File.Copy(sourceFilepath, destinFilepath, overwrite) 
                 in processFile source destination action

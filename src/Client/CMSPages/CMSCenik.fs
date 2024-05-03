@@ -283,7 +283,7 @@ module CMSCenik =
                                                     prop.children [
                                                         Html.td "Vstupní vyšetření"
                                                     
-                                                        Html.td "300"                                              
+                                                        Html.td "500"                                              
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -360,7 +360,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Redukční balíček"
-                                                        Html.td "2 200"                                                    
+                                                        Html.td "2500"                                                    
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -434,7 +434,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Sestavení jídelního lístku na týden"
-                                                        Html.td "230"                                                     
+                                                        Html.td @"N/A"                                                     
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -471,7 +471,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Sestavení jídelního lístku na 2 týdny"
-                                                        Html.td "400" 
+                                                        Html.td @"N/A"
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -508,7 +508,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Sestavení jídelního lístku na 3 týdny"
-                                                        Html.td "600" 
+                                                        Html.td @"N/A" 
                                                         Html.td []
                                                         Html.td
                                                             [

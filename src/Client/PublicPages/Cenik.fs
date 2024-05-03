@@ -133,6 +133,7 @@ module Cenik =
                                 Html.text ",- Kč"
                             ]
                         ]
+                        (*
                         Html.li [
                             prop.id 33
                             prop.children [
@@ -160,6 +161,7 @@ module Cenik =
                                 Html.text ",- Kč"
                             ]
                         ]
+                        *)
                     ]
                     Html.br[]
                     Html.h3 [

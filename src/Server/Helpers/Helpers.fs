@@ -27,7 +27,7 @@ module CEBuilders =
         member _.Bind((optionExpr, errDuCase), nextFunc) =
             match optionExpr with
             | Some value -> nextFunc value 
-            | _          -> errDuCase  
+            | None       -> errDuCase  
         member _.Return x : 'a = x
 
     let internal pyramidOfDoom = Builder2
@@ -73,9 +73,9 @@ module Option =
 
         CEBuilders.pyramidOfHell
             {
-                let!_ = System.Object.ReferenceEquals(value, null), None 
+                let!_ = not <| System.Object.ReferenceEquals(value, null), None 
                 let value = string value 
-                let! _ = String.IsNullOrEmpty(value), None 
+                let! _ = not <| String.IsNullOrEmpty(value), None 
 
                 return Some value
             }
@@ -84,9 +84,9 @@ module Option =
     
         CEBuilders.pyramidOfHell
             {
-                let!_ = System.Object.ReferenceEquals(value, null), None 
+                let!_ = not <| System.Object.ReferenceEquals(value, null), None 
                 let value = string value 
-                let! _ = String.IsNullOrEmpty(value) || String.IsNullOrWhiteSpace(value), None
+                let! _ = not <| (String.IsNullOrEmpty(value) || String.IsNullOrWhiteSpace(value)), None
     
                 return Some value
             }
