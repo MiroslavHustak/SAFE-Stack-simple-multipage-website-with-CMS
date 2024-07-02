@@ -12,14 +12,14 @@ module Connection =
     //let [<Literal>] connStringSomee = @"connection string" 
 
     //nterapie.somee.com //testing website
-    let [<Literal>] internal connStringSomee = @"" 
+    //let [<Literal>] internal connStringSomee = @"" 
 
     //localhost
-    //let [<Literal>] internal connStringLocal = @"Data Source=Misa\SQLEXPRESS;Initial Catalog=nterapieLocal;Integrated Security=True"
+    let [<Literal>] internal connStringLocal = @"Data Source=Misa\SQLEXPRESS;Initial Catalog=nterapieLocal;Integrated Security=True"
 
     //shall be in a tryWith block
     let internal getConnection () =        
-        let connection = new SqlConnection(connStringSomee)
+        let connection = new SqlConnection(connStringLocal)
         connection.Open()
         connection
     

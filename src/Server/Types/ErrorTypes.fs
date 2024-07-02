@@ -12,6 +12,7 @@ type InsertErrorOptions =
    | FirstRunError
    | InsertOrUpdateError
    | NoError
+   | InsertConnectionError
 
 [<Struct>]
 type ErrorVerifyOptions = 

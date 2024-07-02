@@ -45,9 +45,10 @@ module Errors =
         | Cond3 | _               -> err
 
         |> function 
-            | FirstRunError       -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
-            | InsertOrUpdateError -> "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k chybě při načítání hodnot z databáze." 
-            | NoError             -> String.Empty
+            | FirstRunError         -> "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při načítání hodnot z databáze."
+            | InsertOrUpdateError   -> "Zadané hodnoty nebyly nebo nebudou uloženy, neb došlo k chybě při načítání hodnot z databáze." 
+            | NoError               -> String.Empty
+            | InsertConnectionError -> "Chyba připojení k databázi. Zadané hodnoty nebyly nebo nebudou do databáze uloženy."
 
     let internal errorMsgBoxS =
         
