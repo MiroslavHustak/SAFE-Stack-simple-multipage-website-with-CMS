@@ -81,7 +81,7 @@ module Serialisation =
                 let json = JsonConvert.SerializeObject(encoder record) |> Option.ofNull //No reflection  
                 let! json = json, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " jsonFile)
 
-                File.WriteAllText(filepath, json)
+                File.WriteAllText(filepath, json) //non-nullable, ex caught with tryWith 
 
                 return Ok ()
            }
@@ -154,8 +154,7 @@ module Deserialisation =
                 let json = File.ReadAllText(filepath) |> Option.ofNull //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
                 let! json = json, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při deserializaci ze souboru " jsonFile) 
 
-                let result = Decode.fromString decoder json |> Option.ofNull  //Thoth does not not use reflection  
-                let! result = result, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení dat ze souboru (downcasting) " jsonFile)
+                let result = Decode.fromString decoder json  //Thoth does not not use reflection  
 
                 return result //Thoth output is of Result type 
             }
