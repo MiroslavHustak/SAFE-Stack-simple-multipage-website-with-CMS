@@ -17,7 +17,7 @@ open DtoSend.Server.DtoSend
 
 module ThothCoders =   
                    
-    let encoder (link : LinkAndLinkNameValuesDtoSend) =
+    let internal encoder (link : LinkAndLinkNameValuesDtoSend) =
         Encode.object
             [
                 "V001", Encode.string link.V001
@@ -45,7 +45,7 @@ module ThothCoders =
             ]
 
 
-    let decoder : Decoder<LinkAndLinkNameValuesDtoGet> =
+    let internal decoder : Decoder<LinkAndLinkNameValuesDtoGet> =
         Decode.object
             (fun get ->
                 {
