@@ -53,6 +53,7 @@ module Serialisation =
             }    
 
     //Tried and tested for "links" data
+    //Newtonsoft.Json
     let internal serializeToJson (record: 'a) (jsonFile: string) =
 
         pyramidOfDoom 
@@ -69,6 +70,7 @@ module Serialisation =
            }
 
     //Tried and tested for "links" data
+    //Thoth.Json.Net, Thoth.Json
     let internal serializeToJsonThoth (record: LinkAndLinkNameValuesDtoSend) (jsonFile: string) =
        
         pyramidOfDoom 
