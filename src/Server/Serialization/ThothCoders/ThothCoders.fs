@@ -44,7 +44,6 @@ module ThothCoders =
                         ]
             ]
 
-
     let internal decoder : Decoder<LinkAndLinkNameValuesDtoGet> =
         Decode.object
             (fun get ->

@@ -187,7 +187,7 @@ module ServerApi =
                                             //failwith "Simulated exception14"   
                                             let sendLinkAndLinkNameValuesDtoSend = linkAndLinkNameValuesTransferLayerSend sendLinkAndLinkNameValues                                               
                                             match copyFiles pathToJson pathToJsonBackup true with
-                                            | Ok _      -> serializeToJsonThoth sendLinkAndLinkNameValuesDtoSend pathToJson
+                                            | Ok _      -> serializeToJsonThoth2 sendLinkAndLinkNameValuesDtoSend pathToJson
                                             | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                   
                                         with
                                         | ex -> Error (string ex.Message)
@@ -213,7 +213,7 @@ module ServerApi =
                                            let copy = copyFiles pathToJson pathToJsonBackup true
                                            let! _ = copy, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
-                                           let deserialize = deserializeFromJsonThoth<LinkAndLinkNameValuesDtoGet> pathToJsonBackup
+                                           let deserialize = deserializeFromJsonThoth2<LinkAndLinkNameValuesDtoGet> pathToJsonBackup
                                            let! deserialize = deserialize, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
                                            return linkAndLinkNameValuesTransferLayerGet deserialize, String.Empty
@@ -236,7 +236,7 @@ module ServerApi =
                                            let copy = copyFiles pathToJson pathToJsonBackup true
                                            let! _ = copy, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
-                                           let deserialize = deserializeFromJsonThoth<LinkAndLinkNameValuesDtoGet> pathToJsonBackup
+                                           let deserialize = deserializeFromJsonThoth2<LinkAndLinkNameValuesDtoGet> pathToJsonBackup
                                            let! deserialize = deserialize, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
                                            return linkAndLinkNameValuesTransferLayerGet deserialize, String.Empty

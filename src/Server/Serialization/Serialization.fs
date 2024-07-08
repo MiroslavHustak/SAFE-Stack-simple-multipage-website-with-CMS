@@ -13,6 +13,7 @@ open Thoth.Json.Net
 
 //*********************************************** 
 
+open System
 open System.IO
 open Newtonsoft.Json
 open System.Runtime.Serialization
@@ -26,6 +27,7 @@ open DtoXml.Server.DtoXml
 open DtoSend.Server.DtoSend
 
 open Serialization.Coders.Server.ThothCoders
+
 
 // Implement 'try with' block for serialization at each location in the code where it is used.
 module Serialisation =
@@ -47,21 +49,21 @@ module Serialisation =
                 xmlSerializer.WriteObject(stream, record) //non-nullable, ex caught with tryWith 
                 
                 stream.Close()
-                stream.Dispose()                    
+                stream.Dispose()
 
                 return Ok ()
             }    
 
     //Tried and tested for "links" data
-    //Newtonsoft.Json
+    //Newtonsoft.Json 
     let internal serializeToJson (record: 'a) (jsonFile: string) =
 
         pyramidOfDoom 
             {
-                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
+                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k souboru " jsonFile)
 
-                let json = JsonConvert.SerializeObject(record) |> Option.ofNull //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
+                let json = JsonConvert.SerializeObject(record) |> Option.ofNullEmpty 
                 let! json = json, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " jsonFile)
 
                 File.WriteAllText(filepath, json) //non-nullable, ex caught with tryWith 
@@ -70,15 +72,15 @@ module Serialisation =
            }
 
     //Tried and tested for "links" data
-    //Thoth.Json.Net, Thoth.Json
+    //Thoth.Json.Net, Thoth.Json + Newtonsoft.Json
     let internal serializeToJsonThoth (record: LinkAndLinkNameValuesDtoSend) (jsonFile: string) =
        
         pyramidOfDoom 
             {
-                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
+                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty  
                 let! filepath = filepath, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k souboru " jsonFile)
 
-                let json = JsonConvert.SerializeObject(encoder record) |> Option.ofNull //No reflection  
+                let json = JsonConvert.SerializeObject(encoder record) |> Option.ofNullEmpty 
                 let! json = json, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " jsonFile)
 
                 File.WriteAllText(filepath, json) //non-nullable, ex caught with tryWith 
@@ -86,6 +88,29 @@ module Serialisation =
                 return Ok ()
            }
 
+    //Tried and tested for "links" data
+    //Thoth.Json.Net, Thoth.Json + StreamWriter (System.IO (File.WriteAllText) did not work)    
+    let internal serializeToJsonThoth2 (record: LinkAndLinkNameValuesDtoSend) (jsonFile: string) =
+
+        pyramidOfDoom
+            {
+                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty 
+                let! filepath = filepath, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k souboru " jsonFile)
+    
+                let json = Encode.toString 2 (encoder record) |> Option.ofNull // Serialize the record to JSON with indentation
+                let! json = json, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " jsonFile)
+    
+                let writer = new StreamWriter(filepath, false)                
+                let! writer = writer |> Option.ofNull, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " jsonFile)
+
+                writer.Write(json)
+
+                writer.Close()
+                writer.Dispose()
+    
+                return Ok ()
+            }
+    
 //Implement 'try with' block for deserialization at each location in the code where it is used.
 module Deserialisation =
 
@@ -108,29 +133,30 @@ module Deserialisation =
 
                 let read = xmlSerializer.ReadObject(stream) |> Option.ofNull //my paranoia about the object type 
                 let! read = read, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení dat ze souboru " xmlFile)
-
+                                
+                let result = read |> Casting.castAs<KontaktValuesDtoXml> //casting is necessary here, even ChatGPT has not figured out anything better
+                                
                 stream.Close()
                 stream.Dispose() 
 
-                let result = read |> Casting.castAs<KontaktValuesDtoXml> //casting is necessary here, even ChatGPT has not figured out anything better
                 let! result = result, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení dat ze souboru (downcasting) " xmlFile)
 
                 return Ok result
             }    
         
     //Tried and tested for "links" data
-    //Newtonsoft.Json
+    //Newtonsoft.Json 
     let internal deserializeFromJson<'a> (jsonFile : string) =
 
         pyramidOfDoom
             {
-                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
+                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty  
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " jsonFile)
 
                 let fInfodat: FileInfo = new FileInfo(filepath)
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, soubor %s nenalezen" jsonFile) 
                  
-                let json = File.ReadAllText(filepath) |> Option.ofNull //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
+                let json = File.ReadAllText(filepath) |> Option.ofNullEmpty 
                 let! json = json, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při deserializaci ze souboru " jsonFile) 
 
                 let result = JsonConvert.DeserializeObject<'a>(json) |> Option.ofNull //The type is established when calling deserializeFromJson<'a>, casting is not necessary here //|> Casting.castAs<LinkAndLinkNameValuesDtoGet>  
@@ -140,24 +166,53 @@ module Deserialisation =
             }
 
     //Tried and tested for "links" data
-    //Thoth.Json.Net, Thoth.Json
+    //Thoth.Json.Net, Thoth.Json + System.IO (File.ReadAllText)
     let internal deserializeFromJsonThoth<'a> (jsonFile : string) =
 
         pyramidOfDoom
             {
-                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
+                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " jsonFile)
 
                 let fInfodat: FileInfo = new FileInfo(filepath)
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, soubor %s nenalezen" jsonFile) 
                  
-                let json = File.ReadAllText(filepath) |> Option.ofNull //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
+                let json = File.ReadAllText(filepath) |> Option.ofNullEmpty
                 let! json = json, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při deserializaci ze souboru " jsonFile) 
 
-                let result = Decode.fromString decoder json  //Thoth does not not use reflection  
+                let result = Decode.fromString decoder json  //Thoth does not use reflection  
 
                 return result //Thoth output is of Result type 
             }
 
+    //Tried and tested for "links" data
+    //Thoth.Json.Net, Thoth.Json + StreamReader
+    let internal deserializeFromJsonThoth2<'a> (jsonFile : string) =
 
+        pyramidOfDoom
+            {
+                let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty 
+                let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " jsonFile)
 
+                let fInfodat: FileInfo = new FileInfo(filepath)
+                let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, soubor %s nenalezen" jsonFile) 
+                 
+                let fs = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.None) 
+                let! fs = fs |> Option.ofNull, Error (sprintf "%s%s" "Chyba při čtení dat ze souboru " filepath)                        
+                    
+                let reader = new StreamReader(fs) //For large files, StreamReader may offer better performance and memory efficiency
+                let! reader = reader |> Option.ofNull, Error (sprintf "%s%s" "Chyba při čtení dat ze souboru " filepath) 
+                
+                let json = reader.ReadToEnd()
+                let! json = json |> Option.ofNullEmpty, Error (sprintf "%s%s" "Chyba při čtení dat ze souboru " filepath)  
+                    
+                let result = Decode.fromString decoder json  //Thoth does not use reflection  
+
+                fs.Close()
+                fs.Dispose()
+
+                reader.Close()
+                reader.Dispose()
+    
+                return result //Thoth output is of Result type 
+            }
