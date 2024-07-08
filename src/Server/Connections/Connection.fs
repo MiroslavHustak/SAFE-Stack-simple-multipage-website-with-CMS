@@ -9,7 +9,7 @@ module Connection =
     //Switch between the databases (always comment out the option you will not use)
    
     //nutricniterapie.somee.com
-    //let [<Literal>] connStringSomee = @"connection string" 
+    //let [<Literal>] connStringSomee = @"workstation id= ..........." 
 
     //nterapie.somee.com //testing website
     //let [<Literal>] internal connStringSomee = @"" 
@@ -20,6 +20,7 @@ module Connection =
     //shall be in a tryWith block
     let internal getConnection () =        
         let connection = new SqlConnection(connStringLocal)
+        //let connection = new SqlConnection(connStringSomee)
         connection.Open()
         connection
     
