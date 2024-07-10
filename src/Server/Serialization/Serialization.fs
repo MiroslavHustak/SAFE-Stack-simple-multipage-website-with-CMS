@@ -34,12 +34,12 @@ open Serialization.Coders.Server.ThothCoders
 // Implement 'try with' block for serialization at each location in the code where it is used.
 module Serialisation =
    
-    //System.Runtime.Serialization requires equal types for serialization and deserialization; hence separated DTOs
+    //System.Runtime.Serialization (requires equal types for serialization and deserialization; hence separated DTOs)
     let internal serializeToXml (record: 'a) (xmlFile: string) =
         
         pyramidOfDoom 
             {
-                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
+                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty   
                 let! filepath = filepath, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k souboru " xmlFile)
 
                 let xmlSerializer = new DataContractSerializer(typeof<'a>) //cannot be null, exn caught with tryWith elsewhere
@@ -57,7 +57,7 @@ module Serialisation =
 
         pyramidOfDoom 
             {
-                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
+                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty  
                 let! filepath = filepath, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k souboru " xmlFile)
 
                 let xmlSerializer = new XmlSerializer(typeof<'a>) //cannot be null, exn caught with tryWith elsewhere              
@@ -70,11 +70,10 @@ module Serialisation =
                 return Ok ()
             }
 
-    //TODO error handling, option, result
     //LINQ to XML System.Xml.Linq
     let internal parseToXml3 (record: KontaktValuesDtoXml3) (xmlFile: string) = //no reflection
 
-        let msgsElements = //non-nullable if the strings are not nulls
+        let msgsElements = //non-nullable if the strings are not nulls (ensured)
             [
                 new XElement(XName.Get("Msg1"), record.Msgs.Msg1)
                 new XElement(XName.Get("Msg2"), record.Msgs.Msg2)
@@ -99,19 +98,39 @@ module Serialisation =
                     msgsElement
                 ])
 
-        let xmlDoc = //non-nullable
+        (*
+        // See MS Docs: this example does not work in F# due to an ambiguity in the XDeclaration constructor parameters. 
+        // By default, XDocument includes the XML declaration when saving an XML document.
+        let xmlDoc = // non-nullable
             new XDocument(
-                //new XDeclaration("1.0", "utf-8", "yes"), //not working, even ChatGPT is at a loss why. Anyway, by default, XDocument includes this declaration when saving an XML document.
+                new XDeclaration("1.0", "utf-8", "yes"), // This line causes ambiguity in F#, preventing compilation.
                 new XElement(XName.Get("KontaktValuesDtoXml3"),
-                    [
+                    [|
                         new XAttribute(XNamespace.Xmlns + "xsi", "http://www.w3.org/2001/XMLSchema-instance")
                         new XAttribute(XNamespace.Xmlns + "xsd", "http://www.w3.org/2001/XMLSchema")
-                    ],
+                    |],
                     rootElement.Elements()
                 )
-            )        
-    
-        xmlDoc.Save(Path.GetFullPath(xmlFile)) //TODO tryWith
+            )
+        *)         
+        
+        let xmlDoc = new XDocument() //non-nullable
+
+        let declaration = new XDeclaration("1.0", "utf-16", "yes") //non-nullable
+
+        xmlDoc.Declaration <- declaration
+
+        xmlDoc.Add(
+            new XElement(XName.Get("KontaktValuesDtoXml3"),
+                [|
+                    new XAttribute(XNamespace.Xmlns + "xsi", "http://www.w3.org/2001/XMLSchema-instance")
+                    new XAttribute(XNamespace.Xmlns + "xsd", "http://www.w3.org/2001/XMLSchema")
+                |] 
+            )
+        )
+      
+        xmlDoc.Root.Add(rootElement.Elements())     
+        xmlDoc.Save(Path.GetFullPath(xmlFile)) //tryWith in Server.Api
 
         Ok ()  
         
@@ -176,7 +195,7 @@ module Deserialisation =
 
         pyramidOfDoom
             {
-                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
+                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
 
                 let fInfodat: FileInfo = new FileInfo(filepath)
@@ -201,7 +220,7 @@ module Deserialisation =
 
         pyramidOfDoom
             {
-                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
+                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty  
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
 
                 let fInfodat: FileInfo = new FileInfo(filepath)
@@ -221,42 +240,47 @@ module Deserialisation =
                 return Ok result
             }
 
-    //TODO error handling, option, result
     //LINQ to XML System.Xml.Linq
     let internal parseFromXml3 xmlFile : Result<KontaktValuesDtoXml3, string> = //no reflection
 
-        try
-            let xmlString = File.ReadAllText(Path.GetFullPath(xmlFile))
-            let doc = XDocument.Parse(xmlString) //non-nullable if the parameter is not null, TODO tryWith
-    
-            let parseMsgs (msgsElement: XElement) : MessagesDtoXml3 =
-                {
-                    Msg1 = msgsElement.Element(XName.Get("Msg1")).Value
-                    Msg2 = msgsElement.Element(XName.Get("Msg2")).Value
-                    Msg3 = msgsElement.Element(XName.Get("Msg3")).Value
-                    Msg4 = msgsElement.Element(XName.Get("Msg4")).Value
-                    Msg5 = msgsElement.Element(XName.Get("Msg5")).Value
-                    Msg6 = msgsElement.Element(XName.Get("Msg6")).Value
-                }
-    
-            // Extract data from XML
-            let root = doc.Root
+        pyramidOfDoom
+            {
+                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty  
+                let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
 
-            Ok   //TODO
-                {
-                    V001 = root.Element(XName.Get("V001")).Value
-                    V002 = root.Element(XName.Get("V002")).Value
-                    V003 = root.Element(XName.Get("V003")).Value
-                    V004 = root.Element(XName.Get("V004")).Value
-                    V005 = root.Element(XName.Get("V005")).Value
-                    V006 = root.Element(XName.Get("V006")).Value
-                    V007 = root.Element(XName.Get("V007")).Value
-                    Msgs = parseMsgs (root.Element(XName.Get("Msgs")))
-                }
-        with
-        | ex ->
-              Error <| sprintf "Error parsing XML: %s" ex.Message
+                let fInfodat: FileInfo = new FileInfo(filepath)
+                let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Soubor %s nenalezen" xmlFile)                      
+
+                let xmlString = File.ReadAllText(Path.GetFullPath(filepath)) |> Option.ofNullEmpty
+                let! xmlString = xmlString, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při deserializaci ze souboru " xmlFile)
+                                
+                let doc = XDocument.Parse(xmlString) //non-nullable if the parameter is not null (ensured above) -> another Option.ofObj is not necessary
+
+                let parseMsgs (msgsElement: XElement) : MessagesDtoXml3 =
+                    {
+                        Msg1 = msgsElement.Element(XName.Get("Msg1")).Value
+                        Msg2 = msgsElement.Element(XName.Get("Msg2")).Value
+                        Msg3 = msgsElement.Element(XName.Get("Msg3")).Value
+                        Msg4 = msgsElement.Element(XName.Get("Msg4")).Value
+                        Msg5 = msgsElement.Element(XName.Get("Msg5")).Value
+                        Msg6 = msgsElement.Element(XName.Get("Msg6")).Value
+                    }
     
+                // Extracting data from XML
+                let root = doc.Root //non-nullable if doc is not null (ensured above) -> another Option.ofObj is not necessary                    
+
+                return Ok
+                    {
+                        V001 = root.Element(XName.Get("V001")).Value
+                        V002 = root.Element(XName.Get("V002")).Value
+                        V003 = root.Element(XName.Get("V003")).Value
+                        V004 = root.Element(XName.Get("V004")).Value
+                        V005 = root.Element(XName.Get("V005")).Value
+                        V006 = root.Element(XName.Get("V006")).Value
+                        V007 = root.Element(XName.Get("V007")).Value
+                        Msgs = parseMsgs (root.Element(XName.Get("Msgs")))
+                    }
+            }    
                    
     //Newtonsoft.Json 
     let internal deserializeFromJson<'a> (jsonFile : string) =
