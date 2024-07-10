@@ -34,7 +34,6 @@ open Serialization.Coders.Server.ThothCoders
 // Implement 'try with' block for serialization at each location in the code where it is used.
 module Serialisation =
    
-    //Tried and tested for "kontakt" data
     //System.Runtime.Serialization requires equal types for serialization and deserialization; hence separated DTOs
     let internal serializeToXml (record: 'a) (xmlFile: string) =
         
@@ -53,6 +52,7 @@ module Serialisation =
                 return Ok ()
             }
 
+    //System.Xml.Serialization          
     let internal serializeToXml2 (record: 'a) (xmlFile: string) =
 
         pyramidOfDoom 
@@ -117,7 +117,6 @@ module Serialisation =
         
     //**************************************************************************************
 
-    //Tried and tested for "links" data
     //Newtonsoft.Json 
     let internal serializeToJson (record: 'a) (jsonFile: string) =
 
@@ -134,7 +133,6 @@ module Serialisation =
                 return Ok ()
            }
 
-    //Tried and tested for "links" data
     //Thoth.Json.Net, Thoth.Json + Newtonsoft.Json
     let internal serializeToJsonThoth (record: LinkAndLinkNameValuesDtoSend) (jsonFile: string) =
        
@@ -151,7 +149,6 @@ module Serialisation =
                 return Ok ()
            }
 
-    //Tried and tested for "links" data
     //Thoth.Json.Net, Thoth.Json + StreamWriter (System.IO (File.WriteAllText) did not work)    
     let internal serializeToJsonThoth2 (record: LinkAndLinkNameValuesDtoSend) (jsonFile: string) =
 
@@ -174,9 +171,7 @@ module Serialisation =
 //Implement 'try with' block for deserialization at each location in the code where it is used.
 module Deserialisation =
 
-    //Tried and tested for "kontakt" data
     //System.Runtime.Serialization
-    //System.Xml.Serialization requires annotation //TODO do it sometime
     let internal deserializeFromXml<'a> (xmlFile : string) =
 
         pyramidOfDoom
@@ -201,6 +196,7 @@ module Deserialisation =
                 return Ok result
             }
 
+    //System.Xml.Serialization          
     let internal deserializeFromXml2<'a> (xmlFile : string) =
 
         pyramidOfDoom
@@ -228,6 +224,7 @@ module Deserialisation =
     //TODO error handling, option, result
     //LINQ to XML System.Xml.Linq
     let internal parseFromXml3 xmlFile : Result<KontaktValuesDtoXml3, string> = //no reflection
+
         try
             let xmlString = File.ReadAllText(Path.GetFullPath(xmlFile))
             let doc = XDocument.Parse(xmlString) //non-nullable if the parameter is not null, TODO tryWith
@@ -245,22 +242,22 @@ module Deserialisation =
             // Extract data from XML
             let root = doc.Root
 
-            Ok {
-                V001 = root.Element(XName.Get("V001")).Value
-                V002 = root.Element(XName.Get("V002")).Value
-                V003 = root.Element(XName.Get("V003")).Value
-                V004 = root.Element(XName.Get("V004")).Value
-                V005 = root.Element(XName.Get("V005")).Value
-                V006 = root.Element(XName.Get("V006")).Value
-                V007 = root.Element(XName.Get("V007")).Value
-                Msgs = parseMsgs (root.Element(XName.Get("Msgs")))
-            }
+            Ok   //TODO
+                {
+                    V001 = root.Element(XName.Get("V001")).Value
+                    V002 = root.Element(XName.Get("V002")).Value
+                    V003 = root.Element(XName.Get("V003")).Value
+                    V004 = root.Element(XName.Get("V004")).Value
+                    V005 = root.Element(XName.Get("V005")).Value
+                    V006 = root.Element(XName.Get("V006")).Value
+                    V007 = root.Element(XName.Get("V007")).Value
+                    Msgs = parseMsgs (root.Element(XName.Get("Msgs")))
+                }
         with
         | ex ->
               Error <| sprintf "Error parsing XML: %s" ex.Message
     
                    
-    //Tried and tested for "links" data
     //Newtonsoft.Json 
     let internal deserializeFromJson<'a> (jsonFile : string) =
 
@@ -281,7 +278,6 @@ module Deserialisation =
                 return Ok result
             }
 
-    //Tried and tested for "links" data
     //Thoth.Json.Net, Thoth.Json + System.IO (File.ReadAllText)
     let internal deserializeFromJsonThoth<'a> (jsonFile : string) =
 
@@ -301,7 +297,6 @@ module Deserialisation =
                 return result //Thoth output is of Result type 
             }
 
-    //Tried and tested for "links" data
     //Thoth.Json.Net, Thoth.Json + StreamReader
     let internal deserializeFromJsonThoth2<'a> (jsonFile : string) =
 

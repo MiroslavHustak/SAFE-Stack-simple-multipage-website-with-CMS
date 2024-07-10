@@ -20,85 +20,72 @@ module InsertOrUpdate =
     //See the file SQL Queries.fs
        
     //**************** Sql queries - inner functions  *****************
-    let internal insertOrUpdate getConnection closeConnection (sendCenikValues : CenikValuesDtoSend) =       
-
+    let internal insertOrUpdate getConnection closeConnection (sendCenikValues : CenikValuesDtoSend) = 
+                            
         try
-            let isolationLevel = System.Data.IsolationLevel.Serializable //Transaction locking behaviour
+            //failwith "Simulated exception SqlInsertOrUpdate"
 
+            let isolationLevel = System.Data.IsolationLevel.Serializable //Transaction locking behaviour
+                            
             let connection: SqlConnection = getConnection()
             let transaction: SqlTransaction = connection.BeginTransaction(isolationLevel) //Transaction to be implemented for all commands linked to the connection
 
-            Ok (connection, transaction)
-        with
-        | _ ->
-             Error InsertConnectionError
-
-        |> function
-            | Ok value ->                      
-                        try
-                            //failwith "Simulated exception SqlInsertOrUpdate"
-
-                            let connection, transaction = value
-
-                            try
-                                let idInt = sendCenikValues.Id //idInt = Primary Key for new/old/fixed value state
-                                let valState = sendCenikValues.ValueState
+            try
+                let idInt = sendCenikValues.Id //idInt = Primary Key for new/old/fixed value state
+                let valState = sendCenikValues.ValueState
    
-                                //**************** Parameters for command.Parameters.AddWithValue("@val", some value) *****************
-                                let newParamList =
-                                    [
-                                        ("@valState", valState)
-                                        ("@val01", sendCenikValues.V001)
-                                        ("@val02", sendCenikValues.V002)
-                                        ("@val03", sendCenikValues.V003)
-                                        ("@val04", sendCenikValues.V004)
-                                        ("@val05", sendCenikValues.V005)
-                                        ("@val06", sendCenikValues.V006)
-                                        ("@val07", sendCenikValues.V007)
-                                        ("@val08", sendCenikValues.V008)
-                                        ("@val09", sendCenikValues.V009)
-                                    ]       
+                //**************** Parameters for command.Parameters.AddWithValue("@val", some value) *****************
+                let newParamList =
+                    [
+                        ("@valState", valState)
+                        ("@val01", sendCenikValues.V001)
+                        ("@val02", sendCenikValues.V002)
+                        ("@val03", sendCenikValues.V003)
+                        ("@val04", sendCenikValues.V004)
+                        ("@val05", sendCenikValues.V005)
+                        ("@val06", sendCenikValues.V006)
+                        ("@val07", sendCenikValues.V007)
+                        ("@val08", sendCenikValues.V008)
+                        ("@val09", sendCenikValues.V009)
+                    ]       
 
-                                //**************** SqlCommands *****************
-                                use cmdExists = new SqlCommand(queryExists, connection, transaction) //non-nullable, ex caught with tryWith
+                //**************** SqlCommands *****************
+                use cmdExists = new SqlCommand(queryExists, connection, transaction) //non-nullable, ex caught with tryWith
                 
-                                cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
+                cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
 
-                                match cmdExists.ExecuteScalar() |> Option.ofNull with
-                                | Some _ ->
-                                          use cmdUpdate = new SqlCommand(queryUpdate, connection, transaction)//non-nullable, ex caught with tryWith
-                                          cmdUpdate.Parameters.AddWithValue("@Id", idInt) |> ignore
+                match cmdExists.ExecuteScalar() |> Option.ofNull with
+                | Some _ ->
+                          use cmdUpdate = new SqlCommand(queryUpdate, connection, transaction)//non-nullable, ex caught with tryWith
+                          cmdUpdate.Parameters.AddWithValue("@Id", idInt) |> ignore
                                                                                     
-                                          newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore)
+                          newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore)
 
-                                          cmdUpdate.ExecuteNonQuery() > 0 //rowsAffected, non-nullable, ex caught with tryWith
-                                          |> function
-                                             | false ->
-                                                      transaction.Rollback()                                
-                                                      Error InsertOrUpdateError 
-                                              | true ->
-                                                      Ok <| transaction.Commit()
+                          cmdUpdate.ExecuteNonQuery() > 0 //rowsAffected, non-nullable, ex caught with tryWith
+                          |> function
+                              | false ->
+                                       transaction.Rollback()                                
+                                       Error InsertOrUpdateError 
+                              | true  ->
+                                       Ok <| transaction.Commit()
                                             
-                                | None   ->
-                                          use cmdInsert = new SqlCommand(queryInsert, connection, transaction) //non-nullable, ex caught with tryWith                                        
-                                          cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
+                | None   ->
+                          use cmdInsert = new SqlCommand(queryInsert, connection, transaction) //non-nullable, ex caught with tryWith                                        
+                          cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
 
-                                          newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
+                          newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
 
-                                          cmdInsert.ExecuteNonQuery() > 0 //rowsAffected, non-nullable, ex caught with tryWith
-                                          |> function
-                                              | false ->
-                                                       transaction.Rollback()
-                                                       Error InsertOrUpdateError 
-                                              | true  ->
-                                                       Ok <| transaction.Commit() 
+                          cmdInsert.ExecuteNonQuery() > 0 //rowsAffected, non-nullable, ex caught with tryWith
+                          |> function
+                              | false ->
+                                       transaction.Rollback()
+                                       Error InsertOrUpdateError 
+                              | true  ->
+                                       Ok <| transaction.Commit() 
                                 
-                            finally
-                                transaction.Dispose()
-                                closeConnection connection //just in case :-)                         
-                        with
-                        | _ ->            
-                             Error InsertOrUpdateError
-
-            | Error _ ->
-                       Error InsertConnectionError
+            finally
+                transaction.Dispose()
+                closeConnection connection //just in case :-)                         
+        with
+        | _ ->            
+             Error InsertOrUpdateError
