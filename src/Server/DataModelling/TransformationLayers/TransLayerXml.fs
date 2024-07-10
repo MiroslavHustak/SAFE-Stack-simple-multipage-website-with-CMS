@@ -6,7 +6,7 @@ open DtoXml.Server.DtoXml
 
 module TransLayerXml =
 
-    let private messagesTransferLayerXmlToDomain (messagesXml: MessagesDtoXml) : MessagesDomain =
+    let private messagesTransferLayerXmlToDomain (messagesXml: MessagesDtoXml3) : MessagesDomain =
         {
              Msg1 = messagesXml.Msg1
              Msg2 = messagesXml.Msg2   
@@ -16,7 +16,7 @@ module TransLayerXml =
              Msg6 = messagesXml.Msg6                   
         }
 
-    let private messagesTransferLayerDomainToXml (messagesXml: MessagesDomain) : MessagesDtoXml =
+    let private messagesTransferLayerDomainToXml (messagesXml: MessagesDomain) : MessagesDtoXml3 =
         {
              Msg1 = messagesXml.Msg1
              Msg2 = messagesXml.Msg2   
@@ -26,7 +26,7 @@ module TransLayerXml =
              Msg6 = messagesXml.Msg6                   
         } 
      
-    let internal kontaktValuesTransferLayerXmlToDomain (kontaktValuesXmlToDomain: KontaktValuesDtoXml) : KontaktValuesDomain =
+    let internal kontaktValuesTransferLayerXmlToDomain (kontaktValuesXmlToDomain: KontaktValuesDtoXml3) : KontaktValuesDomain =
         {            
             V001 = kontaktValuesXmlToDomain.V001
             V002 = kontaktValuesXmlToDomain.V002
@@ -38,7 +38,7 @@ module TransLayerXml =
             Msgs = messagesTransferLayerXmlToDomain kontaktValuesXmlToDomain.Msgs
         }
 
-    let internal kontaktValuesTransferLayerDomainToXml (kontaktValuesDomainToXml: KontaktValuesDomain) : KontaktValuesDtoXml =
+    let internal kontaktValuesTransferLayerDomainToXml (kontaktValuesDomainToXml: KontaktValuesDomain) : KontaktValuesDtoXml3 =
         {            
             V001 = kontaktValuesDomainToXml.V001
             V002 = kontaktValuesDomainToXml.V002

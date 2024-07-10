@@ -31,7 +31,7 @@ module SharedCenikValues =
     let cenikValuesDomainDefault = //fixed values
         {
             Id = 1; ValueState = "fixed";
-            V001 = "500"; V002 = "300"; V003 = "2500";
+            V001 = "500"; V002 = "500"; V003 = "2500";
             V004 = "250"; V005 = String.Empty; V006 = String.Empty;
             V007 = String.Empty; V008 = "450"; V009 = "450";
             Msgs = SharedMessageDefaultValues.messageDefault

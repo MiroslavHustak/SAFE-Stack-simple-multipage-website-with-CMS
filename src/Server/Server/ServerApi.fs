@@ -115,8 +115,8 @@ module ServerApi =
                                             try
                                                 //failwith "Simulated exception10"
                                                 let sendKontaktValuesDtoXml = kontaktValuesTransferLayerDomainToXml sendKontaktValues
-                                                match copyFiles pathToXml pathToXmlBackup true with
-                                                | Ok _      -> serializeToXml sendKontaktValuesDtoXml pathToXml
+                                                match copyFiles pathToXml3 pathToXmlBackup3 true with
+                                                | Ok _      -> parseToXml3 sendKontaktValuesDtoXml pathToXml3
                                                 | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                                                                       
                                             with
                                             | ex -> Error (string ex.Message)
@@ -138,10 +138,10 @@ module ServerApi =
                                 try
                                     pyramidOfInferno
                                         {
-                                            let copy = copyFiles pathToXml pathToXmlBackup true
+                                            let copy = copyFiles pathToXml3 pathToXmlBackup3 true
                                             let! _ = copy, SharedKontaktValues.kontaktValuesDomainDefault
 
-                                            let deserialize = deserializeFromXml<KontaktValuesDtoXml> pathToXmlBackup
+                                            let deserialize = parseFromXml3 pathToXmlBackup3
                                             let! deserialize = deserialize, SharedKontaktValues.kontaktValuesDomainDefault
 
                                             return kontaktValuesTransferLayerXmlToDomain deserialize, String.Empty
@@ -161,10 +161,11 @@ module ServerApi =
                                     //failwith "Simulated exception12"
                                     pyramidOfInferno
                                         {
-                                            let copy = copyFiles pathToXml pathToXmlBackup true
+                                            let copy = copyFiles pathToXml3 pathToXmlBackup3 true
                                             let! _ = copy, SharedKontaktValues.kontaktValuesDomainDefault
 
-                                            let deserialize = deserializeFromXml<KontaktValuesDtoXml> pathToXmlBackup
+                                            //let deserialize = deserializeFromXml2<KontaktValuesDtoXml2> pathToXmlBackup2
+                                            let deserialize = parseFromXml3 pathToXmlBackup3
                                             let! deserialize = deserialize, SharedKontaktValues.kontaktValuesDomainDefault
 
                                             return kontaktValuesTransferLayerXmlToDomain deserialize, String.Empty

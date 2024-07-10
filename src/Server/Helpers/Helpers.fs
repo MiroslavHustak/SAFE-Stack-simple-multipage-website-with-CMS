@@ -5,46 +5,9 @@ open System.IO
 open Newtonsoft.Json
 open System.Runtime.Serialization
 
+open CEBuilders
 open FsToolkit.ErrorHandling
 
-module CEBuilders = 
-      
-    [<Struct>]
-    type internal Builder1 = Builder1 with            
-        member _.Bind(condition, nextFunc) =
-            match fst condition with
-            | false -> snd condition
-            | true  -> nextFunc() 
-        member _.Using x = x
-        member _.Return x = x
-
-    let internal pyramidOfHell = Builder1
-
- //************************************************************************************* 
-                
-    [<Struct>]
-    type internal Builder2 = Builder2 with    
-        member _.Bind((optionExpr, errDuCase), nextFunc) =
-            match optionExpr with
-            | Some value -> nextFunc value 
-            | None       -> errDuCase  
-        member _.Return x : 'a = x
-
-    let internal pyramidOfDoom = Builder2
-
-//************************************************************************************* 
-
-    [<Struct>]
-    type internal Builder3 = Builder3 with    
-        member _.Bind((resultExpr, defaultRc), nextFunc) =
-            match resultExpr with
-            | Ok value  -> nextFunc value 
-            | Error err -> defaultRc, err  
-        member _.Return x : 'a = x
-
-    let internal pyramidOfInferno = Builder3
-
-  
 module Result =
 
     let internal toOption = 
@@ -71,7 +34,7 @@ module Option =
 
     let internal ofNullEmpty (value: 'nullableValue) = //NullOrEmpty
 
-        CEBuilders.pyramidOfHell
+        pyramidOfHell
             {
                 let!_ = not <| System.Object.ReferenceEquals(value, null), None 
                 let value = string value 
@@ -82,7 +45,7 @@ module Option =
 
     let internal ofNullEmptySpace (value: 'nullableValue) = //NullOrEmpty, NullOrWhiteSpace
     
-        CEBuilders.pyramidOfHell
+        pyramidOfHell
             {
                 let!_ = not <| System.Object.ReferenceEquals(value, null), None 
                 let value = string value 

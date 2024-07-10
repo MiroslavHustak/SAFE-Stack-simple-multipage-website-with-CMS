@@ -7,6 +7,10 @@
   </PropertyGroup>  
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
+    <Content Include="Resources\xmlKontaktValues3.xml" />
+    <Content Include="Resources\xmlKontaktValuesBackUp3.xml" />
+    <Content Include="Resources\xmlKontaktValues2.xml" />
+    <Content Include="Resources\xmlKontaktValuesBackUp2.xml" />
     <Content Include="Resources\xmlKontaktValues.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -19,6 +23,7 @@
     <Compile Include="Connections\Connection.fs" />
     <None Include="paket.references" />
     <Compile Include="Types\ErrorTypes.fs" />
+    <Compile Include="Helpers\CEBuilders.fs" />
     <Compile Include="Helpers\Security2.fs" />
     <Compile Include="Helpers\Helpers.fs" />
     <Compile Include="Helpers\CopyFiles.fs" />

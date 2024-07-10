@@ -15,7 +15,9 @@ open Thoth.Json.Net
 
 open System
 open System.IO
+open System.Xml.Linq
 open Newtonsoft.Json
+open System.Xml.Serialization
 open System.Runtime.Serialization
 
 open FsToolkit.ErrorHandling
@@ -34,25 +36,86 @@ module Serialisation =
    
     //Tried and tested for "kontakt" data
     //System.Runtime.Serialization requires equal types for serialization and deserialization; hence separated DTOs
-    //System.Xml.Serialization requires annotation //TODO do it sometime
     let internal serializeToXml (record: 'a) (xmlFile: string) =
         
-        pyramidOfDoom //z duvodu jednotnosti a pripadneho rozsireni
+        pyramidOfDoom 
             {
                 let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
-                let! filepath = filepath, Error "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k xml souboru"
+                let! filepath = filepath, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k souboru " xmlFile)
 
-                let xmlSerializer = new DataContractSerializer(typeof<'a>) //non-nullable, ex caught with tryWith 
-                
-                let stream = File.Create(filepath) //non-nullable, ex caught with tryWith 
+                let xmlSerializer = new DataContractSerializer(typeof<'a>) //cannot be null, exn caught with tryWith elsewhere
 
-                xmlSerializer.WriteObject(stream, record) //non-nullable, ex caught with tryWith 
-                
-                stream.Close()
-                stream.Dispose()
+                use stream = File.Create(filepath) //exn caught with tryWith
+                let! _ = stream |> Option.ofNull, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do souboru " xmlFile)
 
+                xmlSerializer.WriteObject(stream, record) //non-nullable, exn caught with tryWith 
+                              
                 return Ok ()
-            }    
+            }
+
+    let internal serializeToXml2 (record: 'a) (xmlFile: string) =
+
+        pyramidOfDoom 
+            {
+                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).  
+                let! filepath = filepath, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k souboru " xmlFile)
+
+                let xmlSerializer = new XmlSerializer(typeof<'a>) //cannot be null, exn caught with tryWith elsewhere              
+                                
+                use stream = new FileStream(filepath, FileMode.Create)
+                let! _ = stream |> Option.ofNull, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do souboru " xmlFile)
+                
+                xmlSerializer.Serialize(stream, record)
+              
+                return Ok ()
+            }
+
+    //TODO error handling, option, result
+    //LINQ to XML System.Xml.Linq
+    let internal parseToXml3 (record: KontaktValuesDtoXml3) (xmlFile: string) = //no reflection
+
+        let msgsElements = //non-nullable if the strings are not nulls
+            [
+                new XElement(XName.Get("Msg1"), record.Msgs.Msg1)
+                new XElement(XName.Get("Msg2"), record.Msgs.Msg2)
+                new XElement(XName.Get("Msg3"), record.Msgs.Msg3)
+                new XElement(XName.Get("Msg4"), record.Msgs.Msg4)
+                new XElement(XName.Get("Msg5"), record.Msgs.Msg5)
+                new XElement(XName.Get("Msg6"), record.Msgs.Msg6)
+            ]
+    
+        let msgsElement = new XElement(XName.Get("Msgs"), msgsElements)
+    
+        let rootElement =
+            new XElement(XName.Get("KontaktValuesDtoXml3"),
+                [
+                    new XElement(XName.Get("V001"), record.V001)
+                    new XElement(XName.Get("V002"), record.V002)
+                    new XElement(XName.Get("V003"), record.V003)
+                    new XElement(XName.Get("V004"), record.V004)
+                    new XElement(XName.Get("V005"), record.V005)
+                    new XElement(XName.Get("V006"), record.V006)
+                    new XElement(XName.Get("V007"), record.V007)
+                    msgsElement
+                ])
+
+        let xmlDoc = //non-nullable
+            new XDocument(
+                //new XDeclaration("1.0", "utf-8", "yes"), //not working, even ChatGPT is at a loss why. Anyway, by default, XDocument includes this declaration when saving an XML document.
+                new XElement(XName.Get("KontaktValuesDtoXml3"),
+                    [
+                        new XAttribute(XNamespace.Xmlns + "xsi", "http://www.w3.org/2001/XMLSchema-instance")
+                        new XAttribute(XNamespace.Xmlns + "xsd", "http://www.w3.org/2001/XMLSchema")
+                    ],
+                    rootElement.Elements()
+                )
+            )        
+    
+        xmlDoc.Save(Path.GetFullPath(xmlFile)) //TODO tryWith
+
+        Ok ()  
+        
+    //**************************************************************************************
 
     //Tried and tested for "links" data
     //Newtonsoft.Json 
@@ -66,7 +129,7 @@ module Serialisation =
                 let json = JsonConvert.SerializeObject(record) |> Option.ofNullEmpty 
                 let! json = json, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " jsonFile)
 
-                File.WriteAllText(filepath, json) //non-nullable, ex caught with tryWith 
+                File.WriteAllText(filepath, json) //non-nullable, ex caught with tryWith elsewhere
 
                 return Ok ()
            }
@@ -97,17 +160,14 @@ module Serialisation =
                 let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k souboru " jsonFile)
     
-                let json = Encode.toString 2 (encoder record) |> Option.ofNull // Serialize the record to JSON with indentation
+                let json = Encode.toString 2 (encoder record) |> Option.ofNullEmpty // Serialize the record to JSON with indentation
                 let! json = json, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " jsonFile)
     
-                let writer = new StreamWriter(filepath, false)                
-                let! writer = writer |> Option.ofNull, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " jsonFile)
+                use writer = new StreamWriter(filepath, false)                
+                let! _ = writer |> Option.ofNull, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " jsonFile)
 
                 writer.Write(json)
 
-                writer.Close()
-                writer.Dispose()
-    
                 return Ok ()
             }
     
@@ -125,25 +185,81 @@ module Deserialisation =
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
 
                 let fInfodat: FileInfo = new FileInfo(filepath)
-                let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Soubor %s nenalezen" xmlFile) 
+                let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Soubor %s nenalezen" xmlFile)                      
 
-                let xmlSerializer = new DataContractSerializer(typeof<'a>) //non-nullable, ex caught with tryWith 
+                let xmlSerializer = new DataContractSerializer(typeof<'a>) //cannot be null, exn caught with tryWith elsewhere            
+                                
+                use stream = File.OpenRead(filepath) //exn caught with tryWith
+                let! _ = stream |> Option.ofNull, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při deserializaci ze souboru " xmlFile)
 
-                let stream = File.OpenRead(filepath) //non-nullable, ex caught with tryWith
-
-                let read = xmlSerializer.ReadObject(stream) |> Option.ofNull //my paranoia about the object type 
-                let! read = read, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení dat ze souboru " xmlFile)
+                let read = xmlSerializer.ReadObject(stream) |> Option.ofNull 
+                let! read = read, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, při chyba při deserializaci ze souboru " xmlFile)
                                 
                 let result = read |> Casting.castAs<KontaktValuesDtoXml> //casting is necessary here, even ChatGPT has not figured out anything better
-                                
-                stream.Close()
-                stream.Dispose() 
-
                 let! result = result, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení dat ze souboru (downcasting) " xmlFile)
 
                 return Ok result
-            }    
-        
+            }
+
+    let internal deserializeFromXml2<'a> (xmlFile : string) =
+
+        pyramidOfDoom
+            {
+                let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty //Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
+                let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
+
+                let fInfodat: FileInfo = new FileInfo(filepath)
+                let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Soubor %s nenalezen" xmlFile)                      
+
+                let xmlSerializer = new XmlSerializer(typeof<'a>) //cannot be null, exn caught with tryWith elsewhere   
+                                
+                use stream = new FileStream(filepath, FileMode.Open) //exn caught with tryWith
+                let! _ = stream |> Option.ofNull, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při deserializaci ze souboru " xmlFile)
+
+                let read = xmlSerializer.Deserialize(stream) |> Option.ofNull //my paranoia about the object type 
+                let! read = read, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, při chyba při deserializaci ze souboru " xmlFile)
+                                
+                let result = read |> Casting.castAs<KontaktValuesDtoXml2> //casting is necessary here, even ChatGPT has not figured out anything better               
+                let! result = result, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení dat ze souboru (downcasting) " xmlFile)
+
+                return Ok result
+            }
+
+    //TODO error handling, option, result
+    //LINQ to XML System.Xml.Linq
+    let internal parseFromXml3 xmlFile : Result<KontaktValuesDtoXml3, string> = //no reflection
+        try
+            let xmlString = File.ReadAllText(Path.GetFullPath(xmlFile))
+            let doc = XDocument.Parse(xmlString) //non-nullable if the parameter is not null, TODO tryWith
+    
+            let parseMsgs (msgsElement: XElement) : MessagesDtoXml3 =
+                {
+                    Msg1 = msgsElement.Element(XName.Get("Msg1")).Value
+                    Msg2 = msgsElement.Element(XName.Get("Msg2")).Value
+                    Msg3 = msgsElement.Element(XName.Get("Msg3")).Value
+                    Msg4 = msgsElement.Element(XName.Get("Msg4")).Value
+                    Msg5 = msgsElement.Element(XName.Get("Msg5")).Value
+                    Msg6 = msgsElement.Element(XName.Get("Msg6")).Value
+                }
+    
+            // Extract data from XML
+            let root = doc.Root
+
+            Ok {
+                V001 = root.Element(XName.Get("V001")).Value
+                V002 = root.Element(XName.Get("V002")).Value
+                V003 = root.Element(XName.Get("V003")).Value
+                V004 = root.Element(XName.Get("V004")).Value
+                V005 = root.Element(XName.Get("V005")).Value
+                V006 = root.Element(XName.Get("V006")).Value
+                V007 = root.Element(XName.Get("V007")).Value
+                Msgs = parseMsgs (root.Element(XName.Get("Msgs")))
+            }
+        with
+        | ex ->
+              Error <| sprintf "Error parsing XML: %s" ex.Message
+    
+                   
     //Tried and tested for "links" data
     //Newtonsoft.Json 
     let internal deserializeFromJson<'a> (jsonFile : string) =
@@ -197,22 +313,16 @@ module Deserialisation =
                 let fInfodat: FileInfo = new FileInfo(filepath)
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, soubor %s nenalezen" jsonFile) 
                  
-                let fs = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.None) 
-                let! fs = fs |> Option.ofNull, Error (sprintf "%s%s" "Chyba při čtení dat ze souboru " filepath)                        
+                use fs = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.None) 
+                let! _ = fs |> Option.ofNull, Error (sprintf "%s%s" "Chyba při čtení dat ze souboru " filepath)                        
                     
-                let reader = new StreamReader(fs) //For large files, StreamReader may offer better performance and memory efficiency
-                let! reader = reader |> Option.ofNull, Error (sprintf "%s%s" "Chyba při čtení dat ze souboru " filepath) 
+                use reader = new StreamReader(fs) //For large files, StreamReader may offer better performance and memory efficiency
+                let! _ = reader |> Option.ofNull, Error (sprintf "%s%s" "Chyba při čtení dat ze souboru " filepath) 
                 
                 let json = reader.ReadToEnd()
                 let! json = json |> Option.ofNullEmpty, Error (sprintf "%s%s" "Chyba při čtení dat ze souboru " filepath)  
                     
                 let result = Decode.fromString decoder json  //Thoth does not use reflection  
-
-                fs.Close()
-                fs.Dispose()
-
-                reader.Close()
-                reader.Dispose()
-    
+                                  
                 return result //Thoth output is of Result type 
             }
