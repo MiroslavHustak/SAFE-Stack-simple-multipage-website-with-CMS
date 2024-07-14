@@ -280,7 +280,9 @@ module Deserialisation =
                         V007 = root.Element(XName.Get("V007")).Value
                         Msgs = parseMsgs (root.Element(XName.Get("Msgs")))
                     }
-            }    
+            }
+
+    //***************************************************************************************************************
                    
     //Newtonsoft.Json 
     let internal deserializeFromJson<'a> (jsonFile : string) =

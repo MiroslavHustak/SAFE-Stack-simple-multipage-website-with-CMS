@@ -24,7 +24,8 @@ open ErrorTypes.Server
 open Connections.Connection
 
 open Helpers.Server.CEBuilders
-open Helpers.Server.CopyingFiles
+open Helpers.Server.CopyOrMoveFiles
+open Helpers.Server.CopyOrMoveFilesFM
 
 open Serialization.Server.Serialisation
 open Serialization.Server.Deserialisation
@@ -106,6 +107,7 @@ module ServerApi =
 
             //************* testing XML ********************          
             sendKontaktValues =
+
                 fun sendKontaktValues ->
                     async
                         {
@@ -113,9 +115,17 @@ module ServerApi =
                                 match verifyKontaktValues sendKontaktValues with
                                 | Ok ()    ->                                            
                                             try
+                                                let config = 
+                                                    {
+                                                        source = pathToXml3
+                                                        destination = pathToXmlBackup3
+                                                        fileName = String.Empty
+                                                    }
+
                                                 //failwith "Simulated exception10"
                                                 let sendKontaktValuesDtoXml = kontaktValuesTransferLayerDomainToXml sendKontaktValues
-                                                match copyFiles pathToXml3 pathToXmlBackup3 true with
+                                                
+                                                match copyOrMoveFiles config Copy with
                                                 | Ok _      -> parseToXml3 sendKontaktValuesDtoXml pathToXml3
                                                 | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                                                                       
                                             with
@@ -138,7 +148,14 @@ module ServerApi =
                                 try
                                     pyramidOfInferno
                                         {
-                                            let copy = copyFiles pathToXml3 pathToXmlBackup3 true
+                                            let config = 
+                                                {
+                                                    source = pathToXml3
+                                                    destination = pathToXmlBackup3
+                                                    fileName = String.Empty
+                                                }
+
+                                            let copy = copyOrMoveFiles config Copy //copyFiles pathToXml3 pathToXmlBackup3 true
                                             let! _ = copy, SharedKontaktValues.kontaktValuesDomainDefault
 
                                             let deserialize = parseFromXml3 pathToXmlBackup3
@@ -147,7 +164,7 @@ module ServerApi =
                                             return kontaktValuesTransferLayerXmlToDomain deserialize, String.Empty
                                         }                  
                                 with
-                                | ex -> SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message)
+                                | ex -> SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě 1: " (string ex.Message)
                              
                             return { getOldKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                 
                         } 
@@ -161,7 +178,14 @@ module ServerApi =
                                     //failwith "Simulated exception12"
                                     pyramidOfInferno
                                         {
-                                            let copy = copyFiles pathToXml3 pathToXmlBackup3 true
+                                            let config = 
+                                                {
+                                                    source = pathToXml3
+                                                    destination = pathToXmlBackup3
+                                                    fileName = String.Empty
+                                                }
+
+                                            let copy = copyOrMoveFiles config Copy //copyFiles pathToXml3 pathToXmlBackup3 true
                                             let! _ = copy, SharedKontaktValues.kontaktValuesDomainDefault
 
                                             //let deserialize = deserializeFromXml2<KontaktValuesDtoXml2> pathToXmlBackup2
@@ -171,7 +195,7 @@ module ServerApi =
                                             return kontaktValuesTransferLayerXmlToDomain deserialize, String.Empty
                                         }                                  
                                 with
-                                | ex -> SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message) 
+                                | ex -> SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě 2: " (string ex.Message) 
 
                             return { getKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                   
                         }

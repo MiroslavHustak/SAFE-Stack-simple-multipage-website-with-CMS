@@ -26,7 +26,7 @@
     <Compile Include="Helpers\CEBuilders.fs" />
     <Compile Include="Helpers\Security2.fs" />
     <Compile Include="Helpers\Helpers.fs" />
-    <Compile Include="Helpers\CopyFiles.fs" />
+    <Compile Include="Helpers\CopyOrMoveFiles.fs" />
     <Compile Include="DataModelling\DTOs\DtoSend.fs" />
     <Compile Include="DataModelling\DTOs\DtoGet.fs" />
     <Compile Include="DataModelling\DTOs\DtoXml.fs" />

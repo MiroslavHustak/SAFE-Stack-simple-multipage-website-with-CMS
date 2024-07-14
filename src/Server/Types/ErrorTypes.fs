@@ -19,3 +19,9 @@ type ErrorVerifyOptions =
    | LegitimateTrue 
    | LegitimateFalse 
    | Exception
+
+[<Struct>]
+type ErrorCopyingFiles = 
+   | LegitimateTrue 
+   | LegitimateFalse 
+   | Exception
