@@ -83,7 +83,7 @@ module CopyOrMoveFilesFM =
                                                           Option.fromBool value fInfodat.Exists
                                                       ), Error <| sprintf "Zdrojový soubor %s neexistuje" value
                                                   return Ok value
-                                          }
+                                              }
 
                                       interpret config io (next (sourceFilepath config.source))
 
