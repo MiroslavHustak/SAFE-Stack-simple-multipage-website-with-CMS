@@ -131,6 +131,16 @@ module CopyOrMoveFilesFM =
 
 
 module CopyOrMoveFiles =
+
+    (*
+    [<Struct>]
+    type internal Builder2 = Builder2 with    
+        member _.Bind((optionExpr, err), nextFunc) =
+            match optionExpr with
+            | Some value -> nextFunc value 
+            | _          -> err  
+        member _.Return x : 'a = x
+    *)
     
     let private processFile source destination action =
                                                 
@@ -148,13 +158,79 @@ module CopyOrMoveFiles =
         try
             let action sourceFilepath destinFilepath = File.Copy(sourceFilepath, destinFilepath, overwrite) 
                 in processFile source destination action
-        with
-        | ex -> Error <| sprintf "Chyba při kopírování souboru %s do %s. %s." source destination (string ex.Message)
+        with ex -> Error <| sprintf "Chyba při kopírování souboru %s do %s. %s." source destination (string ex.Message)
               
     let internal moveFiles source destination =
         try
             let action sourceFilepath destinFilepath = File.Move(sourceFilepath, destinFilepath, true) 
                 in processFile source destination action
-        with
-        | _ -> Error <| sprintf "Chyba při přemísťování souboru %s do %s" source destination
+        with _ -> Error <| sprintf "Chyba při přemísťování souboru %s do %s" source destination
+
+(*
+    module CopyOrMoveFiles where
     
+    import System.Directory (copyFile, doesFileExist, renameFile)
+    import Control.Exception (catch, IOException)
+    
+    copyFiles :: FilePath -> FilePath -> Bool -> IO (Either String ())
+    copyFiles source destination overwrite = do
+        fileExists <- doesFileExist source
+        case fileExists of
+            True -> tryCopyFile source destination overwrite
+            False -> return (Left $ "Source file does not exist: " ++ source)
+    
+    tryCopyFile :: FilePath -> FilePath -> Bool -> IO (Either String ())
+    tryCopyFile source destination overwrite = do
+        result <- catch (copyFile source destination >> return (Right ())) (\e -> return (Left $ "Error copying file: " ++ show (e :: IOException)))
+        return result
+    
+    moveFiles :: FilePath -> FilePath -> IO (Either String ())
+    moveFiles source destination = do
+        fileExists <- doesFileExist source
+        case fileExists of
+            True -> tryMoveFile source destination
+            False -> return (Left $ "Source file does not exist: " ++ source)
+    
+    tryMoveFile :: FilePath -> FilePath -> IO (Either String ())
+    tryMoveFile source destination = do
+        result <- catch (renameFile source destination >> return (Right ())) (\e -> return (Left $ "Error moving file: " ++ show (e :: IOException)))
+        return result
+*)
+
+(*
+    module CopyOrMoveFiles where
+
+    import System.Directory (copyFile, doesFileExist, renameFile)
+    import Control.Exception (catch, IOException)
+    import Control.Monad (void)
+
+    tryFileOperation :: (FilePath -> FilePath -> IO ()) -> FilePath -> FilePath -> IO (Either String ())
+    tryFileOperation operation source destination = do
+        catch (do
+                operation source destination
+                return $ Right ()
+              )
+              (\e -> return $ Left $ "Error: " ++ show (e :: IOException))
+
+    handleFileOperation :: FilePath -> FilePath -> (FilePath -> FilePath -> IO (Either String ())) -> IO (Either String ())
+    handleFileOperation source destination operation = do
+        fileExists <- doesFileExist source
+        if fileExists
+            then operation source destination
+            else return (Left $ "Source file does not exist: " ++ source)
+
+    copyFiles :: FilePath -> FilePath -> Bool -> IO (Either String ())
+    copyFiles source destination overwrite =
+        handleFileOperation source destination (\src dst -> tryFileOperation (\s d -> void $ copyFile s d) src dst)
+
+    moveFiles :: FilePath -> FilePath -> IO (Either String ())
+    moveFiles source destination =
+        handleFileOperation source destination (\src dst -> tryFileOperation renameFile src dst)
+
+    tryCopyFile :: FilePath -> FilePath -> Bool -> IO (Either String ())
+    tryCopyFile source destination overwrite =
+        tryFileOperation (\src dst -> copyFile src dst >> return ()) source destination
+
+    tryMoveFile :: FilePath -> FilePath -> IO (Either String ())
+    tryMoveFile = tryFileOperation renameFile
+*)
