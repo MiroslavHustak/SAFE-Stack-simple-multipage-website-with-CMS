@@ -53,7 +53,7 @@ module ServerVerify =
         let uberHashError uberHash credential seqFn =
 
             try
-                pyramidOfDoom  //nelze Builder1 (pyramidOfHell) a Result.isOk
+                pyramidOfDoom  // pyramidOfHell and Result.isOk not possible to use
                     {
                         let! uberHash = uberHash |> Result.toOption, Exception
                         let! _ = not (uberHash |> Seq.isEmpty) |> Option.ofBool, Exception
@@ -80,7 +80,14 @@ module ServerVerify =
                                 let! _ = File.Exists(Path.GetFullPath(pathToUberHashTxt)) |> Option.ofBool, Error String.Empty
                                 let value = File.ReadAllLines(pathToUberHashTxt) //non-nullable, ex caught with tryWith
                                 //array item --> string -> Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).
-                                let! _ = not (value |> Array.map (fun item -> item |> Option.ofNull) |> Array.exists (fun item -> item.IsNone)) |> Option.ofBool, Error String.Empty
+                                let! _ =
+                                    not
+                                        (
+                                            value
+                                            |> Array.map (fun item -> item |> Option.ofNull)
+                                            |> Array.exists (fun item -> item.IsNone)
+                                        )
+                                        |> Option.ofBool, Error String.Empty
 
                                 return Ok (value |> Seq.ofArray) 
                             } 

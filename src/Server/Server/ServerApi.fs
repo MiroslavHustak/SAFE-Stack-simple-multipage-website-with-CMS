@@ -113,29 +113,29 @@ module ServerApi =
                         {
                             let sendNewKontaktValues: KontaktValuesDomain = 
                                 match verifyKontaktValues sendKontaktValues with
-                                | Ok ()    ->                                            
-                                            try
-                                                let config = 
-                                                    {
-                                                        source = pathToXml3
-                                                        destination = pathToXmlBackup3
-                                                        fileName = String.Empty
-                                                    }
+                                | Ok ()   ->                                            
+                                           try
+                                               let config = 
+                                                   {
+                                                       source = pathToXml3
+                                                       destination = pathToXmlBackup3
+                                                       fileName = String.Empty
+                                                   }
 
-                                                //failwith "Simulated exception10"
-                                                let sendKontaktValuesDtoXml = kontaktValuesTransferLayerDomainToXml sendKontaktValues
+                                               //failwith "Simulated exception10"
+                                               let sendKontaktValuesDtoXml = kontaktValuesTransferLayerDomainToXml sendKontaktValues
                                                 
-                                                match copyOrMoveFiles config Copy with
-                                                | Ok _      -> parseToXml3 sendKontaktValuesDtoXml pathToXml3
-                                                | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                                                                       
-                                            with
-                                            | ex -> Error (string ex.Message)
+                                               match copyOrMoveFiles config Copy with
+                                               | Ok _      -> parseToXml3 sendKontaktValuesDtoXml pathToXml3
+                                               | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                                                                       
+                                           with
+                                           | ex -> Error (string ex.Message)
 
-                                            |> function
-                                                | Ok _      -> sendKontaktValues  
-                                                | Error err -> { sendKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                                                                             
-                                | Error _  ->
-                                            SharedKontaktValues.kontaktValuesDomainDefault
+                                           |> function
+                                               | Ok _      -> sendKontaktValues  
+                                               | Error err -> { sendKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                                                                             
+                                | Error _ ->
+                                           SharedKontaktValues.kontaktValuesDomainDefault
 
                             return sendNewKontaktValues
                         }

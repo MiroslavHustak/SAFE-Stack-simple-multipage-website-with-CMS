@@ -1,11 +1,6 @@
 namespace Helpers.Server
 
 open System
-open System.IO
-open Newtonsoft.Json
-open System.Runtime.Serialization
-
-open FsToolkit.ErrorHandling
 
 module CEBuilders = 
       
@@ -31,10 +26,8 @@ module CEBuilders =
         member _.Return x : 'a = x   
         member _.ReturnFrom x : 'a = x 
         member _.TryFinally(body, compensation) =
-            try 
-                body()
-            finally
-                compensation()
+            try body()
+            finally compensation()
         member _.Zero () = ()
         member _.Using(resource, binder) =
             use r = resource
