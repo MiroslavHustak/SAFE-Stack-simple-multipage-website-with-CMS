@@ -26,18 +26,18 @@ module Router =
 
     let toHash (route : Route) =
         match route with
-        | Home -> "#home"
-        | Sluzby id -> "#sluzby" </> id
-        | Cenik id -> "#cenik" </> id
-        | Nenajdete id -> "#nenajdete" </> id
-        | Kontakt id -> "#kontakt" </> id
-        | Login id -> "#login" </> id
-        | Logout -> "#home"               //not in use 
-        | Maintenance -> "#maintenance"   //not in use 
+        | Home             -> "#home"
+        | Sluzby id        -> "#sluzby" </> id
+        | Cenik id         -> "#cenik" </> id
+        | Nenajdete id     -> "#nenajdete" </> id
+        | Kontakt id       -> "#kontakt" </> id
+        | Login id         -> "#login" </> id
+        | Logout           -> "#home"          //not in use 
+        | Maintenance      -> "#maintenance"   //not in use 
         | CMSRozcestnik id -> "#cmsRozcestnik" </> id
-        | CMSCenik id -> "#cmsCenik" </> id
-        | CMSKontakt id -> "#cmsKontakt" </> id
-        | CMSLink id -> "#cmsLink" </> id
+        | CMSCenik id      -> "#cmsCenik" </> id
+        | CMSKontakt id    -> "#cmsKontakt" </> id
+        | CMSLink id       -> "#cmsLink" </> id
 
     open Elmish.Navigation
     open Elmish.UrlParser
@@ -52,7 +52,7 @@ module Router =
                 map (fun domainId -> Route.Kontakt domainId) (s "kontakt" </> i32)
                 map (fun domainId -> Route.Login domainId) (s "login" </> i32)
                 map Route.Logout (s "home") //not in use 
-                map Route.Maintenance (s "maintenance") //zatim nevyuzivano
+                map Route.Maintenance (s "maintenance") //not in use 
                 map (fun domainId -> Route.CMSRozcestnik domainId) (s "cmsRozcestnik" </> i32)
                 map (fun domainId -> Route.CMSCenik domainId) (s "cmsCenik" </> i32)
                 map (fun domainId -> Route.CMSKontakt domainId) (s "cmsKontakt" </> i32)

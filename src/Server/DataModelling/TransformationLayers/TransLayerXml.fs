@@ -1,7 +1,7 @@
 namespace TransLayerXml.Server
 
 open System
-open SharedTypes
+open Shared
 open DtoXml.Server.DtoXml
 
 module TransLayerXml =

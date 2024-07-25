@@ -6,7 +6,7 @@ open FsToolkit.ErrorHandling
 
 open InsertOrUpdate
 
-open SharedTypes
+open Shared
 open ErrorTypes.Server
 open Queries.SqlQueries
 

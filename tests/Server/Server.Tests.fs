@@ -37,10 +37,11 @@ let private server =
                         try
                             match uberHash with
                             | Ok uberHash ->
-                                            match verify (uberHash |> seqFn) credential with 
-                                            | true  -> LegitimateTrue
-                                            | false -> LegitimateFalse
-                            | Error _     -> Exception
+                                           match verify (uberHash |> seqFn) credential with 
+                                           | true  -> LegitimateTrue
+                                           | false -> LegitimateFalse
+                            | Error _     ->
+                                           Exception
                         with
                         | _ -> Exception  
                           

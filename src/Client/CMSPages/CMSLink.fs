@@ -8,7 +8,7 @@ open FSharp.Control
 open Fable.Remoting.Client
 
 open Shared
-open SharedTypes
+open Shared
 open Helpers.Client.Helper
 
 module CMSLink = 
@@ -98,51 +98,55 @@ module CMSLink =
         | SetV005LinkNameInput value -> { model with V005LinkNameInput = value }, Cmd.none
         | SetV006LinkNameInput value -> { model with V006LinkNameInput = value }, Cmd.none
 
-        | SendOldLinkAndLinkNameValuesToServer ->
-            let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.OldLinkAndLinkNameValues
-            let cmd = Cmd.OfAsync.perform sendLinkAndLinkNameValuesApi.getOldLinkAndLinkNameValues loadEvent OldLinkAndLinkNameValues
-            model, cmd
+        | SendOldLinkAndLinkNameValuesToServer
+            ->
+             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.OldLinkAndLinkNameValues
+             let cmd = Cmd.OfAsync.perform sendLinkAndLinkNameValuesApi.getOldLinkAndLinkNameValues loadEvent OldLinkAndLinkNameValues
+             model, cmd
 
         | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
     
-        | SendLinkAndLinkNameValuesToServer ->
-            try
-                try
-                    let buttonClickEvent: LinkAndLinkNameValuesDomain =   //see remark in CMSCenik.fs
-                        let input current old =
-                            match current = String.Empty with //String.IsNullOrWhiteSpace current || String.IsNullOrEmpty current
-                            | true  -> old
-                            | false -> current 
-                        SharedLinkAndLinkNameValues.create
-                        <| input model.V001LinkInput model.OldLinkAndLinkNameValues.V001 <| input model.V002LinkInput model.OldLinkAndLinkNameValues.V002 <| input model.V003LinkInput model.OldLinkAndLinkNameValues.V003 
-                        <| input model.V004LinkInput model.OldLinkAndLinkNameValues.V004 <| input model.V005LinkInput model.OldLinkAndLinkNameValues.V005 <| input model.V006LinkInput model.OldLinkAndLinkNameValues.V006
-                        <| input model.V001LinkNameInput model.OldLinkAndLinkNameValues.V001n <| input model.V002LinkNameInput model.OldLinkAndLinkNameValues.V002n <| input model.V003LinkNameInput model.OldLinkAndLinkNameValues.V003n 
-                        <| input model.V004LinkNameInput model.OldLinkAndLinkNameValues.V004n <| input model.V005LinkNameInput model.OldLinkAndLinkNameValues.V005n <| input model.V006LinkNameInput model.OldLinkAndLinkNameValues.V006n
+        | SendLinkAndLinkNameValuesToServer
+            ->
+             try
+                 try
+                     let buttonClickEvent: LinkAndLinkNameValuesDomain =   //see remark in CMSCenik.fs
+                         let input current old =
+                             match current = String.Empty with //String.IsNullOrWhiteSpace current || String.IsNullOrEmpty current
+                             | true  -> old
+                             | false -> current 
+                         SharedLinkAndLinkNameValues.create
+                         <| input model.V001LinkInput model.OldLinkAndLinkNameValues.V001 <| input model.V002LinkInput model.OldLinkAndLinkNameValues.V002 <| input model.V003LinkInput model.OldLinkAndLinkNameValues.V003 
+                         <| input model.V004LinkInput model.OldLinkAndLinkNameValues.V004 <| input model.V005LinkInput model.OldLinkAndLinkNameValues.V005 <| input model.V006LinkInput model.OldLinkAndLinkNameValues.V006
+                         <| input model.V001LinkNameInput model.OldLinkAndLinkNameValues.V001n <| input model.V002LinkNameInput model.OldLinkAndLinkNameValues.V002n <| input model.V003LinkNameInput model.OldLinkAndLinkNameValues.V003n 
+                         <| input model.V004LinkNameInput model.OldLinkAndLinkNameValues.V004n <| input model.V005LinkNameInput model.OldLinkAndLinkNameValues.V005n <| input model.V006LinkNameInput model.OldLinkAndLinkNameValues.V006n
 
-                    //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
-                    let cmd = Cmd.OfAsyncImmediate.perform sendLinkAndLinkNameValuesApi.sendLinkAndLinkNameValues buttonClickEvent NewLinkAndLinkNameValues
-                    let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }    
+                     //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
+                     let cmd = Cmd.OfAsyncImmediate.perform sendLinkAndLinkNameValuesApi.sendLinkAndLinkNameValues buttonClickEvent NewLinkAndLinkNameValues
+                     let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }    
 
-                    let delayedCmd (dispatch: Msg -> unit): unit =                                                  
-                        let delayedDispatch: Async<unit> =
-                            async
-                                {
-                                    let! completor = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
-                                    let! result = completor
-                                    do! Async.Sleep 1000
-                                    dispatch AsyncWorkIsComplete
-                                }                                   
-                        Async.StartImmediate delayedDispatch                                                            
+                     let delayedCmd (dispatch: Msg -> unit): unit =                                                  
+                         let delayedDispatch: Async<unit> =
+                             async
+                                 {
+                                     let! completor = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
+                                     let! result = completor
+                                     do! Async.Sleep 1000
+
+                                     dispatch AsyncWorkIsComplete
+                                 }                                   
+                         Async.StartImmediate delayedDispatch                                                            
                                                          
-                    { model with DelayMsg = "Probíhá načítání..."; ErrorMsg = String.Empty }, cmd2 cmd delayedCmd        
-                finally
-                ()   
-            with
-            | ex -> { model with ErrorMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
+                     { model with DelayMsg = "Probíhá načítání..."; ErrorMsg = String.Empty }, cmd2 cmd delayedCmd        
+                 finally
+                 ()   
+             with
+             | ex -> { model with ErrorMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
 
-        | NewLinkAndLinkNameValues valueNew ->
-            {
-                model with
+        | NewLinkAndLinkNameValues valueNew
+            ->
+             {
+                 model with
                            LinkAndLinkNameValues =
                               {
                                   V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
@@ -154,11 +158,12 @@ module CMSLink =
                            ErrorMsg = 
                                let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
-            },  Cmd.none
+             },  Cmd.none
 
-        | OldLinkAndLinkNameValues valueOld ->
-            {
-                model with
+        | OldLinkAndLinkNameValues valueOld
+            ->
+             {
+                 model with
                             OldLinkAndLinkNameValues =
                                 {
                                     V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
@@ -170,13 +175,19 @@ module CMSLink =
                             ErrorMsg = 
                                 let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3
                                 removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
-            },  Cmd.none
+             },  Cmd.none
    
     let view (model: Model) (dispatch: Msg -> unit) =
 
         let completeContent() =
 
-            let td n = ([ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq) |> List.map (fun item -> item)
+            let td n =
+                (
+                    [ 1..n ]
+                    |> List.map (fun _ -> Html.td [])
+                    |> List.ofSeq
+                )
+                |> List.map (fun item -> item)
 
             javaScriptMessageBox model.ErrorMsg
 

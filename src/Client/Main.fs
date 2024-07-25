@@ -18,7 +18,7 @@ open PublicPages
 open NotUsedPages
 
 open Shared
-open SharedTypes
+open Shared
 
 [<RequireQualifiedAccess>]
 module App = 
@@ -26,7 +26,7 @@ module App =
     type ApplicationUser =
         | FirstTimeRunAnonymous
         | Anonymous
-        | LoggedIn of SharedApi.User
+        | LoggedIn of SharedTypes.User
 
     [<RequireQualifiedAccess>]
     type Page =
@@ -49,8 +49,8 @@ module App =
             ActivePage: Page      
             CurrentRoute: MaximeRouter.Router.Route option 
             User: ApplicationUser 
-            user: SharedApi.User
-            Session: SharedApi.LoginResult option
+            user: SharedTypes.User
+            Session: SharedTypes.LoginResult option
             LinkAndLinkNameValues: LinkAndLinkNameValuesDomain
             LinkAndLinkNameInputValues: LinkAndLinkNameValuesDomain
         }
@@ -86,8 +86,8 @@ module App =
                 match model.Session with
                 | Some value ->
                               match value with
-                              | SharedApi.UsernameOrPasswordIncorrect problem -> Anonymous 
-                              | SharedApi.LoggedIn user                       -> LoggedIn user  
+                              | SharedTypes.UsernameOrPasswordIncorrect problem -> Anonymous 
+                              | SharedTypes.LoggedIn user                       -> LoggedIn user  
                 | None       ->
                               Anonymous
                 
@@ -120,32 +120,39 @@ module App =
         *)
 
         match optRoute with
-        | None ->
-            { model with ActivePage = Page.NotFound }, Cmd.none
+        | None
+            ->
+             { model with ActivePage = Page.NotFound }, Cmd.none
 
-        | Some MaximeRouter.Router.Route.Home ->    
-           let (homeModel, homeCmd) = Home.init ()       
-           { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
+        | Some MaximeRouter.Router.Route.Home
+            ->    
+            let (homeModel, homeCmd) = Home.init ()       
+            { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
-        | Some (MaximeRouter.Router.Route.Sluzby sluzbyId) ->
-            let (sluzbyModel, sluzbyCmd) = Sluzby.init sluzbyId
-            { model with ActivePage = Page.Sluzby sluzbyModel }, cmd1 SluzbyMsg sluzbyCmd AskServerForLinkAndLinkNameValues 
+        | Some (MaximeRouter.Router.Route.Sluzby sluzbyId)
+            ->
+             let (sluzbyModel, sluzbyCmd) = Sluzby.init sluzbyId
+             { model with ActivePage = Page.Sluzby sluzbyModel }, cmd1 SluzbyMsg sluzbyCmd AskServerForLinkAndLinkNameValues 
 
-        | Some (MaximeRouter.Router.Route.Cenik cenikId) ->
-            let (cenikModel, cenikCmd) = Cenik.init cenikId
-            { model with ActivePage = Page.Cenik cenikModel }, cmd1 CenikMsg cenikCmd AskServerForLinkAndLinkNameValues 
+        | Some (MaximeRouter.Router.Route.Cenik cenikId)
+            ->
+             let (cenikModel, cenikCmd) = Cenik.init cenikId
+             { model with ActivePage = Page.Cenik cenikModel }, cmd1 CenikMsg cenikCmd AskServerForLinkAndLinkNameValues 
 
-        | Some (MaximeRouter.Router.Route.Nenajdete nenajdeteId) ->
-            let (nenajdeteModel, nenajdeteCmd) = Nenajdete.init nenajdeteId 
-            { model with ActivePage = Page.Nenajdete nenajdeteModel }, cmd1 NenajdeteMsg nenajdeteCmd AskServerForLinkAndLinkNameValues 
+        | Some (MaximeRouter.Router.Route.Nenajdete nenajdeteId)
+            ->
+             let (nenajdeteModel, nenajdeteCmd) = Nenajdete.init nenajdeteId 
+             { model with ActivePage = Page.Nenajdete nenajdeteModel }, cmd1 NenajdeteMsg nenajdeteCmd AskServerForLinkAndLinkNameValues 
 
-        | Some (MaximeRouter.Router.Route.Kontakt kontaktId) ->
-            let (kontaktModel, kontaktCmd) = Kontakt.init kontaktId
-            { model with ActivePage = Page.Kontakt kontaktModel }, cmd1 KontaktMsg kontaktCmd AskServerForLinkAndLinkNameValues 
+        | Some (MaximeRouter.Router.Route.Kontakt kontaktId)
+            ->
+             let (kontaktModel, kontaktCmd) = Kontakt.init kontaktId
+             { model with ActivePage = Page.Kontakt kontaktModel }, cmd1 KontaktMsg kontaktCmd AskServerForLinkAndLinkNameValues 
 
-        | Some (MaximeRouter.Router.Route.Login loginId) ->
-            let (loginModel, loginCmd) = Login.init loginId
-            { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd 
+        | Some (MaximeRouter.Router.Route.Login loginId)
+            ->
+             let (loginModel, loginCmd) = Login.init loginId
+             { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd 
 
         //not in use
         | Some (MaximeRouter.Router.Route.Logout) ->
@@ -153,56 +160,61 @@ module App =
             { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
         //not in use
-        | Some (MaximeRouter.Router.Route.Maintenance) ->
-            let (maintenanceModel, maintenanceCmd) = Maintenance.init ()
-            { model with ActivePage = Page.Maintenance maintenanceModel }, Cmd.map MaintenanceMsg maintenanceCmd 
+        | Some (MaximeRouter.Router.Route.Maintenance)
+            ->
+             let (maintenanceModel, maintenanceCmd) = Maintenance.init ()
+             { model with ActivePage = Page.Maintenance maintenanceModel }, Cmd.map MaintenanceMsg maintenanceCmd 
 
-        | Some (MaximeRouter.Router.Route.CMSRozcestnik cmsRozcestnikId) ->               
-            match model.User with
-            | Anonymous     ->  
+        | Some (MaximeRouter.Router.Route.CMSRozcestnik cmsRozcestnikId)
+            ->               
+             match model.User with
+             | Anonymous     ->  
                               let (homeModel, homeCmd) = Home.init () //or Login.init      
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
-            | LoggedIn user ->
+             | LoggedIn user ->
                               let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.init cmsRozcestnikId 
                               { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd
-             //FirstTimeRunAnonymous is a long string, that is why a placeholder is used instead :-)
-            | _             ->
+              //FirstTimeRunAnonymous is a long string, that is why a placeholder is used instead :-)
+             | _             ->
                               let (homeModel, homeCmd) = Home.init () //or Login.init      
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues                  
                      
-        | Some (MaximeRouter.Router.Route.CMSCenik cmsCenikId) ->  
-            match model.User with
-            | Anonymous     ->  
+        | Some (MaximeRouter.Router.Route.CMSCenik cmsCenikId)
+            ->  
+             match model.User with
+             | Anonymous     ->  
                               let (homeModel, homeCmd) = Home.init () //or Login.init      
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
-            | LoggedIn user ->
+             | LoggedIn user ->
                               let (cmsCenikModel, cmsCenikCmd) = CMSCenik.init cmsCenikId
                               { model with ActivePage = Page.CMSCenik cmsCenikModel }, Cmd.map CMSCenikMsg cmsCenikCmd 
-            | _             ->
+             | _             ->
                               let (homeModel, homeCmd) = Home.init () //or Login.init      
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
-        | Some (MaximeRouter.Router.Route.CMSKontakt cmsKontaktId) ->
-            match model.User with
-            | Anonymous     ->  
+        | Some (MaximeRouter.Router.Route.CMSKontakt cmsKontaktId)
+            ->
+             match model.User with
+             | Anonymous     ->  
                               let (homeModel, homeCmd) = Home.init () //or Login.init     
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
-            | LoggedIn user ->
+             | LoggedIn user ->
                               let (cmsKontaktModel, cmsKontaktCmd) = CMSKontakt.init cmsKontaktId
                               { model with ActivePage = Page.CMSKontakt cmsKontaktModel }, Cmd.map CMSKontaktMsg cmsKontaktCmd 
-            | _             ->
+             | _             ->
                               let (homeModel, homeCmd) = Home.init () //or Login.init      
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
-        | Some (MaximeRouter.Router.Route.CMSLink cmsLinkId) ->    
-            match model.User with
-            | Anonymous     ->  
+        | Some (MaximeRouter.Router.Route.CMSLink cmsLinkId)
+            ->    
+             match model.User with
+             | Anonymous     ->  
                               let (homeModel, homeCmd) = Home.init () //or Login.init      
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
-            | LoggedIn user ->
+             | LoggedIn user ->
                               let (cmsLinkModel, cmsLinkCmd) = CMSLink.init cmsLinkId
                               { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
-            | _             ->
+             | _             ->
                               let (homeModel, homeCmd) = Home.init () //or Login.init       
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues
 
@@ -213,7 +225,7 @@ module App =
                 ActivePage = Page.NotFound 
                 CurrentRoute = None
                 User = Anonymous
-                user = { Username = SharedApi.Username String.Empty } //{ Username = SharedApi.Username String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
+                user = { Username = SharedTypes.Username String.Empty } //{ Username = SharedApi.Username String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
                 Session = None          
                 LinkAndLinkNameValues = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault   
                 LinkAndLinkNameInputValues = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
@@ -222,89 +234,104 @@ module App =
     let update (msg: Msg) (model: Model) =
        
         match model.ActivePage, msg with
-        | Page.NotFound, _ ->
-            // Nothing to do here
-            model, Cmd.none
+        | Page.NotFound, _
+            ->
+             // Nothing to do here
+             model, Cmd.none
 
-        | Page.Home homeModel, HomeMsg homeMsg ->
-            let (homeModel, homeCmd) = Home.update homeMsg homeModel       
-            { model with ActivePage = Page.Home homeModel; Session = None }, Cmd.map HomeMsg homeCmd
+        | Page.Home homeModel, HomeMsg homeMsg
+            ->
+             let (homeModel, homeCmd) = Home.update homeMsg homeModel       
+             { model with ActivePage = Page.Home homeModel; Session = None }, Cmd.map HomeMsg homeCmd
 
-        | Page.Sluzby sluzbyModel, SluzbyMsg sluzbyMsg ->
-            let (sluzbyModel, sluzbyCmd) = Sluzby.update sluzbyMsg sluzbyModel
-            { model with ActivePage = Page.Sluzby sluzbyModel; Session = None }, Cmd.map SluzbyMsg sluzbyCmd
+        | Page.Sluzby sluzbyModel, SluzbyMsg sluzbyMsg
+            ->
+             let (sluzbyModel, sluzbyCmd) = Sluzby.update sluzbyMsg sluzbyModel
+             { model with ActivePage = Page.Sluzby sluzbyModel; Session = None }, Cmd.map SluzbyMsg sluzbyCmd
 
-        | Page.Cenik cenikModel, CenikMsg cenikMsg ->
-            let (cenikModel, cenikCmd) = Cenik.update cenikMsg cenikModel
-            { model with ActivePage = Page.Cenik cenikModel; Session = None }, Cmd.map CenikMsg cenikCmd
+        | Page.Cenik cenikModel, CenikMsg cenikMsg
+            ->
+             let (cenikModel, cenikCmd) = Cenik.update cenikMsg cenikModel
+             { model with ActivePage = Page.Cenik cenikModel; Session = None }, Cmd.map CenikMsg cenikCmd
 
-        | Page.Nenajdete nenajdeteModel, NenajdeteMsg nenajdeteMsg ->
-            let (nenajdeteModel, nenajdeteCmd) = Nenajdete.update nenajdeteMsg nenajdeteModel
-            { model with ActivePage = Page.Nenajdete nenajdeteModel; Session = None }, Cmd.map NenajdeteMsg nenajdeteCmd
+        | Page.Nenajdete nenajdeteModel, NenajdeteMsg nenajdeteMsg
+            ->
+             let (nenajdeteModel, nenajdeteCmd) = Nenajdete.update nenajdeteMsg nenajdeteModel
+             { model with ActivePage = Page.Nenajdete nenajdeteModel; Session = None }, Cmd.map NenajdeteMsg nenajdeteCmd
 
-        | Page.Kontakt kontaktModel, KontaktMsg kontaktMsg ->
-            let (kontaktModel, kontaktCmd) = Kontakt.update kontaktMsg kontaktModel
-            { model with ActivePage = Page.Kontakt kontaktModel; Session = None }, Cmd.map KontaktMsg kontaktCmd
+        | Page.Kontakt kontaktModel, KontaktMsg kontaktMsg
+            ->
+             let (kontaktModel, kontaktCmd) = Kontakt.update kontaktMsg kontaktModel
+             { model with ActivePage = Page.Kontakt kontaktModel; Session = None }, Cmd.map KontaktMsg kontaktCmd
 
-        | Page.Login loginModel, LoginMsg loginMsg ->
-            let (loginModel, loginCmd, loginExtraMsg) = Login.update loginMsg loginModel        
-            match loginExtraMsg with
-            | Login.ExternalMsg.NoOp -> { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd
-            | Login.ExternalMsg.SignedIn session -> { model with ActivePage = Page.Login loginModel; Session = Some session }, Cmd.map LoginMsg loginCmd
+        | Page.Login loginModel, LoginMsg loginMsg
+            ->
+             let (loginModel, loginCmd, loginExtraMsg) = Login.update loginMsg loginModel        
+             match loginExtraMsg with
+             | Login.ExternalMsg.NoOp -> { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd
+             | Login.ExternalMsg.SignedIn session -> { model with ActivePage = Page.Login loginModel; Session = Some session }, Cmd.map LoginMsg loginCmd
 
-        | Page.CMSRozcestnik cmsRozcestnikModel, CMSRozcestnikMsg cmsRozcestnikMsg ->
-            let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.update cmsRozcestnikMsg cmsRozcestnikModel
-            { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel; Session = None }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd 
+        | Page.CMSRozcestnik cmsRozcestnikModel, CMSRozcestnikMsg cmsRozcestnikMsg
+            ->
+             let (cmsRozcestnikModel, cmsRozcestnikCmd) = CMSRozcestnik.update cmsRozcestnikMsg cmsRozcestnikModel
+             { model with ActivePage = Page.CMSRozcestnik cmsRozcestnikModel; Session = None }, Cmd.map CMSRozcestnikMsg cmsRozcestnikCmd 
 
-        | Page.CMSCenik cmsCenikModel, CMSCenikMsg cmsCenikMsg ->
-            let (cmsCenikModel, cmsCenikCmd) = CMSCenik.update cmsCenikMsg cmsCenikModel 
-            { model with ActivePage = Page.CMSCenik cmsCenikModel }, Cmd.map CMSCenikMsg cmsCenikCmd 
+        | Page.CMSCenik cmsCenikModel, CMSCenikMsg cmsCenikMsg
+            ->
+             let (cmsCenikModel, cmsCenikCmd) = CMSCenik.update cmsCenikMsg cmsCenikModel 
+             { model with ActivePage = Page.CMSCenik cmsCenikModel }, Cmd.map CMSCenikMsg cmsCenikCmd 
 
-        | Page.CMSKontakt cmsKontaktModel, CMSKontaktMsg cmsKontaktMsg ->
-            let (cmsKontaktModel, cmsKontaktCmd) = CMSKontakt.update cmsKontaktMsg cmsKontaktModel 
-            { model with ActivePage = Page.CMSKontakt cmsKontaktModel }, Cmd.map CMSKontaktMsg cmsKontaktCmd 
+        | Page.CMSKontakt cmsKontaktModel, CMSKontaktMsg cmsKontaktMsg
+            ->
+             let (cmsKontaktModel, cmsKontaktCmd) = CMSKontakt.update cmsKontaktMsg cmsKontaktModel 
+             { model with ActivePage = Page.CMSKontakt cmsKontaktModel }, Cmd.map CMSKontaktMsg cmsKontaktCmd 
 
-        | Page.CMSLink cmsLinkModel, CMSLinkMsg cmsLinkMsg ->
-            let (cmsLinkModel, cmsLinkCmd) = CMSLink.update cmsLinkMsg cmsLinkModel 
-            { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
+        | Page.CMSLink cmsLinkModel, CMSLinkMsg cmsLinkMsg
+            ->
+             let (cmsLinkModel, cmsLinkCmd) = CMSLink.update cmsLinkMsg cmsLinkModel 
+             { model with ActivePage = Page.CMSLink cmsLinkModel }, Cmd.map CMSLinkMsg cmsLinkCmd 
                                                                   
              //LinkAndLinkNameValues need to be activated during the first download of any page        
-        | _, AskServerForLinkAndLinkNameValues ->
-                let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.LinkAndLinkNameInputValues
-                let cmd = Cmd.OfAsync.perform sendDeserialisedLinkAndLinkNameValuesApi.getDeserialisedLinkAndLinkNameValues loadEvent GetLinkAndLinkNameValues
-                model, cmd
+        | _, AskServerForLinkAndLinkNameValues
+            ->
+             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.LinkAndLinkNameInputValues
+             let cmd = Cmd.OfAsync.perform sendDeserialisedLinkAndLinkNameValuesApi.getDeserialisedLinkAndLinkNameValues loadEvent GetLinkAndLinkNameValues
+             model, cmd
         
-        | _, GetLinkAndLinkNameValues value ->
-                { model with
-                             LinkAndLinkNameValues =
-                                {
-                                    V001 = value.V001; V002 = value.V002; V003 = value.V003;
-                                    V004 = value.V004; V005 = value.V005; V006 = value.V006;
-                                    V001n = value.V001n; V002n = value.V002n; V003n = value.V003n;
-                                    V004n = value.V004n; V005n = value.V005n; V006n = value.V006n;
-                                    Msgs = value.Msgs 
-                                }                                                       
-                }, Cmd.none
+        | _, GetLinkAndLinkNameValues value
+            ->
+             { model with
+                         LinkAndLinkNameValues =
+                            {
+                                V001 = value.V001; V002 = value.V002; V003 = value.V003;
+                                V004 = value.V004; V005 = value.V005; V006 = value.V006;
+                                V001n = value.V001n; V002n = value.V002n; V003n = value.V003n;
+                                V004n = value.V004n; V005n = value.V005n; V006n = value.V006n;
+                                Msgs = value.Msgs 
+                            }                                                       
+             }, Cmd.none
                                             
-        | _, msg -> model, Cmd.none
-            //Browser.console.warn("Message discarded:\n", string msg)    
+        | _, msg
+            ->
+             model, Cmd.none
+             //Browser.console.warn("Message discarded:\n", string msg)    
 
     let view (model: Model) (dispatch: Dispatch<Msg>) =
          
         match model.ActivePage with
-        | Page.NotFound -> str "404 Page not found"       
-        | Page.Home homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues 
-        | Page.Sluzby sluzbyModel -> Sluzby.view sluzbyModel (SluzbyMsg >> dispatch) model.LinkAndLinkNameValues 
-        | Page.Cenik cenikModel -> Cenik.view cenikModel (CenikMsg >> dispatch) model.LinkAndLinkNameValues 
-        | Page.Nenajdete nenajdeteModel -> Nenajdete.view nenajdeteModel (NenajdeteMsg >> dispatch) model.LinkAndLinkNameValues 
-        | Page.Kontakt kontaktModel -> Kontakt.view kontaktModel (KontaktMsg >> dispatch) model.LinkAndLinkNameValues
-        | Page.Maintenance maintenanceModel -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch) //not in use
-        | Page.Login loginModel -> Login.view loginModel (LoginMsg >> dispatch)                              
+        | Page.NotFound                      -> str "404 Page not found"       
+        | Page.Home homeModel                -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues 
+        | Page.Sluzby sluzbyModel            -> Sluzby.view sluzbyModel (SluzbyMsg >> dispatch) model.LinkAndLinkNameValues 
+        | Page.Cenik cenikModel              -> Cenik.view cenikModel (CenikMsg >> dispatch) model.LinkAndLinkNameValues 
+        | Page.Nenajdete nenajdeteModel      -> Nenajdete.view nenajdeteModel (NenajdeteMsg >> dispatch) model.LinkAndLinkNameValues 
+        | Page.Kontakt kontaktModel          -> Kontakt.view kontaktModel (KontaktMsg >> dispatch) model.LinkAndLinkNameValues
+        | Page.Maintenance maintenanceModel  -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch) //not in use
+        | Page.Login loginModel              -> Login.view loginModel (LoginMsg >> dispatch)                              
         | Page.CMSRozcestnik rozcestnikModel -> CMSRozcestnik.view rozcestnikModel model.user (CMSRozcestnikMsg >> dispatch)  
-        | Page.CMSCenik cmsCenikModel -> CMSCenik.view cmsCenikModel (CMSCenikMsg >> dispatch) 
-        | Page.CMSKontakt cmsKontaktModel -> CMSKontakt.view cmsKontaktModel (CMSKontaktMsg >> dispatch) 
-        | Page.CMSLink cmsLinkModel -> CMSLink.view cmsLinkModel (CMSLinkMsg >> dispatch)
-       // | Page.Logout homeModel -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues //not in use
+        | Page.CMSCenik cmsCenikModel        -> CMSCenik.view cmsCenikModel (CMSCenikMsg >> dispatch) 
+        | Page.CMSKontakt cmsKontaktModel    -> CMSKontakt.view cmsKontaktModel (CMSKontaktMsg >> dispatch) 
+        | Page.CMSLink cmsLinkModel          -> CMSLink.view cmsLinkModel (CMSLinkMsg >> dispatch)
+       // | Page.Logout homeModel            -> Home.view homeModel (HomeMsg >> dispatch) model.LinkAndLinkNameValues //not in use
 
     open Elmish.React    
     open Elmish.UrlParser

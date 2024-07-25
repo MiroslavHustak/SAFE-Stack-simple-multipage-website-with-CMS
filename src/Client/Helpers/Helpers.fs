@@ -26,9 +26,4 @@ open System
 
             match not (strContainsOnlySpace errorMsg || errorMsg = String.Empty) with //I know - String.IsNullOrWhiteSpace, String.IsNullOrEmpty :-)
             | true  -> Browser.Dom.window.alert(errorMsg)
-            | false -> ()
-
-    module Option =
-
-        let neco = ()
-              
+            | false -> ()              

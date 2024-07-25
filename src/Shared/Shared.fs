@@ -1,7 +1,7 @@
 namespace Shared
 
 open System
-open SharedTypes
+open Shared
 
 module Route =
 
@@ -22,8 +22,8 @@ module SharedLoginValues =
 
     let create username password = 
         {
-            Username = username   //client -> server
-            Password = password   //client -> server
+            SharedTypes.Username = username   //client -> server
+            SharedTypes.Password = password   //client -> server
         }
   
 module SharedCenikValues =    

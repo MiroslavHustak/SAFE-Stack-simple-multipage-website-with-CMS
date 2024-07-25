@@ -1,7 +1,7 @@
 namespace TransLayerSend.Server
 
 open System
-open SharedTypes
+open Shared
 open DtoSend.Server.DtoSend
 
 module TransLayerSend =

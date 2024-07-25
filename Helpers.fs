@@ -15,35 +15,48 @@ module Proc =
         let locker = obj()
 
         let colors =
-            [| ConsoleColor.Blue
-               ConsoleColor.Yellow
-               ConsoleColor.Magenta
-               ConsoleColor.Cyan
-               ConsoleColor.DarkBlue
-               ConsoleColor.DarkYellow
-               ConsoleColor.DarkMagenta
-               ConsoleColor.DarkCyan |]
+            [|
+                ConsoleColor.Blue
+                ConsoleColor.Yellow
+                ConsoleColor.Magenta
+                ConsoleColor.Cyan
+                ConsoleColor.DarkBlue
+                ConsoleColor.DarkYellow
+                ConsoleColor.DarkMagenta
+                ConsoleColor.DarkCyan
+            |]
 
         let print color (colored: string) (line: string) =
             lock locker
                 (fun () ->
-                    let currentColor = Console.ForegroundColor
-                    Console.ForegroundColor <- color
-                    Console.Write colored
-                    Console.ForegroundColor <- currentColor
-                    Console.WriteLine line)
+                         let currentColor = Console.ForegroundColor
+                         Console.ForegroundColor <- color
+                         Console.Write colored
+                         Console.ForegroundColor <- currentColor
+                         Console.WriteLine line
+                )
 
         let onStdout index name (line: string) =
             let color = colors.[index % colors.Length]
-            if isNull line then
-                print color $"{name}: --- END ---" ""
-            else if String.isNotNullOrEmpty line then
-                print color $"{name}: " line
+            match isNull line with
+            | true  ->
+                     print color $"{name}: --- END ---" ""
+            | false ->
+                     match String.isNotNullOrEmpty line with
+                     | true  -> print color $"{name}: " line
+                     | false -> ()
+            //if isNull line then
+                //print color $"{name}: --- END ---" ""
+            //else if String.isNotNullOrEmpty line then
+               // print color $"{name}: " line
 
         let onStderr name (line: string) =
             let color = ConsoleColor.Red
-            if isNull line |> not then
-                print color $"{name}: " line
+            match isNull line |> not with
+            | true  -> print color $"{name}: " line
+            | false -> ()
+            //if isNull line |> not then
+              //  print color $"{name}: " line
 
         let redirect (index, (name, createProcess)) =
             createProcess
@@ -77,11 +90,12 @@ let dotnet = createProcess "dotnet"
 let npm =
     let npmPath =
         match ProcessUtils.tryFindFileOnPath "npm" with
-        | Some path -> path
-        | None ->
-            "npm was not found in path. Please install it and make sure it's available from your path. " +
-            "See https://safe-stack.github.io/docs/quickstart/#install-pre-requisites for more info"
-            |> failwith
+        | Some path ->
+                     path
+        | None      ->
+                     "npm was not found in path. Please install it and make sure it's available from your path. " +
+                     "See https://safe-stack.github.io/docs/quickstart/#install-pre-requisites for more info"
+                     |> failwith
 
     createProcess npmPath
 
@@ -99,8 +113,8 @@ let runOrDefault args =
     try
         match args with
         | [| target |] -> Target.runOrDefault target
-        | _ -> Target.runOrDefault "Run"
+        | _            -> Target.runOrDefault "Run"
         0
     with e ->
-        printfn "%A" e
-        1
+            printfn "%A" e
+            1

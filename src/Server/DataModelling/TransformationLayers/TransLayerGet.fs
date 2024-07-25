@@ -2,7 +2,7 @@ namespace TransLayerGet.Server
 
 open System
 
-open SharedTypes
+open Shared
 open Helpers.Server
 open ErrorTypes.Server
 open DtoGet.Server.DtoGet

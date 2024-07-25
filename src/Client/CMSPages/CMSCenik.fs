@@ -8,7 +8,7 @@ open FSharp.Control
 open Fable.Remoting.Client
 
 open Shared
-open SharedTypes
+open Shared
 open Helpers.Client.Helper
 
 module CMSCenik = 
@@ -88,50 +88,53 @@ module CMSCenik =
         | SetV008Input value -> { model with V008Input = value }, Cmd.none
         | SetV009Input value -> { model with V009Input = value }, Cmd.none
     
-        | SendOldCenikValuesToServer ->   
-            let loadEvent = SharedDeserialisedCenikValues.create model.OldCenikValues
-            let cmd = Cmd.OfAsync.perform sendCenikValuesApi.getOldCenikValues loadEvent OldCenikValues  
-            model, cmd
+        | SendOldCenikValuesToServer
+            ->   
+             let loadEvent = SharedDeserialisedCenikValues.create model.OldCenikValues
+             let cmd = Cmd.OfAsync.perform sendCenikValuesApi.getOldCenikValues loadEvent OldCenikValues  
+             model, cmd
 
         | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
 
-        | SendCenikValuesToServer ->
-            try
-                try
-                    let buttonClickEvent: CenikValuesDomain =                   
-                        let input current old =                  
-                            match strContainsOnlySpace current || String.IsNullOrEmpty current with //nebo String.IsNullOrWhiteSpace current || String.IsNullOrEmpty current
-                            | true  -> old
-                            | false -> current 
-                        SharedCenikValues.create //Unit type would suffice, nevertheless sending CenikValues and empty values to the server preserved in order to use the existing code on Server and Shared 
-                        <| SharedCenikValues.cenikValuesDomainDefault.Id <| SharedCenikValues.cenikValuesDomainDefault.ValueState //whatever Id and Value State
-                        <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
-                        <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
-                        <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
+        | SendCenikValuesToServer
+            ->
+             try
+                 try
+                     let buttonClickEvent: CenikValuesDomain =                   
+                         let input current old =                  
+                             match strContainsOnlySpace current || String.IsNullOrEmpty current with //nebo String.IsNullOrWhiteSpace current || String.IsNullOrEmpty current
+                             | true  -> old
+                             | false -> current 
+                         SharedCenikValues.create //Unit type would suffice, nevertheless sending CenikValues and empty values to the server preserved in order to use the existing code on Server and Shared 
+                         <| SharedCenikValues.cenikValuesDomainDefault.Id <| SharedCenikValues.cenikValuesDomainDefault.ValueState //whatever Id and Value State
+                         <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
+                         <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
+                         <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
 
-                    //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
-                    let cmd = Cmd.OfAsyncImmediate.perform sendCenikValuesApi.sendCenikValues buttonClickEvent NewCenikValues 
-                    let cmd2 (cmd: Cmd<Msg>) delayedCmd = Cmd.batch <| seq { cmd; Cmd.ofSub delayedCmd }               
+                     //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
+                     let cmd = Cmd.OfAsyncImmediate.perform sendCenikValuesApi.sendCenikValues buttonClickEvent NewCenikValues 
+                     let cmd2 (cmd: Cmd<Msg>) delayedCmd = Cmd.batch <| seq { cmd; Cmd.ofSub delayedCmd }               
 
-                    let delayedCmd (dispatch: Msg -> unit): unit =                    
-                        let delayedDispatch: Async<unit> =                      
-                            async
-                                {
-                                    let! completor = Async.StartChild (async { return dispatch SendOldCenikValuesToServer } ) 
-                                    let! result = completor
-                                    do! Async.Sleep 1000 //see the Elmish Book
-                                    dispatch AsyncWorkIsComplete           
-                                }
-                        Async.StartImmediate delayedDispatch
-                    { model with DelayMsg = "Probíhá načítání ... " }, cmd2 cmd delayedCmd  //cmd shall be performed first, delayedCmd shall be performed second; hence Cmd.OfAsyncImmediate instead of Cmd.OfAsync         
-                finally
-                ()   
-            with
-            | ex -> { model with ErrorMsg = sprintf "Nedošlo k načtení hodnot. Popis chyby: %s " (string ex) }, Cmd.none   
+                     let delayedCmd (dispatch: Msg -> unit): unit =                    
+                         let delayedDispatch: Async<unit> =                      
+                             async
+                                 {
+                                     let! completor = Async.StartChild (async { return dispatch SendOldCenikValuesToServer } ) 
+                                     let! result = completor
+                                     do! Async.Sleep 1000 //see the Elmish Book
+                                     dispatch AsyncWorkIsComplete           
+                                 }
+                         Async.StartImmediate delayedDispatch
+                     { model with DelayMsg = "Probíhá načítání ... " }, cmd2 cmd delayedCmd  //cmd shall be performed first, delayedCmd shall be performed second; hence Cmd.OfAsyncImmediate instead of Cmd.OfAsync         
+                 finally
+                 ()   
+             with
+             | ex -> { model with ErrorMsg = sprintf "Nedošlo k načtení hodnot. Popis chyby: %s " (string ex) }, Cmd.none   
 
-        | NewCenikValues valueNew ->
-            {
-                model with
+        | NewCenikValues valueNew
+            ->
+             {
+                 model with
                            CenikValues =
                               {
                                   Id = valueNew.Id; ValueState = valueNew.ValueState;
@@ -143,11 +146,12 @@ module CMSCenik =
                            ErrorMsg =
                                let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3   
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3
-            },  Cmd.none
+             },  Cmd.none
 
-        | OldCenikValues valueOld ->    
-            {
-                model with
+        | OldCenikValues valueOld
+            ->    
+             {
+                 model with
                            OldCenikValues =
                               {
                                   Id = valueOld.Id; ValueState = valueOld.ValueState;
@@ -159,13 +163,19 @@ module CMSCenik =
                            ErrorMsg =
                                let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3  
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3                      
-            },  Cmd.none
+             },  Cmd.none
 
     let view (model: Model) (dispatch: Msg -> unit) =        
 
         let completeContent() =
 
-            let td n = ([ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq) |> List.map (fun item -> item)
+            let td n =
+                (
+                    [ 1..n ]
+                    |> List.map (fun _ -> Html.td [])
+                    |> List.ofSeq
+                )
+                |> List.map (fun item -> item)
 
             javaScriptMessageBox model.ErrorMsg
 

@@ -8,7 +8,7 @@ open FSharp.Control
 open Fable.Remoting.Client
 
 open Shared
-open SharedTypes
+open Shared
 open Helpers.Client.Helper
 
 module CMSKontakt = 
@@ -78,49 +78,52 @@ module CMSKontakt =
         | SetV006Input value -> { model with V006Input = value }, Cmd.none
         | SetV007Input value -> { model with V007Input = value }, Cmd.none    
 
-        | SendOldKontaktValuesToServer ->
-            let loadEvent = SharedDeserialisedKontaktValues.create model.OldKontaktValues
-            let cmd = Cmd.OfAsync.perform sendKontaktValuesApi.getOldKontaktValues loadEvent OldKontaktValues
-            model, cmd
+        | SendOldKontaktValuesToServer
+            ->
+             let loadEvent = SharedDeserialisedKontaktValues.create model.OldKontaktValues
+             let cmd = Cmd.OfAsync.perform sendKontaktValuesApi.getOldKontaktValues loadEvent OldKontaktValues
+             model, cmd
 
         | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
         
-        | SendKontaktValuesToServer ->
-            try
-                try
-                    let buttonClickEvent: KontaktValuesDomain =
-                        let input current old =
-                            match current = String.Empty with
-                            | true  -> old
-                            | false -> current 
-                        SharedKontaktValues.create //see remark in CMSCenik.fs
-                        <| input model.V001Input model.OldKontaktValues.V001 <| input model.V002Input model.OldKontaktValues.V002 <| input model.V003Input model.OldKontaktValues.V003 
-                        <| input model.V004Input model.OldKontaktValues.V004 <| input model.V005Input model.OldKontaktValues.V005 <| input model.V006Input model.OldKontaktValues.V006
-                        <| input model.V007Input model.OldKontaktValues.V007 
+        | SendKontaktValuesToServer
+            ->
+             try
+                 try
+                     let buttonClickEvent: KontaktValuesDomain =
+                         let input current old =
+                             match current = String.Empty with
+                             | true  -> old
+                             | false -> current 
+                         SharedKontaktValues.create //see remark in CMSCenik.fs
+                         <| input model.V001Input model.OldKontaktValues.V001 <| input model.V002Input model.OldKontaktValues.V002 <| input model.V003Input model.OldKontaktValues.V003 
+                         <| input model.V004Input model.OldKontaktValues.V004 <| input model.V005Input model.OldKontaktValues.V005 <| input model.V006Input model.OldKontaktValues.V006
+                         <| input model.V007Input model.OldKontaktValues.V007 
 
-                    //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
-                    let cmd = Cmd.OfAsyncImmediate.perform sendKontaktValuesApi.sendKontaktValues buttonClickEvent NewKontaktValues
-                    let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }
+                     //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
+                     let cmd = Cmd.OfAsyncImmediate.perform sendKontaktValuesApi.sendKontaktValues buttonClickEvent NewKontaktValues
+                     let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }
 
-                    let delayedCmd (dispatch: Msg -> unit): unit =                                                  
-                        let delayedDispatch: Async<unit> =
-                            async
-                                {
-                                    let! completor = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
-                                    let! result = completor
-                                    do! Async.Sleep 1000
-                                    dispatch AsyncWorkIsComplete
-                                }                                      
-                        Async.StartImmediate delayedDispatch      
-                    { model with DelayMsg = "Probíhá načítání..."; ErrorMsg = String.Empty }, cmd2 cmd delayedCmd        
-                finally
-                ()   
-            with
-            | ex -> { model with ErrorMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
+                     let delayedCmd (dispatch: Msg -> unit): unit =                                                  
+                         let delayedDispatch: Async<unit> =
+                             async
+                                 {
+                                     let! completor = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
+                                     let! result = completor
+                                     do! Async.Sleep 1000
+                                     dispatch AsyncWorkIsComplete
+                                 }                                      
+                         Async.StartImmediate delayedDispatch      
+                     { model with DelayMsg = "Probíhá načítání..."; ErrorMsg = String.Empty }, cmd2 cmd delayedCmd        
+                 finally
+                 ()   
+             with
+             | ex -> { model with ErrorMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
                   
-        | NewKontaktValues valueNew ->
-            {
-                model with
+        | NewKontaktValues valueNew
+            ->
+             {
+                 model with
                            KontaktValues =
                               {
                                   V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
@@ -130,11 +133,12 @@ module CMSKontakt =
                            ErrorMsg = 
                                let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
-            },  Cmd.none
+             },  Cmd.none
 
-        | OldKontaktValues valueOld ->
-            {
-                model with
+        | OldKontaktValues valueOld
+            ->
+             {
+                 model with
                            OldKontaktValues =
                               {
                                   V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
@@ -144,13 +148,19 @@ module CMSKontakt =
                            ErrorMsg =
                                let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3  
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3  
-            },  Cmd.none  
+             },  Cmd.none  
    
     let view (model: Model) (dispatch: Msg -> unit) =        
 
         let completeContent() =
 
-            let td n = ([ 1..n ] |> List.map (fun _ -> Html.td []) |> List.ofSeq) |> List.map (fun item -> item)
+            let td n =
+                (
+                    [ 1..n ]
+                    |> List.map (fun _ -> Html.td [])
+                    |> List.ofSeq
+                )
+                |> List.map (fun item -> item)
 
             javaScriptMessageBox model.ErrorMsg
 

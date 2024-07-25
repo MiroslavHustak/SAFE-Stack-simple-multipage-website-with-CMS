@@ -9,7 +9,7 @@ open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 
 open Shared
-open SharedTypes
+open Shared
 
 open Errors
 open Settings

@@ -5,7 +5,7 @@ open Elmish
 open Fable.Remoting.Client
 
 open Shared
-open SharedTypes
+open Shared
 
 module CMSRozcestnik = 
 
@@ -30,9 +30,9 @@ module CMSRozcestnik =
         match msg with
         | Dummy -> model, Cmd.none 
 
-    let view model (user: SharedApi.User) (dispatch: Msg -> unit) = 
+    let view model (user: SharedTypes.User) (dispatch: Msg -> unit) = 
 
-        let usr = user.Username |> function SharedApi.Username value -> value
+        let usr = user.Username |> function SharedTypes.Username value -> value
 
         let userText = sprintf"%s%s" "Uživatel byl právě přihlášen jako : " usr   
         let userTextTime = sprintf"%s%s" "Okamžik přihlášení : " (string <| System.DateTime.Now.ToLongTimeString())

@@ -7,7 +7,7 @@ open Feliz
 open Fable.Remoting.Client
 
 open Shared
-open SharedTypes
+open Shared
 
 open Records.Client
 open HtmlFeliz.Layout
@@ -46,14 +46,16 @@ module Kontakt =
     let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         
         match msg with       
-        | AskServerForKontaktValues ->
-            let loadEvent = SharedDeserialisedKontaktValues.create model.KontaktInputValues
-            let cmd = Cmd.OfAsync.perform getDeserialisedKontaktValuesApi.getDeserialisedKontaktValues loadEvent NewKontaktValues
-            model, cmd
+        | AskServerForKontaktValues
+            ->
+             let loadEvent = SharedDeserialisedKontaktValues.create model.KontaktInputValues
+             let cmd = Cmd.OfAsync.perform getDeserialisedKontaktValuesApi.getDeserialisedKontaktValues loadEvent NewKontaktValues
+             model, cmd
 
-        | NewKontaktValues value    ->
-            {
-                model with
+        | NewKontaktValues value
+            ->
+             {
+                 model with
                            KontaktValues =
                                 {
                                     V001 = value.V001; V002 = value.V002; V003 = value.V003;
@@ -61,7 +63,7 @@ module Kontakt =
                                     V007 = value.V007; Msgs = value.Msgs 
                                 }
                            ErrorMsg = sprintf "%s %s %s" value.Msgs.Msg1 value.Msgs.Msg2 value.Msgs.Msg3
-            }, Cmd.none    
+             }, Cmd.none    
  
     let view (model: Model) (dispatch: Msg -> unit) links =
     
@@ -92,7 +94,7 @@ module Kontakt =
                             prop.id 17
                             prop.style
                                 [
-                                  style.padding(0)
+                                    style.padding(0)
                                 ]
                             prop.children [
                                 Html.text model.KontaktValues.V001
@@ -102,7 +104,7 @@ module Kontakt =
                             prop.id 18
                             prop.style
                                 [
-                                  style.padding(0)
+                                    style.padding(0)
                                 ]
                             prop.children [
                                 Html.text model.KontaktValues.V002
@@ -112,7 +114,7 @@ module Kontakt =
                             prop.id 19
                             prop.style
                                 [
-                                  style.padding(0)
+                                    style.padding(0)
                                 ]
                             prop.children [
                                 Html.text model.KontaktValues.V003                    
@@ -122,7 +124,7 @@ module Kontakt =
                             prop.id 20
                             prop.style
                                 [
-                                  style.padding(0)
+                                    style.padding(0)
                                 ]
                             prop.children [
                                 Html.text model.KontaktValues.V004                
@@ -142,7 +144,7 @@ module Kontakt =
                             prop.id 21
                             prop.style
                                 [
-                                  style.padding(0)
+                                    style.padding(0)
                                 ]
                             prop.children [
                                 Html.text model.KontaktValues.V006                            
@@ -152,7 +154,7 @@ module Kontakt =
                             prop.id 21
                             prop.style
                                [
-                                 style.padding(0)
+                                   style.padding(0)
                                ]
                             prop.children [
                                Html.text model.KontaktValues.V007                            
@@ -167,7 +169,7 @@ module Kontakt =
                                 prop.id 24
                                 prop.style
                                     [
-                                      style.padding(0)
+                                        style.padding(0)
                                     ]
                                 prop.children [
                                     Html.text "-----------------------------------------------------------------------------------------"
@@ -178,7 +180,7 @@ module Kontakt =
                                 prop.id 25
                                 prop.style
                                     [
-                                      style.padding(0)
+                                        style.padding(0)
                                     ]
                                 prop.children [
                                      Html.text "IČ: 02021820"
@@ -214,7 +216,7 @@ module Kontakt =
                                 prop.id 28
                                 prop.style
                                     [
-                                      style.padding(0)
+                                        style.padding(0)
                                     ]
                                 prop.children [
                                     Html.text "Vznik oprávnění dne 21.08.2013"

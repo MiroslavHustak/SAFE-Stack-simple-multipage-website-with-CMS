@@ -7,7 +7,7 @@ open Elmish
 open Fable.Remoting.Client
 
 open Shared
-open SharedTypes
+open Shared
 
 module Login =
 
@@ -15,17 +15,17 @@ module Login =
     //https://medium.com/@MangelMaxime/my-tips-for-working-with-elmish-ab8d193d52fd
     type ExternalMsg =
         | NoOp
-        | SignedIn of SharedApi.LoginResult
+        | SignedIn of SharedTypes.LoginResult
 
     type ApplicationUser =  
         | FirstTimeRunAnonymous
         | Anonymous
-        | LoggedIn of SharedApi.User
+        | LoggedIn of SharedTypes.User
 
     type Model =
         {
             User: ApplicationUser
-            problem: SharedApi.LoginProblems
+            problem: SharedTypes.LoginProblems
             InputUsr: string
             InputPsw: string
             Id: int
@@ -39,8 +39,8 @@ module Login =
         | SetUsrInput of string
         | SetPswInput of string
         | SendUsrPswToServer
-        | GetLoginResults of SharedApi.LoginResult
-        | LoginCompleted of SharedApi.LoginResult
+        | GetLoginResults of SharedTypes.LoginResult
+        | LoginCompleted of SharedTypes.LoginResult
         | Logout
         | CMSRozcestnikMsg of CMSPages.CMSRozcestnik.Msg
         | CMSRozcestnikModel of CMSPages.CMSRozcestnik.Model 
@@ -68,17 +68,19 @@ module Login =
         | SetUsrInput value -> { model with InputUsr = value }, Cmd.none, NoOp
         | SetPswInput value -> { model with InputPsw = value }, Cmd.none, NoOp
 
-        | SendUsrPswToServer ->
-            let buttonClickEvent = SharedLoginValues.create (SharedApi.Username model.InputUsr) (SharedApi.Password model.InputPsw)
-            let cmd = Cmd.OfAsync.perform getLoginApi.login buttonClickEvent GetLoginResults 
-            model, cmd, NoOp
+        | SendUsrPswToServer
+            ->
+             let buttonClickEvent = SharedLoginValues.create (SharedTypes.Username model.InputUsr) (SharedTypes.Password model.InputPsw)
+             let cmd = Cmd.OfAsync.perform getLoginApi.login buttonClickEvent GetLoginResults 
+             model, cmd, NoOp
 
-        | GetLoginResults value -> 
-            let model =           
-                match value with
-                | SharedApi.UsernameOrPasswordIncorrect problem -> { model with User = ApplicationUser.Anonymous; problem = problem } //potrebne pro na konci modulu uvedeny kod
-                | SharedApi.LoggedIn user                       -> { model with User = ApplicationUser.LoggedIn user } //potrebne pro na konci modulu uvedeny kod    
-            model, Cmd.ofMsg (LoginCompleted value), NoOp
+        | GetLoginResults value
+            -> 
+             let model =           
+                 match value with
+                 | SharedTypes.UsernameOrPasswordIncorrect problem -> { model with User = ApplicationUser.Anonymous; problem = problem } //potrebne pro na konci modulu uvedeny kod
+                 | SharedTypes.LoggedIn user                       -> { model with User = ApplicationUser.LoggedIn user } //potrebne pro na konci modulu uvedeny kod    
+             model, Cmd.ofMsg (LoginCompleted value), NoOp
 
         | LoginCompleted session -> model, Cmd.none, SignedIn session
         | Logout                 -> model, Cmd.none, NoOp
@@ -89,8 +91,8 @@ module Login =
 
         let proponClick =
             prop.onClick (fun e ->
-                                e.preventDefault()
-                                dispatch SendUsrPswToServer
+                                 e.preventDefault()
+                                 dispatch SendUsrPswToServer
                          )
 
         let submitInput =
@@ -137,16 +139,22 @@ module Login =
                     prop.onChange (SetPswInput >> dispatch)  
                     prop.style
                         [
-                        style.width(200)
-                        style.fontFamily "sans-serif"
+                            style.width(200)
+                            style.fontFamily "sans-serif"
                         ]
             ]   
          
         //************************************************************************
-        let br n = ( [ 1..n ] |> List.map (fun _ -> Html.br []) |> List.ofSeq ) |> List.map (fun item -> item)
+        let br n =
+            (
+                [ 1..n ]
+                |> List.map (fun _ -> Html.br [])
+                |> List.ofSeq
+            )
+            |> List.map (fun item -> item)
         
         //complete html/Feliz code (no layout)
-        let contentLogin submitInput inputElementUsr inputElementPsw (rcErrorMsg: SharedApi.LoginProblems) hiddenValue dispatch = 
+        let contentLogin submitInput inputElementUsr inputElementPsw (rcErrorMsg: SharedTypes.LoginProblems) hiddenValue dispatch = 
         
             Html.html [
                 prop.xmlns "http://www.w3.org/1999/xhtml"
@@ -370,11 +378,11 @@ module Login =
 //https://medium.com/@MangelMaxime/my-tips-for-working-with-elmish-ab8d193d52fd
 module Parent =
 
-    open SharedTypes
+    open Shared
 
     type Model =
         {
-            Session : SharedApi.LoginResult option
+            Session : SharedTypes.LoginResult option
             Login : Login.Model
         }        
 

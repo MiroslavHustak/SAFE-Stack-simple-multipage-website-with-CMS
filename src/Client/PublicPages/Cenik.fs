@@ -7,7 +7,7 @@ open Elmish
 open Fable.Remoting.Client
 
 open Shared
-open SharedTypes
+open Shared
 
 open Records.Client
 open HtmlFeliz.Layout
@@ -46,13 +46,15 @@ module Cenik =
     let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         
         match msg with       
-        | AskServerForCenikValues -> 
-            let loadEvent = SharedDeserialisedCenikValues.create model.CenikInputValues
-            let cmd = Cmd.OfAsync.perform getDeserialisedCenikValuesApi.getDeserialisedCenikValues loadEvent GetCenikValues
-            model, cmd
+        | AskServerForCenikValues
+            -> 
+             let loadEvent = SharedDeserialisedCenikValues.create model.CenikInputValues
+             let cmd = Cmd.OfAsync.perform getDeserialisedCenikValuesApi.getDeserialisedCenikValues loadEvent GetCenikValues
+             model, cmd
                 
-        | GetCenikValues value   ->
-            { model with
+        | GetCenikValues value
+            ->
+             { model with
                         CenikValues =
                             {
                                 Id = value.Id; ValueState = value.ValueState;
@@ -62,7 +64,7 @@ module Cenik =
                                 Msgs = value.Msgs
                             }
                         ErrorMsg = sprintf "%s %s %s" value.Msgs.Msg1 value.Msgs.Msg2 value.Msgs.Msg3
-            }, Cmd.none    
+             }, Cmd.none    
  
     let view (model: Model) (dispatch: Msg -> unit) links =
     

@@ -3,7 +3,7 @@ namespace Database.Errors
 open System
 
 open Shared
-open SharedTypes
+open Shared
 
 open ErrorTypes.Server
 open Connections.Connection

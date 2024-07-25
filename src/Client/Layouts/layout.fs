@@ -4,7 +4,7 @@ open System
 
 open Feliz
 
-open SharedTypes
+open Shared
 open Records.Client
 open Helpers.Client.Helper
 

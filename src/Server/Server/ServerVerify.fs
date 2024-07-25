@@ -12,7 +12,7 @@ open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 
 open Shared
-open SharedTypes
+open Shared
 
 open Errors
 open Database.Errors
@@ -24,6 +24,7 @@ open Helpers.Server
 open Helpers.Server.Security2
 open Helpers.Server.CEBuilders
 open Helpers.Server.Miscellaneous
+
 
 module ServerVerify =
 
@@ -46,7 +47,7 @@ module ServerVerify =
         mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
     //************************************************************************
 
-    let internal verifyLogin (login: LoginInfo) =   // LoginInfo -> Async<LoginResult>>
+    let internal verifyLogin (login: SharedTypes.LoginInfo) =   // LoginInfo -> Async<LoginResult>>
 
         let isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)            
 
@@ -66,12 +67,12 @@ module ServerVerify =
 
         pyramidOfHell  
             {
-                let rc1 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
-                let rc2 = { SharedApi.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedApi.LoginProblems.line2 = "Problém s ověřením uživatelského jména a hesla" }
-                let rc3 = { SharedApi.LoginProblems.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedApi.LoginProblems.line2 = "Prosím zadej údaje znovu." }  
+                let rc1 = { SharedTypes.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedTypes.LoginProblems.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
+                let rc2 = { SharedTypes.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedTypes.LoginProblems.line2 = "Problém s ověřením uživatelského jména a hesla" }
+                let rc3 = { SharedTypes.LoginProblems.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedTypes.LoginProblems.line2 = "Prosím zadej údaje znovu." }  
 
-                let usr = login.Username |> function SharedApi.Username value -> value //unwrapping SCDU
-                let psw = login.Password |> function SharedApi.Password value -> value
+                let usr = login.Username |> function SharedTypes.Username value -> value //unwrapping SCDU
+                let psw = login.Password |> function SharedTypes.Password value -> value
 
                 let uberHash =
                     try
@@ -94,17 +95,17 @@ module ServerVerify =
                     with
                     | ex -> Error (string ex.Message)
 
-                let! _ = uberHash |> Result.isOk, SharedApi.UsernameOrPasswordIncorrect rc1                
-                let! _ = isValidLogin usr psw, SharedApi.UsernameOrPasswordIncorrect rc3
+                let! _ = uberHash |> Result.isOk, SharedTypes.UsernameOrPasswordIncorrect rc1                
+                let! _ = isValidLogin usr psw, SharedTypes.UsernameOrPasswordIncorrect rc3
 
                 let verify1 = uberHashError uberHash usr Seq.head 
-                let! _ = (<>) verify1 Exception, SharedApi.UsernameOrPasswordIncorrect rc2
+                let! _ = (<>) verify1 Exception, SharedTypes.UsernameOrPasswordIncorrect rc2
 
                 let verify2 = uberHashError uberHash psw Seq.last 
-                let! _ = (<>) verify2 Exception, SharedApi.UsernameOrPasswordIncorrect rc2
-                let! _ = (&&) (verify1 = LegitimateTrue) (verify2 = LegitimateTrue), SharedApi.UsernameOrPasswordIncorrect rc3 
+                let! _ = (<>) verify2 Exception, SharedTypes.UsernameOrPasswordIncorrect rc2
+                let! _ = (&&) (verify1 = LegitimateTrue) (verify2 = LegitimateTrue), SharedTypes.UsernameOrPasswordIncorrect rc3 
                                                                         
-                return SharedApi.LoggedIn { Username = login.Username } //{ Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
+                return SharedTypes.LoggedIn { Username = login.Username } //{ Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             }
 
 
