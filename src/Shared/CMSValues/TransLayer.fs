@@ -1,9 +1,8 @@
 namespace Shared
 
 open System
+
 open Shared
-
-
 
 module SharedMessageDefaultValues =
 
@@ -15,14 +14,6 @@ module SharedMessageDefaultValues =
             Msg4 = String.Empty
             Msg5 = String.Empty
             Msg6 = String.Empty
-        }
-
-module SharedLoginValues =
-
-    let create username password = 
-        {
-            SharedTypes.Username = username   //client -> server
-            SharedTypes.Password = password   //client -> server
         }
   
 module SharedCenikValues =    
@@ -43,7 +34,7 @@ module SharedCenikValues =
             Msgs = SharedMessageDefaultValues.messageDefault
         }
           
-    let create id valState v001 v002 v003 v004 v005 v006 v007 v008 v009 =
+    let transferLayer id valState v001 v002 v003 v004 v005 v006 v007 v008 v009 =
         {
             Id = id
             ValueState = valState
@@ -117,9 +108,9 @@ module SharedDeserialisedKontaktValues =
             Msgs = SharedMessageDefaultValues.messageDefault          
         }
 
-module SharedLinkAndLinkNameValues =
+module SharedLinkValues =
 
-    let linkAndLinkNameValuesDomainDefault = 
+    let linkValuesDomainDefault = 
         {
             V001 = "https://blog.kaloricketabulky.cz/2013/08/nutricni-terapeut-vs-vyzivovy-poradce-kdo-nam-muze-radit-s-vyzivou/"
             V002 = "http://www.aktivityprozdravi.cz/zdravotni-problemy/civilizacni-psychologicke-a-jine-nemoci/civilizacni-choroby-a-nas-zivotni-styl"
@@ -153,7 +144,7 @@ module SharedLinkAndLinkNameValues =
             Msgs = SharedMessageDefaultValues.messageDefault    
         }
 
-module SharedDeserialisedLinkAndLinkNameValues =
+module SharedDeserialisedValues =
    
     let transferLayer (linkAndLinkNameInputValues: LinkValuesShared) =
         {

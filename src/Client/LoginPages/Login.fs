@@ -25,9 +25,13 @@ module Login =
     type Model =
         {
             User: ApplicationUser
-            Problem: SharedTypes.LoginProblems
+            Problem: SharedTypes.LoginErrorMsgShared
+
+            //********** ClientDtoCredentials **********
             InputUsr: string
             InputPsw: string
+            //******************************************
+
             Id: int
         }
         
@@ -70,7 +74,8 @@ module Login =
 
         | SendUsrPswToServer
             ->
-             let buttonClickEvent = SharedLoginValues.create (SharedTypes.Username model.InputUsr) (SharedTypes.Password model.InputPsw)
+             //let buttonClickEvent = SharedLoginValues.create (SharedTypes.Username model.InputUsr) (SharedTypes.Password model.InputPsw)
+             let buttonClickEvent = SharedLoginValues.transferLayer model.InputUsr model.InputPsw
              let cmd = Cmd.OfAsync.perform getLoginApi.login buttonClickEvent GetLoginResults 
              model, cmd, NoOp
 
@@ -154,7 +159,7 @@ module Login =
             |> List.map (fun item -> item)
         
         //complete html/Feliz code (no layout)
-        let contentLogin submitInput inputElementUsr inputElementPsw (rcErrorMsg: SharedTypes.LoginProblems) hiddenValue dispatch = 
+        let contentLogin submitInput inputElementUsr inputElementPsw (rcErrorMsg: SharedTypes.LoginErrorMsgShared) hiddenValue dispatch = 
         
             Html.html [
                 prop.xmlns "http://www.w3.org/1999/xhtml"

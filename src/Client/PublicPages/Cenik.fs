@@ -7,7 +7,6 @@ open Elmish
 open Fable.Remoting.Client
 
 open Shared
-open Shared
 
 open Records.Client
 open HtmlFeliz.Layout

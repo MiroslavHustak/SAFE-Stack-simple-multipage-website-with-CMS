@@ -221,12 +221,12 @@ module ServerApi =
                                             | Ok _      -> sendLinkAndLinkNameValues  
                                             | Error err -> { sendLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }    
                              | Error _ ->
-                                        SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
+                                        SharedLinkValues.linkValuesDomainDefault
 
                          return sendNewLinkAndLinkNameValues
                       }
            
-            getOldLinkAndLinkNameValues =
+            getOldLinkValues =
                 fun _ ->
                    async
                        {                         
@@ -236,15 +236,15 @@ module ServerApi =
                                    pyramidOfInferno
                                        {
                                            let copy = copyFiles pathToJson pathToJsonBackup true
-                                           let! _ = copy, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
+                                           let! _ = copy, SharedLinkValues.linkValuesDomainDefault
 
                                            let deserialize = deserializeFromJsonThoth2<LinkValuesDtoFromStorage> pathToJsonBackup
-                                           let! deserialize = deserialize, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
+                                           let! deserialize = deserialize, SharedLinkValues.linkValuesDomainDefault
 
                                            return linkValuesTransferLayerFromStorage deserialize, String.Empty
                                        }                                      
                                with
-                               | ex -> SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message) 
+                               | ex -> SharedLinkValues.linkValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message) 
 
                            return { getOldLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }  
                        } 
@@ -259,15 +259,15 @@ module ServerApi =
                                    pyramidOfInferno
                                        {
                                            let copy = copyFiles pathToJson pathToJsonBackup true
-                                           let! _ = copy, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
+                                           let! _ = copy, SharedLinkValues.linkValuesDomainDefault
 
                                            let deserialize = deserializeFromJsonThoth2<LinkValuesDtoFromStorage> pathToJsonBackup
-                                           let! deserialize = deserialize, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
+                                           let! deserialize = deserialize, SharedLinkValues.linkValuesDomainDefault
 
                                            return linkValuesTransferLayerFromStorage deserialize, String.Empty
                                        }                                      
                                with
-                               | ex -> SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message)  
+                               | ex -> SharedLinkValues.linkValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message)  
 
                            return { getLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }  
                        }

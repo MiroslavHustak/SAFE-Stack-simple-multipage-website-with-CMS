@@ -8,15 +8,20 @@ open FSharp.Control
 open Fable.Remoting.Client
 
 open Shared
-open Shared
+
 open Helpers.Client.Helper
 
 module CMSLink = 
 
+     //Common model to view / from view
     type Model =
         {
-            LinkAndLinkNameValues: LinkValuesShared
-            OldLinkAndLinkNameValues: LinkValuesShared
+            //***** ClientDtoToView *********
+            LinkValues: LinkValuesShared
+            OldLinkValues: LinkValuesShared
+            //******************************
+
+            //***** ClientDtoFromView *********            
             V001LinkInput: string
             V002LinkInput: string
             V003LinkInput: string
@@ -29,6 +34,8 @@ module CMSLink =
             V004LinkNameInput: string
             V005LinkNameInput: string
             V006LinkNameInput: string
+            //******************************
+
             Id: int
             DelayMsg: string
             ErrorMsg: string
@@ -47,13 +54,13 @@ module CMSLink =
         | SetV004LinkNameInput of string
         | SetV005LinkNameInput of string
         | SetV006LinkNameInput of string
-        | SendLinkAndLinkNameValuesToServer
-        | SendOldLinkAndLinkNameValuesToServer
-        | NewLinkAndLinkNameValues of LinkValuesShared
-        | OldLinkAndLinkNameValues of LinkValuesShared
+        | SendLinkValuesToServer
+        | SendOldLinkValuesToServer
+        | NewLinkValues of LinkValuesShared
+        | OldLinkValues of LinkValuesShared
         | AsyncWorkIsComplete 
 
-    let private sendLinkAndLinkNameValuesApi =
+    let private sendLinkValuesApi =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
@@ -62,8 +69,8 @@ module CMSLink =
 
         let model =
             {
-                LinkAndLinkNameValues = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault           
-                OldLinkAndLinkNameValues = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault           
+                LinkValues = SharedLinkValues.linkValuesDomainDefault           
+                OldLinkValues = SharedLinkValues.linkValuesDomainDefault           
                 V001LinkInput = String.Empty
                 V002LinkInput = String.Empty
                 V003LinkInput = String.Empty
@@ -80,7 +87,7 @@ module CMSLink =
                 DelayMsg = String.Empty
                 ErrorMsg = String.Empty
             }
-        model, Cmd.ofMsg SendOldLinkAndLinkNameValuesToServer
+        model, Cmd.ofMsg SendOldLinkValuesToServer
 
     let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
 
@@ -98,15 +105,15 @@ module CMSLink =
         | SetV005LinkNameInput value -> { model with V005LinkNameInput = value }, Cmd.none
         | SetV006LinkNameInput value -> { model with V006LinkNameInput = value }, Cmd.none
 
-        | SendOldLinkAndLinkNameValuesToServer
+        | SendOldLinkValuesToServer
             ->
-             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.transferLayer model.OldLinkAndLinkNameValues
-             let cmd = Cmd.OfAsync.perform sendLinkAndLinkNameValuesApi.getOldLinkAndLinkNameValues loadEvent OldLinkAndLinkNameValues
+             let loadEvent = SharedDeserialisedValues.transferLayer model.OldLinkValues
+             let cmd = Cmd.OfAsync.perform sendLinkValuesApi.getOldLinkValues loadEvent OldLinkValues
              model, cmd
 
         | AsyncWorkIsComplete -> { model with DelayMsg = String.Empty }, Cmd.none 
     
-        | SendLinkAndLinkNameValuesToServer
+        | SendLinkValuesToServer
             ->
              try
                  try
@@ -115,21 +122,21 @@ module CMSLink =
                              match current = String.Empty with //String.IsNullOrWhiteSpace current || String.IsNullOrEmpty current
                              | true  -> old
                              | false -> current 
-                         SharedLinkAndLinkNameValues.transferLayer
-                         <| input model.V001LinkInput model.OldLinkAndLinkNameValues.V001 <| input model.V002LinkInput model.OldLinkAndLinkNameValues.V002 <| input model.V003LinkInput model.OldLinkAndLinkNameValues.V003 
-                         <| input model.V004LinkInput model.OldLinkAndLinkNameValues.V004 <| input model.V005LinkInput model.OldLinkAndLinkNameValues.V005 <| input model.V006LinkInput model.OldLinkAndLinkNameValues.V006
-                         <| input model.V001LinkNameInput model.OldLinkAndLinkNameValues.V001n <| input model.V002LinkNameInput model.OldLinkAndLinkNameValues.V002n <| input model.V003LinkNameInput model.OldLinkAndLinkNameValues.V003n 
-                         <| input model.V004LinkNameInput model.OldLinkAndLinkNameValues.V004n <| input model.V005LinkNameInput model.OldLinkAndLinkNameValues.V005n <| input model.V006LinkNameInput model.OldLinkAndLinkNameValues.V006n
+                         SharedLinkValues.transferLayer
+                         <| input model.V001LinkInput model.OldLinkValues.V001 <| input model.V002LinkInput model.OldLinkValues.V002 <| input model.V003LinkInput model.OldLinkValues.V003 
+                         <| input model.V004LinkInput model.OldLinkValues.V004 <| input model.V005LinkInput model.OldLinkValues.V005 <| input model.V006LinkInput model.OldLinkValues.V006
+                         <| input model.V001LinkNameInput model.OldLinkValues.V001n <| input model.V002LinkNameInput model.OldLinkValues.V002n <| input model.V003LinkNameInput model.OldLinkValues.V003n 
+                         <| input model.V004LinkNameInput model.OldLinkValues.V004n <| input model.V005LinkNameInput model.OldLinkValues.V005n <| input model.V006LinkNameInput model.OldLinkValues.V006n
 
                      //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
-                     let cmd = Cmd.OfAsyncImmediate.perform sendLinkAndLinkNameValuesApi.sendLinkAndLinkNameValues buttonClickEvent NewLinkAndLinkNameValues
+                     let cmd = Cmd.OfAsyncImmediate.perform sendLinkValuesApi.sendLinkAndLinkNameValues buttonClickEvent NewLinkValues
                      let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }    
 
                      let delayedCmd (dispatch: Msg -> unit): unit =                                                  
                          let delayedDispatch: Async<unit> =
                              async
                                  {
-                                     let! completor = Async.StartChild (async { return dispatch SendOldLinkAndLinkNameValuesToServer })
+                                     let! completor = Async.StartChild (async { return dispatch SendOldLinkValuesToServer })
                                      let! result = completor
                                      do! Async.Sleep 1000
 
@@ -143,11 +150,11 @@ module CMSLink =
              with
              | ex -> { model with ErrorMsg = "Nedošlo k načtení hodnot." }, Cmd.none  
 
-        | NewLinkAndLinkNameValues valueNew
+        | NewLinkValues valueNew
             ->
              {
                  model with
-                           LinkAndLinkNameValues =
+                           LinkValues =
                               {
                                   V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
                                   V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
@@ -160,11 +167,11 @@ module CMSLink =
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
              },  Cmd.none
 
-        | OldLinkAndLinkNameValues valueOld
+        | OldLinkValues valueOld
             ->
              {
                  model with
-                            OldLinkAndLinkNameValues =
+                            OldLinkValues =
                                 {
                                     V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
                                     V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
@@ -283,7 +290,7 @@ module CMSLink =
                                                 ]
                                                 Html.tr [                                                
                                                     prop.children [
-                                                        Html.td model.OldLinkAndLinkNameValues.V001n   
+                                                        Html.td model.OldLinkValues.V001n   
                                                         Html.td
                                                             [
                                                                 Html.input [
@@ -292,7 +299,7 @@ module CMSLink =
                                                                     prop.type' "text"
                                                                     prop.id "001a"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V001n 
+                                                                    prop.placeholder model.OldLinkValues.V001n 
                                                                     prop.onChange (SetV001LinkNameInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV001LinkNameInput ev |> dispatch) 
                                                                     prop.autoFocus true
@@ -306,7 +313,7 @@ module CMSLink =
                                                                     prop.type' "text"
                                                                     prop.id "001b"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V001
+                                                                    prop.placeholder model.OldLinkValues.V001
                                                                     prop.onChange (SetV001LinkInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV001LinkInput ev |> dispatch)    
                                                                     prop.autoFocus true
@@ -320,7 +327,7 @@ module CMSLink =
                                                             //style.fontWeight.bold                                                        
                                                         ] 
                                                     prop.children [
-                                                        Html.td model.OldLinkAndLinkNameValues.V002n  
+                                                        Html.td model.OldLinkValues.V002n  
                                                    
                                                         Html.td
                                                             [
@@ -328,7 +335,7 @@ module CMSLink =
                                                                     prop.type' "text"
                                                                     prop.id "002a"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V002n
+                                                                    prop.placeholder model.OldLinkValues.V002n
                                                                     prop.onChange (SetV002LinkNameInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV002LinkNameInput ev |> dispatch)
                                                                     prop.autoFocus true
@@ -340,7 +347,7 @@ module CMSLink =
                                                                     prop.type' "text"
                                                                     prop.id "002b"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V002
+                                                                    prop.placeholder model.OldLinkValues.V002
                                                                     prop.onChange (SetV002LinkInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV002LinkInput ev |> dispatch)
                                                                     prop.autoFocus true
@@ -354,14 +361,14 @@ module CMSLink =
                                                             //style.fontWeight.bold                                                        
                                                         ] 
                                                     prop.children [
-                                                        Html.td model.OldLinkAndLinkNameValues.V003n 
+                                                        Html.td model.OldLinkValues.V003n 
                                                         Html.td
                                                             [
                                                                 Html.input [
                                                                     prop.type' "text"
                                                                     prop.id "003a"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V003n
+                                                                    prop.placeholder model.OldLinkValues.V003n
                                                                     prop.onChange (SetV003LinkNameInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV003LinkNameInput ev |> dispatch)
                                                                     prop.autoFocus true
@@ -373,7 +380,7 @@ module CMSLink =
                                                                     prop.type' "text"
                                                                     prop.id "003b"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V003
+                                                                    prop.placeholder model.OldLinkValues.V003
                                                                     prop.onChange (SetV003LinkInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV003LinkInput ev |> dispatch)
                                                                     prop.autoFocus true
@@ -387,14 +394,14 @@ module CMSLink =
                                                             //style.fontWeight.bold                                                        
                                                         ] 
                                                     prop.children [
-                                                        Html.td model.OldLinkAndLinkNameValues.V004n 
+                                                        Html.td model.OldLinkValues.V004n 
                                                         Html.td
                                                             [
                                                                 Html.input [
                                                                     prop.type' "text"
                                                                     prop.id "004a"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V004n
+                                                                    prop.placeholder model.OldLinkValues.V004n
                                                                     prop.onChange (SetV004LinkNameInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV004LinkNameInput ev |> dispatch)
                                                                     prop.autoFocus true
@@ -406,7 +413,7 @@ module CMSLink =
                                                                     prop.type' "text"
                                                                     prop.id "004b"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V004
+                                                                    prop.placeholder model.OldLinkValues.V004
                                                                     prop.onChange (SetV004LinkInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV004LinkInput ev |> dispatch)
                                                                     prop.autoFocus true
@@ -420,14 +427,14 @@ module CMSLink =
                                                             //style.fontWeight.bold                                                        
                                                         ] 
                                                     prop.children [
-                                                        Html.td model.OldLinkAndLinkNameValues.V005n  
+                                                        Html.td model.OldLinkValues.V005n  
                                                         Html.td
                                                             [
                                                                 Html.input [
                                                                     prop.type' "text"
                                                                     prop.id "005a"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V005n
+                                                                    prop.placeholder model.OldLinkValues.V005n
                                                                     prop.onChange (SetV005LinkNameInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV005LinkNameInput ev |> dispatch)   
                                                                     prop.autoFocus true
@@ -439,7 +446,7 @@ module CMSLink =
                                                                     prop.type' "text"
                                                                     prop.id "005b"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V005
+                                                                    prop.placeholder model.OldLinkValues.V005
                                                                     prop.onChange (SetV005LinkInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV005LinkInput ev |> dispatch)
                                                                     prop.autoFocus true
@@ -453,15 +460,15 @@ module CMSLink =
                                                             //style.fontWeight.bold                                                        
                                                         ] 
                                                     prop.children [
-                                                        Html.td model.OldLinkAndLinkNameValues.V006n  
-                                                        Html.td model.OldLinkAndLinkNameValues.V006n 
+                                                        Html.td model.OldLinkValues.V006n  
+                                                        Html.td model.OldLinkValues.V006n 
                                                         Html.td
                                                             [
                                                                 Html.input [
                                                                     prop.type' "text"
                                                                     prop.id "006"
                                                                     prop.name ""
-                                                                    prop.placeholder model.OldLinkAndLinkNameValues.V006
+                                                                    prop.placeholder model.OldLinkValues.V006
                                                                     prop.onChange (SetV006LinkInput >> dispatch)
                                                                     //prop.onChange (fun (ev: string) -> SetV006LinkInput ev |> dispatch)  
                                                                     prop.autoFocus true
@@ -572,7 +579,7 @@ module CMSLink =
                                                                 prop.value "Uložit nové údaje"
                                                                 prop.id "Button1"
                                                                 prop.onClick (fun e -> e.preventDefault()
-                                                                                       dispatch SendLinkAndLinkNameValuesToServer
+                                                                                       dispatch SendLinkValuesToServer
                                                                              )
                                                                 prop.style
                                                                     [

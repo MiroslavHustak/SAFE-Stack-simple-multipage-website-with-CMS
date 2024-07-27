@@ -12,7 +12,7 @@ open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 
 open Shared
-open Shared
+open TransLayerLoginValues.Server.TransLayerLoginValues
 
 open Errors
 open Database.Errors
@@ -47,7 +47,7 @@ module ServerVerify =
         mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
     //************************************************************************
 
-    let internal verifyLogin (login: SharedTypes.LoginValues) =   // LoginInfo -> Async<LoginResult>>
+    let internal verifyLogin (login: SharedTypes.LoginValuesShared) =   // LoginInfo -> Async<LoginResult>>
 
         let isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)            
 
@@ -67,12 +67,13 @@ module ServerVerify =
 
         pyramidOfHell  
             {
-                let rc1 = { SharedTypes.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedTypes.LoginProblems.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
-                let rc2 = { SharedTypes.LoginProblems.line1 = "Závažná chyba na serveru !!!"; SharedTypes.LoginProblems.line2 = "Problém s ověřením uživatelského jména a hesla" }
-                let rc3 = { SharedTypes.LoginProblems.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedTypes.LoginProblems.line2 = "Prosím zadej údaje znovu." }  
+                let rc1 = { SharedTypes.LoginErrorMsgShared.line1 = "Závažná chyba na serveru !!!"; SharedTypes.LoginErrorMsgShared.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
+                let rc2 = { SharedTypes.LoginErrorMsgShared.line1 = "Závažná chyba na serveru !!!"; SharedTypes.LoginErrorMsgShared.line2 = "Problém s ověřením uživatelského jména a hesla" }
+                let rc3 = { SharedTypes.LoginErrorMsgShared.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedTypes.LoginErrorMsgShared.line2 = "Prosím zadej údaje znovu." }  
 
-                let usr = login.Username |> function SharedTypes.Username value -> value //unwrapping SCDU
-                let psw = login.Password |> function SharedTypes.Password value -> value
+                // DomainModelLoginValues //TODO zrobit record a domain model
+                let usr = fst <| loginValuesTransferLayer login
+                let psw = snd <| loginValuesTransferLayer login
 
                 let uberHash =
                     try

@@ -8,22 +8,29 @@ open FSharp.Control
 open Fable.Remoting.Client
 
 open Shared
-open Shared
+
 open Helpers.Client.Helper
 
 module CMSKontakt = 
 
+     //Common model to view / from view
     type Model =
         {
+            //***** ClientDtoToView *********
             KontaktValues: KontaktValuesShared
             OldKontaktValues: KontaktValuesShared
+            //******************************
+
+            //***** ClientDtoFromView *********
             V001Input: string
             V002Input: string
             V003Input: string
             V004Input: string
             V005Input: string
             V006Input: string
-            V007Input: string       
+            V007Input: string
+            //******************************
+
             Id: int
             DelayMsg: string
             ErrorMsg: string

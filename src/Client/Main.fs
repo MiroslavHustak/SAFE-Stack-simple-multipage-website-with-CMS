@@ -227,8 +227,8 @@ module App =
                 User = Anonymous
                 user = { Username = SharedTypes.Username String.Empty } //{ Username = SharedApi.Username String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
                 Session = None          
-                LinkAndLinkNameValues = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault   
-                LinkAndLinkNameInputValues = SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
+                LinkAndLinkNameValues = SharedLinkValues.linkValuesDomainDefault   
+                LinkAndLinkNameInputValues = SharedLinkValues.linkValuesDomainDefault
             }    
 
     let update (msg: Msg) (model: Model) =
@@ -294,7 +294,7 @@ module App =
              //LinkAndLinkNameValues need to be activated during the first download of any page        
         | _, AskServerForLinkAndLinkNameValues
             ->
-             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.transferLayer model.LinkAndLinkNameInputValues
+             let loadEvent = SharedDeserialisedValues.transferLayer model.LinkAndLinkNameInputValues
              let cmd = Cmd.OfAsync.perform sendDeserialisedLinkAndLinkNameValuesApi.getDeserialisedLinkAndLinkNameValues loadEvent GetLinkAndLinkNameValues
              model, cmd
         

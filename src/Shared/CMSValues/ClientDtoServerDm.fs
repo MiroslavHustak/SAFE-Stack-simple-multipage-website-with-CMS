@@ -2,14 +2,6 @@ namespace Shared
 
 open System
 
-// = LoginValuesDomainModel
-//
-type LoginValuesDomain = 
-    {
-        username: SharedTypes.Username
-        password: SharedTypes.Password
-    }
-
 // = MessagesServerDomainModel (common model - from to storage to view, from view to storage)
 // = MessagesClientDto (common model - from to storage to view, from view to storage)
 type MessagesShared =

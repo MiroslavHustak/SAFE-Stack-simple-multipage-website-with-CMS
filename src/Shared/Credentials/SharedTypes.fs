@@ -7,7 +7,6 @@ open System
 [<RequireQualifiedAccess>]
 module SharedTypes = 
 
-
     //************** SCDUs for type-driven development (client + server) ***************
 
     //[<Struct>]
@@ -19,18 +18,19 @@ module SharedTypes =
     [<Struct>]
     type Password = Password of string
 
-
-    //*************** Shared types **********************************
-
+    // = LoginValuesServerDto 
+    // = LoginValuesClientDomainModel 
     [<Struct>]
-    type LoginValues =
+    type LoginValuesShared =
        {
            Username: Username
            Password: Password
-       }    
+       }
 
+    // = LoginErrorMsgServerDomainModel 
+    // = LoginErrorMsgClientDto
     [<Struct>]
-    type LoginProblems =
+    type LoginErrorMsgShared =
         {
             line1: string
             line2: string
@@ -46,6 +46,6 @@ module SharedTypes =
     //https://stackoverflow.com/questions/59738472/struct-attribute-on-discriminated-unions
     [<Struct>]
     type LoginResult =
-        | UsernameOrPasswordIncorrect of UsernameOrPasswordIncorrect: LoginProblems
+        | UsernameOrPasswordIncorrect of UsernameOrPasswordIncorrect: LoginErrorMsgShared
         | LoggedIn of LoggedIn: User
 

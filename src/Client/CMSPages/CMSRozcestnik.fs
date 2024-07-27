@@ -5,7 +5,6 @@ open Elmish
 open Fable.Remoting.Client
 
 open Shared
-open Shared
 
 module CMSRozcestnik = 
 
