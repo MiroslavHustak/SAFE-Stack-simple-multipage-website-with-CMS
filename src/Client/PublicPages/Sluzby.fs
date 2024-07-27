@@ -17,14 +17,14 @@ module Sluzby =
     type Msg =
         | DummyMsg
 
-    let init id : Model * Cmd<Msg> =
+    let internal init id : Model * Cmd<Msg> =
 
         let model = { Id = id }
         model, Cmd.none
 
-    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none   
+    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none   
 
-    let view (model: Model) (dispatch: Msg -> unit) links =
+    let internal view (model: Model) (dispatch: Msg -> unit) links =
 
         let sluzbyRecord =
            {

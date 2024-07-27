@@ -8,7 +8,7 @@ namespace MaximeRouter
 [<RequireQualifiedAccess>]
 module Router = 
 
-    let inline (</>) a b = a + "/" + string b
+    let private (</>) a b = a + "/" + string b
 
     type Route =
         | Home
@@ -24,7 +24,7 @@ module Router =
         | CMSKontakt of int
         | CMSLink of int
 
-    let toHash (route : Route) =
+    let internal toHash (route : Route) =
         match route with
         | Home             -> "#home"
         | Sluzby id        -> "#sluzby" </> id
@@ -42,7 +42,7 @@ module Router =
     open Elmish.Navigation
     open Elmish.UrlParser
 
-    let routeParser : Parser<Route -> Route, Route> =
+    let internal routeParser : Parser<Route -> Route, Route> =
         oneOf
             [   // Auth Routes
                 map Route.Home (s "home")

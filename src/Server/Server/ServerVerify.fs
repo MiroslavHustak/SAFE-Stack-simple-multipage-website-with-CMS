@@ -6,16 +6,13 @@ open System.IO
 open FsToolkit
 open FsToolkit.ErrorHandling
 
-open Saturn
+//open Errors
+//open Saturn
+//open Fable.Remoting.Giraffe
 
 open Fable.Remoting.Server
-open Fable.Remoting.Giraffe
 
 open Shared
-open TransLayerLoginValues.Server.TransLayerLoginValues
-
-open Errors
-open Database.Errors
 
 open Settings
 open ErrorTypes.Server
@@ -25,6 +22,8 @@ open Helpers.Server.Security2
 open Helpers.Server.CEBuilders
 open Helpers.Server.Miscellaneous
 
+open LoginValuesDomain.Server.LoginValuesDomain
+open TransLayerLoginValues.Server.TransLayerLoginValues
 
 module ServerVerify =
 
@@ -47,7 +46,7 @@ module ServerVerify =
         mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
     //************************************************************************
 
-    let internal verifyLogin (login: SharedTypes.LoginValuesShared) =   // LoginInfo -> Async<LoginResult>>
+    let internal verifyLogin (login: LoginValuesShared) =   // LoginInfo -> Async<LoginResult>>
 
         let isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)            
 
@@ -67,13 +66,13 @@ module ServerVerify =
 
         pyramidOfHell  
             {
-                let rc1 = { SharedTypes.LoginErrorMsgShared.line1 = "Závažná chyba na serveru !!!"; SharedTypes.LoginErrorMsgShared.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
-                let rc2 = { SharedTypes.LoginErrorMsgShared.line1 = "Závažná chyba na serveru !!!"; SharedTypes.LoginErrorMsgShared.line2 = "Problém s ověřením uživatelského jména a hesla" }
-                let rc3 = { SharedTypes.LoginErrorMsgShared.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; SharedTypes.LoginErrorMsgShared.line2 = "Prosím zadej údaje znovu." }  
+                let rc1 = { LoginErrorMsgShared.line1 = "Závažná chyba na serveru !!!"; LoginErrorMsgShared.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
+                let rc2 = { LoginErrorMsgShared.line1 = "Závažná chyba na serveru !!!"; LoginErrorMsgShared.line2 = "Problém s ověřením uživatelského jména a hesla" }
+                let rc3 = { LoginErrorMsgShared.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; LoginErrorMsgShared.line2 = "Prosím zadej údaje znovu." }  
 
-                // DomainModelLoginValues //TODO zrobit record a domain model
-                let usr = fst <| loginValuesTransferLayer login
-                let psw = snd <| loginValuesTransferLayer login
+                let credentials = loginValuesTransferLayer login
+                let usr = credentials.username
+                let psw = credentials.password
 
                 let uberHash =
                     try
@@ -96,17 +95,17 @@ module ServerVerify =
                     with
                     | ex -> Error (string ex.Message)
 
-                let! _ = uberHash |> Result.isOk, SharedTypes.UsernameOrPasswordIncorrect rc1                
-                let! _ = isValidLogin usr psw, SharedTypes.UsernameOrPasswordIncorrect rc3
+                let! _ = uberHash |> Result.isOk, UsernameOrPasswordIncorrect rc1                
+                let! _ = isValidLogin usr psw, UsernameOrPasswordIncorrect rc3
 
                 let verify1 = uberHashError uberHash usr Seq.head 
-                let! _ = (<>) verify1 Exception, SharedTypes.UsernameOrPasswordIncorrect rc2
+                let! _ = (<>) verify1 Exception, UsernameOrPasswordIncorrect rc2
 
                 let verify2 = uberHashError uberHash psw Seq.last 
-                let! _ = (<>) verify2 Exception, SharedTypes.UsernameOrPasswordIncorrect rc2
-                let! _ = (&&) (verify1 = LegitimateTrue) (verify2 = LegitimateTrue), SharedTypes.UsernameOrPasswordIncorrect rc3 
+                let! _ = (<>) verify2 Exception, UsernameOrPasswordIncorrect rc2
+                let! _ = (&&) (verify1 = LegitimateTrue) (verify2 = LegitimateTrue), UsernameOrPasswordIncorrect rc3 
                                                                         
-                return SharedTypes.LoggedIn { Username = login.Username } //{ Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
+                return LoggedIn { Username = login.Username } //{ Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             }
 
 

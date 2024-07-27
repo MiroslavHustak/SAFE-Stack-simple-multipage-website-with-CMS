@@ -31,7 +31,7 @@ module Cenik =
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
 
-    let init id : Model * Cmd<Msg> =
+    let internal init id : Model * Cmd<Msg> =
 
         let model =
            {
@@ -42,7 +42,7 @@ module Cenik =
            }
         model, Cmd.ofMsg AskServerForCenikValues
 
-    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         
         match msg with       
         | AskServerForCenikValues
@@ -65,7 +65,7 @@ module Cenik =
                         ErrorMsg = sprintf "%s %s %s" value.Msgs.Msg1 value.Msgs.Msg2 value.Msgs.Msg3
              }, Cmd.none    
  
-    let view (model: Model) (dispatch: Msg -> unit) links =
+    let internal view (model: Model) (dispatch: Msg -> unit) links =
     
         let cenikRecord =
            {

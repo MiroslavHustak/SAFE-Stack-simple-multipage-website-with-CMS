@@ -16,13 +16,13 @@ module Maintenance =
     type Msg =
         | DummyMsgText   
 
-    let init () : Model * Cmd<Msg> =
+    let internal init () : Model * Cmd<Msg> =
         let model = { Dummy = () } 
         model, Cmd.none
 
-    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none
+    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none
 
-    let view (model: Model) (dispatch: Msg -> unit) = contentMaintenance()
+    let internal view (model: Model) (dispatch: Msg -> unit) = contentMaintenance()
 
 
     

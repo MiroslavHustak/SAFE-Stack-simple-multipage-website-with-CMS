@@ -3,7 +3,6 @@ namespace Database.Errors
 open System
 
 open Shared
-open Shared
 
 open ErrorTypes.Server
 open Connections.Connection
@@ -22,7 +21,7 @@ module Errors =
 
     let internal errorMsgBoxIU insertOrUpdate cond =
 
-        //just testing active patterns... :-)
+        //just having fun with active patterns... :-)
         let (|Cond1|Cond2|Cond3|) value =
         
             pyramidOfHell    

@@ -5,7 +5,7 @@ type IGetApi =
     //unit -> Async<GetKontaktValues> etc is enough while transferring one way only, but I need error messages to be sent back to the client side
 
     {
-        login : SharedTypes.LoginValuesShared -> Async<SharedTypes.LoginResult> 
+        login : LoginValuesShared -> Async<LoginResult> 
         sendCenikValues: CenikValuesShared -> Async<CenikValuesShared> 
         getOldCenikValues: CenikValuesShared -> Async<CenikValuesShared>
         getDeserialisedCenikValues: CenikValuesShared -> Async<CenikValuesShared>
@@ -19,5 +19,5 @@ type IGetApi =
 
 module Route =
 
-    let builder typeName methodName = sprintf "/api/%s/%s" typeName methodName
+    let internal builder typeName methodName = sprintf "/api/%s/%s" typeName methodName
 

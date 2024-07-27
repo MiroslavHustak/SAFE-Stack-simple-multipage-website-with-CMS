@@ -8,7 +8,6 @@ open FSharp.Control
 open Fable.Remoting.Client
 
 open Shared
-
 open Helpers.Client.Helper
 
 module CMSLink = 
@@ -65,7 +64,7 @@ module CMSLink =
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
 
-    let init id : Model * Cmd<Msg> =
+    let internal init id : Model * Cmd<Msg> =
 
         let model =
             {
@@ -89,7 +88,7 @@ module CMSLink =
             }
         model, Cmd.ofMsg SendOldLinkValuesToServer
 
-    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
 
         match msg with
         | SetV001LinkInput value -> { model with V001LinkInput = value }, Cmd.none
@@ -117,7 +116,7 @@ module CMSLink =
             ->
              try
                  try
-                     let buttonClickEvent: LinkValuesShared =   //see remark in CMSCenik.fs
+                     let buttonClickEvent: LinkValuesShared =   
                          let input current old =
                              match current = String.Empty with //String.IsNullOrWhiteSpace current || String.IsNullOrEmpty current
                              | true  -> old
@@ -184,7 +183,7 @@ module CMSLink =
                                 removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
              },  Cmd.none
    
-    let view (model: Model) (dispatch: Msg -> unit) =
+    let internal view (model: Model) (dispatch: Msg -> unit) =
 
         let completeContent() =
 
@@ -605,5 +604,3 @@ module CMSLink =
             ]
 
         completeContent()
-
-   

@@ -10,7 +10,7 @@ open Helpers.Client.Helper
 
 module Layout = 
 
-    let private myBody render (pageRecord: MyCssClass) (links: LinkValuesShared) =
+    let private myBody render (pageRecord: ReactPage) (links: LinkValuesShared) =
 
         let errorMsg = sprintf "%s %s %s" links.Msgs.Msg1 links.Msgs.Msg2 links.Msgs.Msg3
 
@@ -324,7 +324,7 @@ module Layout =
             ]     
         ]
 
-    let layout render (pageRecord: MyCssClass) links =
+    let internal layout render (pageRecord: ReactPage) links =
 
         Html.html [
             Html.head [
@@ -358,6 +358,6 @@ module Layout =
                 Html.div [
                     prop.id "elmish-app"
                 ]
-                myBody render (pageRecord: MyCssClass) links
+                myBody render (pageRecord: ReactPage) links
             ]
         ]

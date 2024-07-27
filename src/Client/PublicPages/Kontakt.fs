@@ -2,8 +2,8 @@ namespace PublicPages
 
 open System
 
-open Elmish
 open Feliz
+open Elmish
 open Fable.Remoting.Client
 
 open Shared
@@ -31,7 +31,7 @@ module Kontakt =
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
 
-    let init id : Model * Cmd<Msg> =
+    let internal init id : Model * Cmd<Msg> =
        
         let model =        
             {
@@ -42,7 +42,7 @@ module Kontakt =
             }
         model, Cmd.ofMsg AskServerForKontaktValues
 
-    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
         
         match msg with       
         | AskServerForKontaktValues
@@ -64,7 +64,7 @@ module Kontakt =
                            ErrorMsg = sprintf "%s %s %s" value.Msgs.Msg1 value.Msgs.Msg2 value.Msgs.Msg3
              }, Cmd.none    
  
-    let view (model: Model) (dispatch: Msg -> unit) links =
+    let internal view (model: Model) (dispatch: Msg -> unit) links =
     
         let kontaktRecord =
            {

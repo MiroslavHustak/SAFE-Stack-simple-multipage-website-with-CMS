@@ -2,9 +2,9 @@ namespace DtoDefault.Server
 
 open System
 
-open DtoFromStorage.Server.DtoFromStorage
 open DtoXml.Server.DtoXml
 open DtoToStorage.Server.DtoToStorage
+open DtoFromStorage.Server.DtoFromStorage
 
 module DtoDefault =  
 

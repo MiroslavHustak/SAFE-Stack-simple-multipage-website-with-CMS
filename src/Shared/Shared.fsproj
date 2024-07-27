@@ -4,10 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Credentials\SharedTypes.fs" />
-    <Compile Include="Credentials\TransLayer.fs" />
-    <Compile Include="CMSValues\ClientDtoServerDm.fs" />
-    <Compile Include="CMSValues\TransLayer.fs" />
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="LoginData\SharedTypes.fs" />
+    <Compile Include="LoginData\ClientDtoServerDm.fs" />
+    <Compile Include="LoginData\TransLayer.fs" />
+    <Compile Include="CMSData\ClientDtoServerDm.fs" />
+    <Compile Include="CMSData\TransLayer.fs" />
     <Compile Include="GetApi.fs" />
   </ItemGroup>
   <ItemGroup>   

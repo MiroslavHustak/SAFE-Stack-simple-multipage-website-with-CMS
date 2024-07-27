@@ -1,12 +1,12 @@
-namespace Server
+namespace Client
 
 module AssemblyInfo =
 
     open System.Runtime.CompilerServices
 
     [<assembly: InternalsVisibleTo("Shared")>]
-    [<assembly: InternalsVisibleTo("Client")>]
-    [<assembly: InternalsVisibleTo("Server.Tests")>]
+    [<assembly: InternalsVisibleTo("Server")>]
+    [<assembly: InternalsVisibleTo("Client.Tests")>]
     do ()
 
 

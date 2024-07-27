@@ -8,7 +8,6 @@ open FSharp.Control
 open Fable.Remoting.Client
 
 open Shared
-
 open Helpers.Client.Helper
 
 module CMSKontakt = 
@@ -55,7 +54,7 @@ module CMSKontakt =
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
 
-    let init id : Model * Cmd<Msg> =
+    let internal init id : Model * Cmd<Msg> =
         
         let model =
             {
@@ -74,7 +73,7 @@ module CMSKontakt =
             }
         model, Cmd.ofMsg SendOldKontaktValuesToServer
 
-    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
 
         match msg with
         | SetV001Input value -> { model with V001Input = value }, Cmd.none
@@ -102,7 +101,7 @@ module CMSKontakt =
                              match current = String.Empty with
                              | true  -> old
                              | false -> current 
-                         SharedKontaktValues.transferLayer //see remark in CMSCenik.fs
+                         SharedKontaktValues.transferLayer 
                          <| input model.V001Input model.OldKontaktValues.V001 <| input model.V002Input model.OldKontaktValues.V002 <| input model.V003Input model.OldKontaktValues.V003 
                          <| input model.V004Input model.OldKontaktValues.V004 <| input model.V005Input model.OldKontaktValues.V005 <| input model.V006Input model.OldKontaktValues.V006
                          <| input model.V007Input model.OldKontaktValues.V007 
@@ -157,7 +156,7 @@ module CMSKontakt =
                                removeSpaces <| sprintf "%s %s %s" p1 p2 p3  
              },  Cmd.none  
    
-    let view (model: Model) (dispatch: Msg -> unit) =        
+    let internal view (model: Model) (dispatch: Msg -> unit) =        
 
         let completeContent() =
 
@@ -591,4 +590,3 @@ module CMSKontakt =
             ]
     
         completeContent()
-

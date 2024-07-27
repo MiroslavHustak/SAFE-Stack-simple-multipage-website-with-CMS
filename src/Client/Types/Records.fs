@@ -5,7 +5,7 @@ open System
 open Feliz
            
 [<Struct>]
-type MyCssClass =
+type ReactPage =
     {
         Home: IReactProperty
         Sluzby: IReactProperty

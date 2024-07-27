@@ -6,7 +6,7 @@ module ContentMaintenance =
 
     //not in use 
 
-    let contentMaintenance() =
+    let internal contentMaintenance() =
 
         Html.html [
             prop.lang "en"
@@ -62,5 +62,3 @@ module ContentMaintenance =
                 ]
             ]
         ]
-
-    

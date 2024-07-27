@@ -1,7 +1,6 @@
 namespace DtoFromStorage.Server
 
 open System
-open Shared
 
 module DtoFromStorage =   
 

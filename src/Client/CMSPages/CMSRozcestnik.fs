@@ -16,7 +16,7 @@ module CMSRozcestnik =
     type Msg =
         | Dummy  
             
-    let init id: Model * Cmd<Msg> =
+    let internal init id: Model * Cmd<Msg> =
 
         let model =
             {
@@ -24,12 +24,12 @@ module CMSRozcestnik =
             }
         model, Cmd.none
 
-    let update (msg: Msg) (model: Model): Model * Cmd<Msg> =
+    let internal update (msg: Msg) (model: Model): Model * Cmd<Msg> =
 
         match msg with
         | Dummy -> model, Cmd.none 
 
-    let view model (user: SharedTypes.User) (dispatch: Msg -> unit) = 
+    let internal view model (user: User) (dispatch: Msg -> unit) = 
 
         let usr = user.Username |> function SharedTypes.Username value -> value
 
@@ -270,5 +270,4 @@ module CMSRozcestnik =
                     ]
                 ]
 
-        contentCMSRozcestnik returnButtonDiv
-   
+        contentCMSRozcestnik returnButtonDiv   

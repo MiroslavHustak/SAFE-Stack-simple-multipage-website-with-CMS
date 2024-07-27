@@ -15,19 +15,19 @@ module Login =
     //https://medium.com/@MangelMaxime/my-tips-for-working-with-elmish-ab8d193d52fd
     type ExternalMsg =
         | NoOp
-        | SignedIn of SharedTypes.LoginResult
+        | SignedIn of LoginResult
 
     type ApplicationUser =  
         | FirstTimeRunAnonymous
         | Anonymous
-        | LoggedIn of SharedTypes.User
+        | LoggedIn of User
 
     type Model =
         {
             User: ApplicationUser
-            Problem: SharedTypes.LoginErrorMsgShared
+            ErrorMsg: LoginErrorMsgShared
 
-            //********** ClientDtoCredentials **********
+            //********** ClientDtoLoginData**********
             InputUsr: string
             InputPsw: string
             //******************************************
@@ -43,8 +43,8 @@ module Login =
         | SetUsrInput of string
         | SetPswInput of string
         | SendUsrPswToServer
-        | GetLoginResults of SharedTypes.LoginResult
-        | LoginCompleted of SharedTypes.LoginResult
+        | GetLoginResults of LoginResult
+        | LoginCompleted of LoginResult
         | Logout
         | CMSRozcestnikMsg of CMSPages.CMSRozcestnik.Msg
         | CMSRozcestnikModel of CMSPages.CMSRozcestnik.Model 
@@ -54,19 +54,19 @@ module Login =
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.buildProxy<IGetApi>
 
-    let init id : Model * Cmd<Msg> =
+    let internal init id : Model * Cmd<Msg> =
 
         let model =
             {
                 User = FirstTimeRunAnonymous
-                Problem = { line1 = String.Empty; line2 = String.Empty }
+                ErrorMsg = { line1 = String.Empty; line2 = String.Empty }
                 InputUsr = String.Empty
                 InputPsw = String.Empty
                 Id = id
             }
         model, Cmd.none
 
-    let update (msg: Msg) (model: Model): Model * Cmd<Msg> * ExternalMsg =
+    let internal update (msg: Msg) (model: Model): Model * Cmd<Msg> * ExternalMsg =
 
         match msg with
         | SetUsrInput value -> { model with InputUsr = value }, Cmd.none, NoOp
@@ -74,7 +74,6 @@ module Login =
 
         | SendUsrPswToServer
             ->
-             //let buttonClickEvent = SharedLoginValues.create (SharedTypes.Username model.InputUsr) (SharedTypes.Password model.InputPsw)
              let buttonClickEvent = SharedLoginValues.transferLayer model.InputUsr model.InputPsw
              let cmd = Cmd.OfAsync.perform getLoginApi.login buttonClickEvent GetLoginResults 
              model, cmd, NoOp
@@ -83,8 +82,8 @@ module Login =
             -> 
              let model =           
                  match value with
-                 | SharedTypes.UsernameOrPasswordIncorrect problem -> { model with User = ApplicationUser.Anonymous; Problem = problem } //potrebne pro na konci modulu uvedeny kod
-                 | SharedTypes.LoggedIn user                       -> { model with User = ApplicationUser.LoggedIn user } //potrebne pro na konci modulu uvedeny kod    
+                 | UsernameOrPasswordIncorrect problem -> { model with User = ApplicationUser.Anonymous; ErrorMsg = problem } //potrebne pro na konci modulu uvedeny kod
+                 | Shared.LoggedIn user                       -> { model with User = ApplicationUser.LoggedIn user } //potrebne pro na konci modulu uvedeny kod    
              model, Cmd.ofMsg (LoginCompleted value), NoOp
 
         | LoginCompleted session -> model, Cmd.none, SignedIn session
@@ -92,7 +91,7 @@ module Login =
         | CMSRozcestnikMsg _     -> model, Cmd.none, NoOp
         | CMSRozcestnikModel _   -> model, Cmd.none, NoOp
 
-    let view (model: Model) (dispatch: Msg -> unit) =
+    let internal view (model: Model) (dispatch: Msg -> unit) =
 
         let proponClick =
             prop.onClick (fun e ->
@@ -159,7 +158,7 @@ module Login =
             |> List.map (fun item -> item)
         
         //complete html/Feliz code (no layout)
-        let contentLogin submitInput inputElementUsr inputElementPsw (rcErrorMsg: SharedTypes.LoginErrorMsgShared) hiddenValue dispatch = 
+        let contentLogin submitInput inputElementUsr inputElementPsw (rcErrorMsg: LoginErrorMsgShared) hiddenValue dispatch = 
         
             Html.html [
                 prop.xmlns "http://www.w3.org/1999/xhtml"
@@ -373,8 +372,8 @@ module Login =
             <| (dispatch: Msg -> unit)
 
         match model.User with      
-        | Anonymous             -> fnError model.Problem
-        | FirstTimeRunAnonymous -> fnFirstRun model.Problem
+        | Anonymous             -> fnError model.ErrorMsg
+        | FirstTimeRunAnonymous -> fnFirstRun model.ErrorMsg
         | LoggedIn user         -> CMSPages.CMSRozcestnik.view CMSRozcestnikModel user (CMSRozcestnikMsg >> dispatch) //it is not strictly necessary for the model and user to be here, but I left them here to keep things tidy
 
                    
@@ -387,7 +386,7 @@ module Parent =
 
     type Model =
         {
-            Session : SharedTypes.LoginResult option
+            Session : LoginResult option
             Login : Login.Model
         }        
 

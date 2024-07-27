@@ -9,7 +9,7 @@ open System
 
 open Elmish
 open Fable.React
-open Feliz.Router //Cmd.Navigation //not used in this app 
+//open Feliz.Router //Cmd.Navigation //not used in this app 
 open Fable.Remoting.Client
 
 open CMSPages
@@ -18,7 +18,6 @@ open PublicPages
 open NotUsedPages
 
 open Shared
-open Shared
 
 [<RequireQualifiedAccess>]
 module App = 
@@ -26,7 +25,7 @@ module App =
     type ApplicationUser =
         | FirstTimeRunAnonymous
         | Anonymous
-        | LoggedIn of SharedTypes.User
+        | LoggedIn of User
 
     [<RequireQualifiedAccess>]
     type Page =
@@ -48,9 +47,9 @@ module App =
         {
             ActivePage: Page      
             CurrentRoute: MaximeRouter.Router.Route option 
-            User: ApplicationUser 
-            user: SharedTypes.User
-            Session: SharedTypes.LoginResult option
+            A_User: ApplicationUser 
+            User: User
+            Session: LoginResult option
             LinkAndLinkNameValues: LinkValuesShared
             LinkAndLinkNameInputValues: LinkValuesShared
         }
@@ -86,15 +85,15 @@ module App =
                 match model.Session with
                 | Some value ->
                               match value with
-                              | SharedTypes.UsernameOrPasswordIncorrect problem -> Anonymous 
-                              | SharedTypes.LoggedIn user                       -> LoggedIn user  
+                              | UsernameOrPasswordIncorrect problem -> Anonymous 
+                              | Shared.LoggedIn user                -> LoggedIn user  
                 | None       ->
                               Anonymous
                 
             {
                 model with
                            CurrentRoute = optRoute //currentRoute //Not necessary as User = applicationUser in pattern matching will take care of the correct routing
-                           User = applicationUser                                          
+                           A_User = applicationUser                                          
             }    
 
         (*
@@ -155,9 +154,10 @@ module App =
              { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd 
 
         //not in use
-        | Some (MaximeRouter.Router.Route.Logout) ->
-            let (homeModel, homeCmd) = Home.init () //or Login.init
-            { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
+        | Some (MaximeRouter.Router.Route.Logout)
+            ->
+             let (homeModel, homeCmd) = Home.init () //or Login.init
+             { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
         //not in use
         | Some (MaximeRouter.Router.Route.Maintenance)
@@ -167,7 +167,7 @@ module App =
 
         | Some (MaximeRouter.Router.Route.CMSRozcestnik cmsRozcestnikId)
             ->               
-             match model.User with
+             match model.A_User with
              | Anonymous     ->  
                               let (homeModel, homeCmd) = Home.init () //or Login.init      
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
@@ -181,7 +181,7 @@ module App =
                      
         | Some (MaximeRouter.Router.Route.CMSCenik cmsCenikId)
             ->  
-             match model.User with
+             match model.A_User with
              | Anonymous     ->  
                               let (homeModel, homeCmd) = Home.init () //or Login.init      
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
@@ -194,7 +194,7 @@ module App =
 
         | Some (MaximeRouter.Router.Route.CMSKontakt cmsKontaktId)
             ->
-             match model.User with
+             match model.A_User with
              | Anonymous     ->  
                               let (homeModel, homeCmd) = Home.init () //or Login.init     
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
@@ -207,7 +207,7 @@ module App =
 
         | Some (MaximeRouter.Router.Route.CMSLink cmsLinkId)
             ->    
-             match model.User with
+             match model.A_User with
              | Anonymous     ->  
                               let (homeModel, homeCmd) = Home.init () //or Login.init      
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
@@ -218,20 +218,20 @@ module App =
                               let (homeModel, homeCmd) = Home.init () //or Login.init       
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues
 
-    let init (location: MaximeRouter.Router.Route option) =
+    let internal init (location: MaximeRouter.Router.Route option) =
         
         setRoute location
             {
                 ActivePage = Page.NotFound 
                 CurrentRoute = None
-                User = Anonymous
-                user = { Username = SharedTypes.Username String.Empty } //{ Username = SharedApi.Username String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
+                A_User = Anonymous
+                User = { Username = SharedTypes.Username String.Empty } //{ Username = SharedApi.Username String.Empty; AccessToken = SharedApi.AccessToken String.Empty }
                 Session = None          
                 LinkAndLinkNameValues = SharedLinkValues.linkValuesDomainDefault   
                 LinkAndLinkNameInputValues = SharedLinkValues.linkValuesDomainDefault
             }    
 
-    let update (msg: Msg) (model: Model) =
+    let internal update (msg: Msg) (model: Model) =
        
         match model.ActivePage, msg with
         | Page.NotFound, _
@@ -316,7 +316,7 @@ module App =
              model, Cmd.none
              //Browser.console.warn("Message discarded:\n", string msg)    
 
-    let view (model: Model) (dispatch: Dispatch<Msg>) =
+    let internal view (model: Model) (dispatch: Dispatch<Msg>) =
          
         match model.ActivePage with
         | Page.NotFound                      -> str "404 Page not found"       
@@ -327,7 +327,7 @@ module App =
         | Page.Kontakt kontaktModel          -> Kontakt.view kontaktModel (KontaktMsg >> dispatch) model.LinkAndLinkNameValues
         | Page.Maintenance maintenanceModel  -> Maintenance.view maintenanceModel (MaintenanceMsg >> dispatch) //not in use
         | Page.Login loginModel              -> Login.view loginModel (LoginMsg >> dispatch)                              
-        | Page.CMSRozcestnik rozcestnikModel -> CMSRozcestnik.view rozcestnikModel model.user (CMSRozcestnikMsg >> dispatch)  
+        | Page.CMSRozcestnik rozcestnikModel -> CMSRozcestnik.view rozcestnikModel model.User (CMSRozcestnikMsg >> dispatch)  
         | Page.CMSCenik cmsCenikModel        -> CMSCenik.view cmsCenikModel (CMSCenikMsg >> dispatch) 
         | Page.CMSKontakt cmsKontaktModel    -> CMSKontakt.view cmsKontaktModel (CMSKontaktMsg >> dispatch) 
         | Page.CMSLink cmsLinkModel          -> CMSLink.view cmsLinkModel (CMSLinkMsg >> dispatch)

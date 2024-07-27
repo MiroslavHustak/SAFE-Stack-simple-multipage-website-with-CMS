@@ -6,7 +6,7 @@ open Shared
 
 module SharedMessageDefaultValues =
 
-    let messageDefault = //fixed values
+    let internal messageDefault = //fixed values
         {
             Msg1 = String.Empty
             Msg2 = String.Empty
@@ -18,7 +18,7 @@ module SharedMessageDefaultValues =
   
 module SharedCenikValues =    
 
-    let cenikValuesDomainDefault = //fixed values
+    let internal cenikValuesDomainDefault = //fixed values
         {
             Id = 1
             ValueState = "fixed"
@@ -34,7 +34,7 @@ module SharedCenikValues =
             Msgs = SharedMessageDefaultValues.messageDefault
         }
           
-    let transferLayer id valState v001 v002 v003 v004 v005 v006 v007 v008 v009 =
+    let internal transferLayer id valState v001 v002 v003 v004 v005 v006 v007 v008 v009 =
         {
             Id = id
             ValueState = valState
@@ -52,7 +52,7 @@ module SharedCenikValues =
    
 module SharedDeserialisedCenikValues =
    
-    let transferLayer (cenikInputValues: CenikValuesShared) =
+    let internal transferLayer (cenikInputValues: CenikValuesShared) =
         {
             Id = cenikInputValues.Id
             ValueState = cenikInputValues.ValueState
@@ -70,7 +70,7 @@ module SharedDeserialisedCenikValues =
 
 module SharedKontaktValues =
 
-    let kontaktValuesDomainDefault = 
+    let internal kontaktValuesDomainDefault = 
         {
             V001 = "Mgr. Hana NOVÁKOVÁ"
             V002 = "Nutriční teraupetka"
@@ -82,7 +82,7 @@ module SharedKontaktValues =
             Msgs = SharedMessageDefaultValues.messageDefault
         }
             
-    let transferLayer v001 v002 v003 v004 v005 v006 v007 =
+    let internal transferLayer v001 v002 v003 v004 v005 v006 v007 =
         {
             V001 = v001
             V002 = v002
@@ -96,7 +96,7 @@ module SharedKontaktValues =
 
 module SharedDeserialisedKontaktValues =    
    
-    let transferLayer (kontaktInputValues: KontaktValuesShared) =
+    let internal transferLayer (kontaktInputValues: KontaktValuesShared) =
         {
             V001 = kontaktInputValues.V001
             V002 = kontaktInputValues.V002
@@ -110,7 +110,7 @@ module SharedDeserialisedKontaktValues =
 
 module SharedLinkValues =
 
-    let linkValuesDomainDefault = 
+    let internal linkValuesDomainDefault = 
         {
             V001 = "https://blog.kaloricketabulky.cz/2013/08/nutricni-terapeut-vs-vyzivovy-poradce-kdo-nam-muze-radit-s-vyzivou/"
             V002 = "http://www.aktivityprozdravi.cz/zdravotni-problemy/civilizacni-psychologicke-a-jine-nemoci/civilizacni-choroby-a-nas-zivotni-styl"
@@ -127,7 +127,7 @@ module SharedLinkValues =
             Msgs = SharedMessageDefaultValues.messageDefault  
         }
     
-    let transferLayer v001 v002 v003 v004 v005 v006 v001n v002n v003n v004n v005n v006n =
+    let internal transferLayer v001 v002 v003 v004 v005 v006 v001n v002n v003n v004n v005n v006n =
         {
             V001 = v001
             V002 = v002
@@ -146,7 +146,7 @@ module SharedLinkValues =
 
 module SharedDeserialisedValues =
    
-    let transferLayer (linkAndLinkNameInputValues: LinkValuesShared) =
+    let internal transferLayer (linkAndLinkNameInputValues: LinkValuesShared) =
         {
             V001 = linkAndLinkNameInputValues.V001
             V002 = linkAndLinkNameInputValues.V002

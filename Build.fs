@@ -1,4 +1,5 @@
-//GENERATED CODE
+
+//SAFE STACK GENERATED CODE
 
 open Fake.Core
 open Fake.IO

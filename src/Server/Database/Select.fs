@@ -13,12 +13,9 @@ open Queries.SqlQueries
 open Helpers.Server
 open Helpers.Server.CEBuilders
 
-open DtoFromStorage.Server.DtoFromStorage
 open DtoDefault.Server.DtoDefault
+open DtoFromStorage.Server.DtoFromStorage
 open TransLayerFromStorage.Server.TransLayerFromStorage
-
-open Connections
-
 
 //SQL type providers did not work in this app (they blocked the Somee database)
 module Select = 

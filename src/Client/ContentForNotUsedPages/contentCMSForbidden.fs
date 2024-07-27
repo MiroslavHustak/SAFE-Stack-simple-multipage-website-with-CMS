@@ -7,7 +7,7 @@ module ContentCMSForbidden =
     //not in use 
 
     //complete html/Feliz code (no layout)
-    let contentCMSForbidden() = 
+    let internal contentCMSForbidden() = 
 
         Html.html [
             prop.xmlns "http://www.w3.org/1999/xhtml"
@@ -151,10 +151,3 @@ module ContentCMSForbidden =
                 ]
             ]
         ]
-
-
-
-
-
-
-
