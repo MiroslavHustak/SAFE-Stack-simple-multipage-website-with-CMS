@@ -14,7 +14,7 @@ module Errors =
 
     let internal insertDefaultValues insertOrUpdate =     
         
-        let cenikValuesDtoSendDefault = cenikValuesTransferLayerSend SharedCenikValues.cenikValuesDomainDefault
+        let cenikValuesDtoSendDefault = cenikValuesTransferLayerToStorage SharedCenikValues.cenikValuesDomainDefault
 
         match insertOrUpdate getConnection closeConnection cenikValuesDtoSendDefault with
         | Ok _    -> InsertOrUpdateError1

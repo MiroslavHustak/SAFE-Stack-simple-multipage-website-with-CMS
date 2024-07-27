@@ -47,7 +47,7 @@ module ServerVerify =
         mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
     //************************************************************************
 
-    let internal verifyLogin (login: SharedTypes.LoginInfo) =   // LoginInfo -> Async<LoginResult>>
+    let internal verifyLogin (login: SharedTypes.LoginValues) =   // LoginInfo -> Async<LoginResult>>
 
         let isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)            
 
@@ -115,17 +115,17 @@ module ServerVerify =
     let private isValidKontakt param = () 
     let private isValidLink param = ()
 
-    let verifyCenikValues (cenikValues: CenikValuesDomain) =
+    let verifyCenikValues (cenikValues: CenikValuesShared) =
         match isValidCenik () with
         | ()  -> Ok ()        
         //| _ -> Error _
 
-    let verifyKontaktValues (kontaktValues: KontaktValuesDomain) =
+    let verifyKontaktValues (kontaktValues: KontaktValuesShared) =
        match isValidKontakt () with
        | ()  -> Ok ()        
        //| _ -> Error _
 
-    let verifyLinkAndLinkNameValues (linkValues: LinkAndLinkNameValuesDomain) =
+    let verifyLinkAndLinkNameValues (linkValues: LinkValuesShared) =
        match isValidLink () with
        | ()  -> Ok ()        
        //| _ -> Error _

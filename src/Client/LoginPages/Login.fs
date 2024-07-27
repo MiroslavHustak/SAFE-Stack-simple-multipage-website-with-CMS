@@ -25,7 +25,7 @@ module Login =
     type Model =
         {
             User: ApplicationUser
-            problem: SharedTypes.LoginProblems
+            Problem: SharedTypes.LoginProblems
             InputUsr: string
             InputPsw: string
             Id: int
@@ -55,7 +55,7 @@ module Login =
         let model =
             {
                 User = FirstTimeRunAnonymous
-                problem = { line1 = String.Empty; line2 = String.Empty }
+                Problem = { line1 = String.Empty; line2 = String.Empty }
                 InputUsr = String.Empty
                 InputPsw = String.Empty
                 Id = id
@@ -78,7 +78,7 @@ module Login =
             -> 
              let model =           
                  match value with
-                 | SharedTypes.UsernameOrPasswordIncorrect problem -> { model with User = ApplicationUser.Anonymous; problem = problem } //potrebne pro na konci modulu uvedeny kod
+                 | SharedTypes.UsernameOrPasswordIncorrect problem -> { model with User = ApplicationUser.Anonymous; Problem = problem } //potrebne pro na konci modulu uvedeny kod
                  | SharedTypes.LoggedIn user                       -> { model with User = ApplicationUser.LoggedIn user } //potrebne pro na konci modulu uvedeny kod    
              model, Cmd.ofMsg (LoginCompleted value), NoOp
 
@@ -368,8 +368,8 @@ module Login =
             <| (dispatch: Msg -> unit)
 
         match model.User with      
-        | Anonymous             -> fnError model.problem
-        | FirstTimeRunAnonymous -> fnFirstRun model.problem
+        | Anonymous             -> fnError model.Problem
+        | FirstTimeRunAnonymous -> fnFirstRun model.Problem
         | LoggedIn user         -> CMSPages.CMSRozcestnik.view CMSRozcestnikModel user (CMSRozcestnikMsg >> dispatch) //it is not strictly necessary for the model and user to be here, but I left them here to keep things tidy
 
                    

@@ -26,7 +26,7 @@ open Helpers.Server
 open Helpers.Server.CEBuilders
 
 open DtoXml.Server.DtoXml
-open DtoSend.Server.DtoSend
+open DtoToStorage.Server.DtoToStorage
 
 open Serialization.Coders.Server.ThothCoders
 
@@ -153,7 +153,7 @@ module Serialisation =
            }
 
     //Thoth.Json.Net, Thoth.Json + Newtonsoft.Json
-    let internal serializeToJsonThoth (record: LinkAndLinkNameValuesDtoSend) (jsonFile: string) =
+    let internal serializeToJsonThoth (record: LinkValuesDtoToStorage) (jsonFile: string) =
        
         pyramidOfDoom 
             {
@@ -169,7 +169,7 @@ module Serialisation =
            }
 
     //Thoth.Json.Net, Thoth.Json + StreamWriter (System.IO (File.WriteAllText) did not work)    
-    let internal serializeToJsonThoth2 (record: LinkAndLinkNameValuesDtoSend) (jsonFile: string) =
+    let internal serializeToJsonThoth2 (record: LinkValuesDtoToStorage) (jsonFile: string) =
 
         pyramidOfDoom
             {

@@ -8,7 +8,7 @@ open Database.Errors
 open ErrorTypes.Server
 
 open Queries.SqlQueries
-open DtoSend.Server.DtoSend
+open DtoToStorage.Server.DtoToStorage
 
 open Helpers.Server
 open Helpers.Server.CEBuilders
@@ -20,7 +20,7 @@ module InsertOrUpdate =
     //See the file SQL Queries.fs
        
     //**************** Sql queries - inner functions  *****************
-    let internal insertOrUpdate getConnection closeConnection (sendCenikValues : CenikValuesDtoSend) = 
+    let internal insertOrUpdate getConnection closeConnection (sendCenikValues : CenikValuesDtoToStorage) = 
                             
         try
             //failwith "Simulated exception SqlInsertOrUpdate"

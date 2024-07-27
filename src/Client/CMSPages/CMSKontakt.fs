@@ -15,8 +15,8 @@ module CMSKontakt =
 
     type Model =
         {
-            KontaktValues: KontaktValuesDomain
-            OldKontaktValues: KontaktValuesDomain
+            KontaktValues: KontaktValuesShared
+            OldKontaktValues: KontaktValuesShared
             V001Input: string
             V002Input: string
             V003Input: string
@@ -39,8 +39,8 @@ module CMSKontakt =
         | SetV007Input of string   
         | SendKontaktValuesToServer
         | SendOldKontaktValuesToServer
-        | NewKontaktValues of KontaktValuesDomain
-        | OldKontaktValues of KontaktValuesDomain
+        | NewKontaktValues of KontaktValuesShared
+        | OldKontaktValues of KontaktValuesShared
         | AsyncWorkIsComplete 
     
     let private sendKontaktValuesApi =
@@ -80,7 +80,7 @@ module CMSKontakt =
 
         | SendOldKontaktValuesToServer
             ->
-             let loadEvent = SharedDeserialisedKontaktValues.create model.OldKontaktValues
+             let loadEvent = SharedDeserialisedKontaktValues.transferLayer model.OldKontaktValues
              let cmd = Cmd.OfAsync.perform sendKontaktValuesApi.getOldKontaktValues loadEvent OldKontaktValues
              model, cmd
 
@@ -90,12 +90,12 @@ module CMSKontakt =
             ->
              try
                  try
-                     let buttonClickEvent: KontaktValuesDomain =
+                     let buttonClickEvent: KontaktValuesShared =
                          let input current old =
                              match current = String.Empty with
                              | true  -> old
                              | false -> current 
-                         SharedKontaktValues.create //see remark in CMSCenik.fs
+                         SharedKontaktValues.transferLayer //see remark in CMSCenik.fs
                          <| input model.V001Input model.OldKontaktValues.V001 <| input model.V002Input model.OldKontaktValues.V002 <| input model.V003Input model.OldKontaktValues.V003 
                          <| input model.V004Input model.OldKontaktValues.V004 <| input model.V005Input model.OldKontaktValues.V005 <| input model.V006Input model.OldKontaktValues.V006
                          <| input model.V007Input model.OldKontaktValues.V007 

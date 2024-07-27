@@ -27,12 +27,12 @@
     <Compile Include="Helpers\Security2.fs" />
     <Compile Include="Helpers\Helpers.fs" />
     <Compile Include="Helpers\CopyOrMoveFiles.fs" />
-    <Compile Include="DataModelling\DTOs\DtoSend.fs" />
-    <Compile Include="DataModelling\DTOs\DtoGet.fs" />
+    <Compile Include="DataModelling\DTOs\DtoToStorage.fs" />
+    <Compile Include="DataModelling\DTOs\DtoFromStorage.fs" />
     <Compile Include="DataModelling\DTOs\DtoXml.fs" />
     <Compile Include="DataModelling\DTOs\DtoDefault.fs" />
-    <Compile Include="DataModelling\TransformationLayers\TransLayerSend.fs" />
-    <Compile Include="DataModelling\TransformationLayers\TransLayerGet.fs" />
+    <Compile Include="DataModelling\TransformationLayers\TransLayerToStorage.fs" />
+    <Compile Include="DataModelling\TransformationLayers\TransLayerFromStorage.fs" />
     <Compile Include="DataModelling\TransformationLayers\TransLayerXml.fs" />
     <Compile Include="Serialization\ThothCoders\ThothCoders.fs" />
     <Compile Include="Serialization\Serialization.fs" />

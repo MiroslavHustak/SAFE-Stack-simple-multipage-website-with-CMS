@@ -4,10 +4,10 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="SharedTypes.fs" />
-    <Compile Include="ClientDto.fs" />
-    <Compile Include="Api.fs" />
-    <Compile Include="Shared.fs" />
+    <Compile Include="Credentials\SharedTypes.fs" />
+    <Compile Include="CMSValues\ClientDtoServerDm.fs" />
+    <Compile Include="CMSValues\TransLayer.fs" />
+    <Compile Include="GetApi.fs" />
   </ItemGroup>
   <ItemGroup>   
     <PackageReference Include="Dapper.FSharp" Version="4.1.0" />

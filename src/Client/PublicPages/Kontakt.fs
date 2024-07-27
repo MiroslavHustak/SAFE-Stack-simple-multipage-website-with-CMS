@@ -17,15 +17,15 @@ module Kontakt =
 
     type Model =
         {
-            KontaktValues: KontaktValuesDomain
-            KontaktInputValues: KontaktValuesDomain
+            KontaktValues: KontaktValuesShared
+            KontaktInputValues: KontaktValuesShared
             ErrorMsg: string
             Id: int
         }
 
     type Msg =   
         | AskServerForKontaktValues 
-        | NewKontaktValues of KontaktValuesDomain    
+        | NewKontaktValues of KontaktValuesShared    
 
     let private getDeserialisedKontaktValuesApi =
         Remoting.createApi ()
@@ -48,7 +48,7 @@ module Kontakt =
         match msg with       
         | AskServerForKontaktValues
             ->
-             let loadEvent = SharedDeserialisedKontaktValues.create model.KontaktInputValues
+             let loadEvent = SharedDeserialisedKontaktValues.transferLayer model.KontaktInputValues
              let cmd = Cmd.OfAsync.perform getDeserialisedKontaktValuesApi.getDeserialisedKontaktValues loadEvent NewKontaktValues
              model, cmd
 

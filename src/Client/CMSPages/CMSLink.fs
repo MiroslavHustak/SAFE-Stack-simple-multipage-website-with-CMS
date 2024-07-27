@@ -15,8 +15,8 @@ module CMSLink =
 
     type Model =
         {
-            LinkAndLinkNameValues: LinkAndLinkNameValuesDomain
-            OldLinkAndLinkNameValues: LinkAndLinkNameValuesDomain
+            LinkAndLinkNameValues: LinkValuesShared
+            OldLinkAndLinkNameValues: LinkValuesShared
             V001LinkInput: string
             V002LinkInput: string
             V003LinkInput: string
@@ -49,8 +49,8 @@ module CMSLink =
         | SetV006LinkNameInput of string
         | SendLinkAndLinkNameValuesToServer
         | SendOldLinkAndLinkNameValuesToServer
-        | NewLinkAndLinkNameValues of LinkAndLinkNameValuesDomain
-        | OldLinkAndLinkNameValues of LinkAndLinkNameValuesDomain
+        | NewLinkAndLinkNameValues of LinkValuesShared
+        | OldLinkAndLinkNameValues of LinkValuesShared
         | AsyncWorkIsComplete 
 
     let private sendLinkAndLinkNameValuesApi =
@@ -100,7 +100,7 @@ module CMSLink =
 
         | SendOldLinkAndLinkNameValuesToServer
             ->
-             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.OldLinkAndLinkNameValues
+             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.transferLayer model.OldLinkAndLinkNameValues
              let cmd = Cmd.OfAsync.perform sendLinkAndLinkNameValuesApi.getOldLinkAndLinkNameValues loadEvent OldLinkAndLinkNameValues
              model, cmd
 
@@ -110,12 +110,12 @@ module CMSLink =
             ->
              try
                  try
-                     let buttonClickEvent: LinkAndLinkNameValuesDomain =   //see remark in CMSCenik.fs
+                     let buttonClickEvent: LinkValuesShared =   //see remark in CMSCenik.fs
                          let input current old =
                              match current = String.Empty with //String.IsNullOrWhiteSpace current || String.IsNullOrEmpty current
                              | true  -> old
                              | false -> current 
-                         SharedLinkAndLinkNameValues.create
+                         SharedLinkAndLinkNameValues.transferLayer
                          <| input model.V001LinkInput model.OldLinkAndLinkNameValues.V001 <| input model.V002LinkInput model.OldLinkAndLinkNameValues.V002 <| input model.V003LinkInput model.OldLinkAndLinkNameValues.V003 
                          <| input model.V004LinkInput model.OldLinkAndLinkNameValues.V004 <| input model.V005LinkInput model.OldLinkAndLinkNameValues.V005 <| input model.V006LinkInput model.OldLinkAndLinkNameValues.V006
                          <| input model.V001LinkNameInput model.OldLinkAndLinkNameValues.V001n <| input model.V002LinkNameInput model.OldLinkAndLinkNameValues.V002n <| input model.V003LinkNameInput model.OldLinkAndLinkNameValues.V003n 

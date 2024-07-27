@@ -8,7 +8,7 @@ open System
 module SharedTypes = 
 
 
-    //************** SCDUs for type-driven development ***************
+    //************** SCDUs for type-driven development (client + server) ***************
 
     //[<Struct>]
     //type AccessToken = AccessToken of string
@@ -23,11 +23,11 @@ module SharedTypes =
     //*************** Shared types **********************************
 
     [<Struct>]
-    type LoginInfo =
-        {
-            Username: Username
-            Password: Password
-        }    
+    type LoginValues =
+       {
+           Username: Username
+           Password: Password
+       }    
 
     [<Struct>]
     type LoginProblems =

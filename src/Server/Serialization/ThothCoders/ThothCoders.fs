@@ -12,12 +12,12 @@ open Thoth.Json.Net
 #endif
 
 //*********************************************** 
-open DtoGet.Server.DtoGet
-open DtoSend.Server.DtoSend
+open DtoFromStorage.Server.DtoFromStorage
+open DtoToStorage.Server.DtoToStorage
 
 module ThothCoders =   
                    
-    let internal encoder (link : LinkAndLinkNameValuesDtoSend) =
+    let internal encoder (link : LinkValuesDtoToStorage) =
         Encode.object
             [
                 "V001", Encode.string link.V001
@@ -44,7 +44,7 @@ module ThothCoders =
                         ]
             ]
 
-    let internal decoder : Decoder<LinkAndLinkNameValuesDtoGet> =
+    let internal decoder : Decoder<LinkValuesDtoFromStorage> =
         Decode.object
             (fun get ->
                       {

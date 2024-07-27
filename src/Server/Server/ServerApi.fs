@@ -31,10 +31,10 @@ open Serialization.Server.Serialisation
 open Serialization.Server.Deserialisation
 
 open DtoXml.Server.DtoXml
-open DtoGet.Server.DtoGet
+open DtoFromStorage.Server.DtoFromStorage
 
 open TransLayerXml.Server.TransLayerXml
-open TransLayerGet.Server.TransLayerGet
+open TransLayerFromStorage.Server.TransLayerFromStorage
 open TransLayerSend.Server.TransLayerSend
 
 module ServerApi =
@@ -48,12 +48,12 @@ module ServerApi =
                 fun sendCenikValues ->
                     async
                         {                   
-                            let sendNewCenikValues: CenikValuesDomain =                        
+                            let sendNewCenikValues: CenikValuesShared =                        
                                 match verifyCenikValues sendCenikValues with                
                                 | Ok ()   ->
                                            let dbNewCenikValues = { sendCenikValues with Id = 2; ValueState = "new" }
                                            let cond = dbNewCenikValues.Msgs.Msg1 = "First run"
-                                           let cenikValuesSend = cenikValuesTransferLayerSend dbNewCenikValues
+                                           let cenikValuesSend = cenikValuesTransferLayerToStorage dbNewCenikValues
                                            let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) cond
                                             
                                            { dbNewCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql } }
@@ -79,7 +79,7 @@ module ServerApi =
                             //********************************************************
                             let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                             let cond = dbCenikValues.Msgs.Msg1 = "First run"
-                            let cenikValuesSend = cenikValuesTransferLayerSend dbCenikValues
+                            let cenikValuesSend = cenikValuesTransferLayerToStorage dbCenikValues
                             let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) cond
                            
                             //********************************************************
@@ -111,7 +111,7 @@ module ServerApi =
                 fun sendKontaktValues ->
                     async
                         {
-                            let sendNewKontaktValues: KontaktValuesDomain = 
+                            let sendNewKontaktValues: KontaktValuesShared = 
                                 match verifyKontaktValues sendKontaktValues with
                                 | Ok ()   ->                                            
                                            try
@@ -205,12 +205,12 @@ module ServerApi =
                fun sendLinkAndLinkNameValues ->
                    async
                       {                       
-                         let sendNewLinkAndLinkNameValues: LinkAndLinkNameValuesDomain = 
+                         let sendNewLinkAndLinkNameValues: LinkValuesShared = 
                              match verifyLinkAndLinkNameValues sendLinkAndLinkNameValues with
                              | Ok ()   ->                                       
                                         try 
                                             //failwith "Simulated exception14"   
-                                            let sendLinkAndLinkNameValuesDtoSend = linkAndLinkNameValuesTransferLayerSend sendLinkAndLinkNameValues                                               
+                                            let sendLinkAndLinkNameValuesDtoSend = linkValuesTransferLayerToStorage sendLinkAndLinkNameValues                                               
                                             match copyFiles pathToJson pathToJsonBackup true with
                                             | Ok _      -> serializeToJsonThoth2 sendLinkAndLinkNameValuesDtoSend pathToJson
                                             | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                   
@@ -238,10 +238,10 @@ module ServerApi =
                                            let copy = copyFiles pathToJson pathToJsonBackup true
                                            let! _ = copy, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
-                                           let deserialize = deserializeFromJsonThoth2<LinkAndLinkNameValuesDtoGet> pathToJsonBackup
+                                           let deserialize = deserializeFromJsonThoth2<LinkValuesDtoFromStorage> pathToJsonBackup
                                            let! deserialize = deserialize, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
-                                           return linkAndLinkNameValuesTransferLayerGet deserialize, String.Empty
+                                           return linkValuesTransferLayerFromStorage deserialize, String.Empty
                                        }                                      
                                with
                                | ex -> SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message) 
@@ -261,10 +261,10 @@ module ServerApi =
                                            let copy = copyFiles pathToJson pathToJsonBackup true
                                            let! _ = copy, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
-                                           let deserialize = deserializeFromJsonThoth2<LinkAndLinkNameValuesDtoGet> pathToJsonBackup
+                                           let deserialize = deserializeFromJsonThoth2<LinkValuesDtoFromStorage> pathToJsonBackup
                                            let! deserialize = deserialize, SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault
 
-                                           return linkAndLinkNameValuesTransferLayerGet deserialize, String.Empty
+                                           return linkValuesTransferLayerFromStorage deserialize, String.Empty
                                        }                                      
                                with
                                | ex -> SharedLinkAndLinkNameValues.linkAndLinkNameValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message)  
@@ -302,7 +302,7 @@ module ServerApi =
     let app =
         //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
         let dbCenikValues = { SharedCenikValues.cenikValuesDomainDefault with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = "First run" } }
-        let cenikValuesSend = cenikValuesTransferLayerSend dbCenikValues
+        let cenikValuesSend = cenikValuesTransferLayerToStorage dbCenikValues
         let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) true //true == first run
 
         application

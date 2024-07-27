@@ -13,9 +13,9 @@ open Queries.SqlQueries
 open Helpers.Server
 open Helpers.Server.CEBuilders
 
-open DtoGet.Server.DtoGet
+open DtoFromStorage.Server.DtoFromStorage
 open DtoDefault.Server.DtoDefault
-open TransLayerGet.Server.TransLayerGet
+open TransLayerFromStorage.Server.TransLayerFromStorage
 
 open Connections
 
@@ -30,7 +30,7 @@ module Select =
              //failwith "Simulated exception SqlSelectValues"            
              let connection = getConnection()
                     
-             let getValues: Result<CenikValuesDomain, SelectErrorOptions> =
+             let getValues: Result<CenikValuesShared, SelectErrorOptions> =
 
                  try
                      try
@@ -93,14 +93,14 @@ module Select =
                                                                   V008DtoGet = reader.GetString(v008Index) |> Option.ofNull
                                                                   V009DtoGet = reader.GetString(v009Index) |> Option.ofNull
 
-                                                                  MsgsDtoGet = MessagesDtoGetDefault |> Option.ofNull
+                                                                  MsgsDtoGet = MessagesDtoFromStorageDefault |> Option.ofNull
                                                               }
                                                       } 
                                         )
                                         |> List.ofSeq
                                         |> List.tryHead
                                         |> function
-                                            | Some value -> cenikValuesTransferLayerGet value
+                                            | Some value -> cenikValuesTransferLayerFromStorage value
                                             | None       -> Error ReadingDbError
                          | Error err ->
                                       Error err     

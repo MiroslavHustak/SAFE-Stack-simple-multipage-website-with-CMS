@@ -51,8 +51,8 @@ module App =
             User: ApplicationUser 
             user: SharedTypes.User
             Session: SharedTypes.LoginResult option
-            LinkAndLinkNameValues: LinkAndLinkNameValuesDomain
-            LinkAndLinkNameInputValues: LinkAndLinkNameValuesDomain
+            LinkAndLinkNameValues: LinkValuesShared
+            LinkAndLinkNameInputValues: LinkValuesShared
         }
 
     type Msg =
@@ -68,7 +68,7 @@ module App =
         | CMSKontaktMsg of CMSKontakt.Msg
         | CMSLinkMsg of CMSLink.Msg
         | AskServerForLinkAndLinkNameValues 
-        | GetLinkAndLinkNameValues of LinkAndLinkNameValuesDomain
+        | GetLinkAndLinkNameValues of LinkValuesShared
 
     let private sendDeserialisedLinkAndLinkNameValuesApi =
         Remoting.createApi ()
@@ -294,7 +294,7 @@ module App =
              //LinkAndLinkNameValues need to be activated during the first download of any page        
         | _, AskServerForLinkAndLinkNameValues
             ->
-             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.create model.LinkAndLinkNameInputValues
+             let loadEvent = SharedDeserialisedLinkAndLinkNameValues.transferLayer model.LinkAndLinkNameInputValues
              let cmd = Cmd.OfAsync.perform sendDeserialisedLinkAndLinkNameValuesApi.getDeserialisedLinkAndLinkNameValues loadEvent GetLinkAndLinkNameValues
              model, cmd
         

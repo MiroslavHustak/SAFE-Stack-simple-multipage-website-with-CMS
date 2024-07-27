@@ -2,31 +2,31 @@ namespace DtoDefault.Server
 
 open System
 
-open DtoGet.Server.DtoGet
+open DtoFromStorage.Server.DtoFromStorage
 open DtoXml.Server.DtoXml
-open DtoSend.Server.DtoSend
+open DtoToStorage.Server.DtoToStorage
 
 module DtoDefault =  
 
     // Defined but currently unused; retained for potential future requirements or updates. 
     let MessagesDtoSendDefault =        
         {
-            DtoSend.Server.DtoSend.Msg1 = String.Empty
-            DtoSend.Server.DtoSend.Msg2 = String.Empty
-            DtoSend.Server.DtoSend.Msg3 = String.Empty
-            DtoSend.Server.DtoSend.Msg4 = String.Empty
-            DtoSend.Server.DtoSend.Msg5 = String.Empty
-            DtoSend.Server.DtoSend.Msg6 = String.Empty
+            DtoToStorage.Server.DtoToStorage.Msg1 = String.Empty
+            DtoToStorage.Server.DtoToStorage.Msg2 = String.Empty
+            DtoToStorage.Server.DtoToStorage.Msg3 = String.Empty
+            DtoToStorage.Server.DtoToStorage.Msg4 = String.Empty
+            DtoToStorage.Server.DtoToStorage.Msg5 = String.Empty
+            DtoToStorage.Server.DtoToStorage.Msg6 = String.Empty
         }
      
-    let MessagesDtoGetDefault =        
+    let MessagesDtoFromStorageDefault =        
         {
-            DtoGet.Server.DtoGet.Msg1 = String.Empty 
-            DtoGet.Server.DtoGet.Msg2 = String.Empty
-            DtoGet.Server.DtoGet.Msg3 = String.Empty
-            DtoGet.Server.DtoGet.Msg4 = String.Empty
-            DtoGet.Server.DtoGet.Msg5 = String.Empty
-            DtoGet.Server.DtoGet.Msg6 = String.Empty
+            DtoFromStorage.Server.DtoFromStorage.Msg1 = String.Empty 
+            DtoFromStorage.Server.DtoFromStorage.Msg2 = String.Empty
+            DtoFromStorage.Server.DtoFromStorage.Msg3 = String.Empty
+            DtoFromStorage.Server.DtoFromStorage.Msg4 = String.Empty
+            DtoFromStorage.Server.DtoFromStorage.Msg5 = String.Empty
+            DtoFromStorage.Server.DtoFromStorage.Msg6 = String.Empty
         }
 
     // Defined but currently unused; retained for potential future requirements or updates.     

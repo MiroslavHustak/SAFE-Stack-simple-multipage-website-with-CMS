@@ -13,10 +13,15 @@ open Helpers.Client.Helper
 
 module CMSCenik = 
 
+    //Common model to view / from view
     type Model =
         {
-            CenikValues: CenikValuesDomain
-            OldCenikValues: CenikValuesDomain
+            //***** ClientDtoToView *********
+            CenikValues: CenikValuesShared
+            OldCenikValues: CenikValuesShared
+            //******************************
+
+            //***** ClientDtoFromView *********
             V001Input: string
             V002Input: string
             V003Input: string
@@ -25,7 +30,9 @@ module CMSCenik =
             V006Input: string
             V007Input: string
             V008Input: string
-            V009Input: string      
+            V009Input: string
+            //******************************
+
             Id: int
             DelayMsg: string
             ErrorMsg: string
@@ -43,8 +50,8 @@ module CMSCenik =
         | SetV009Input of string   
         | SendCenikValuesToServer
         | SendOldCenikValuesToServer
-        | NewCenikValues of CenikValuesDomain
-        | OldCenikValues of CenikValuesDomain
+        | NewCenikValues of CenikValuesShared
+        | OldCenikValues of CenikValuesShared
         | AsyncWorkIsComplete 
     
     let private sendCenikValuesApi =
@@ -90,7 +97,7 @@ module CMSCenik =
     
         | SendOldCenikValuesToServer
             ->   
-             let loadEvent = SharedDeserialisedCenikValues.create model.OldCenikValues
+             let loadEvent = SharedDeserialisedCenikValues.transferLayer model.OldCenikValues
              let cmd = Cmd.OfAsync.perform sendCenikValuesApi.getOldCenikValues loadEvent OldCenikValues  
              model, cmd
 
@@ -100,7 +107,7 @@ module CMSCenik =
             ->
              try
                  try
-                     let buttonClickEvent: CenikValuesDomain =                   
+                     let buttonClickEvent: CenikValuesShared =                   
                          let input current old =                  
                              match strContainsOnlySpace current || String.IsNullOrEmpty current with //nebo String.IsNullOrWhiteSpace current || String.IsNullOrEmpty current
                              | true  -> old
