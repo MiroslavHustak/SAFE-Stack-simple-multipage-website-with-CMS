@@ -13,6 +13,7 @@ open FsToolkit.ErrorHandling
 open Fable.Remoting.Server
 
 open Shared
+open Shared.SharedTypes
 
 open Settings
 open ErrorTypes.Server
@@ -22,13 +23,12 @@ open Helpers.Server.Security2
 open Helpers.Server.CEBuilders
 open Helpers.Server.Miscellaneous
 
-open LoginValuesDomain.Server.LoginValuesDomain
-open TransLayerLoginValues.Server.TransLayerLoginValues
-
 module ServerVerify =
 
     //************************************************************************
-    //TODO create a separate solution and include a try with block
+    //Password creation
+    //To be used one-time only
+    //TODO create a separate project and include a try with block
     let private pswHash() = //to be used only once before bundling             
         
         let usr = uberHash "" //delete username before bundling
@@ -66,13 +66,26 @@ module ServerVerify =
 
         pyramidOfHell  
             {
-                let rc1 = { LoginErrorMsgShared.line1 = "Závažná chyba na serveru !!!"; LoginErrorMsgShared.line2 = "Chybí soubor pro ověření uživatelského jména a hesla" }
-                let rc2 = { LoginErrorMsgShared.line1 = "Závažná chyba na serveru !!!"; LoginErrorMsgShared.line2 = "Problém s ověřením uživatelského jména a hesla" }
-                let rc3 = { LoginErrorMsgShared.line1 = "Buď uživatelské jméno anebo heslo je neplatné."; LoginErrorMsgShared.line2 = "Prosím zadej údaje znovu." }  
+                let rc1 =
+                    {
+                        LoginErrorMsgShared.line1 = ErrorMsgLine1 "Závažná chyba na serveru !!!"
+                        LoginErrorMsgShared.line2 = ErrorMsgLine2 "Chybí soubor pro ověření uživatelského jména a hesla"
+                    }
 
-                let credentials = loginValuesTransferLayer login
-                let usr = credentials.username
-                let psw = credentials.password
+                let rc2 =
+                    {
+                        LoginErrorMsgShared.line1 = ErrorMsgLine1 "Závažná chyba na serveru !!!"
+                        LoginErrorMsgShared.line2 = ErrorMsgLine2 "Problém s ověřením uživatelského jména a hesla"
+                    }
+
+                let rc3 =
+                    {
+                        LoginErrorMsgShared.line1 = ErrorMsgLine1 "Buď uživatelské jméno anebo heslo je neplatné."
+                        LoginErrorMsgShared.line2 = ErrorMsgLine2 "Prosím zadej údaje znovu."
+                    }  
+
+                let usr = login.Username |> function SharedTypes.Username value -> value 
+                let psw = login.Password |> function SharedTypes.Password value -> value 
 
                 let uberHash =
                     try

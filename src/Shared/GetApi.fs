@@ -1,5 +1,7 @@
 namespace Shared
 
+open SharedTypes
+
 type IGetApi =
 
     //unit -> Async<GetKontaktValues> etc is enough while transferring one way only, but I need error messages to be sent back to the client side

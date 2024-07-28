@@ -1,6 +1,7 @@
 //Code for routing taken from StackOverflow:
 //https://stackoverflow.com/questions/54970180/how-can-i-do-a-simple-elmish-router
 //Created by Maxime Mangel:
+//https://github.com/MangelMaxime
 //https://stackoverflow.com/users/2911775/maxime-mangel
 
 namespace Main.Client
@@ -18,6 +19,7 @@ open PublicPages
 open NotUsedPages
 
 open Shared
+open Shared.SharedTypes
 
 [<RequireQualifiedAccess>]
 module App = 
@@ -86,7 +88,7 @@ module App =
                 | Some value ->
                               match value with
                               | UsernameOrPasswordIncorrect problem -> Anonymous 
-                              | Shared.LoggedIn user                -> LoggedIn user  
+                              | Shared.SharedTypes.LoggedIn user    -> LoggedIn user  
                 | None       ->
                               Anonymous
                 
@@ -268,7 +270,7 @@ module App =
             ->
              let (loginModel, loginCmd, loginExtraMsg) = Login.update loginMsg loginModel        
              match loginExtraMsg with
-             | Login.ExternalMsg.NoOp -> { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd
+             | Login.ExternalMsg.NoOp             -> { model with ActivePage = Page.Login loginModel }, Cmd.map LoginMsg loginCmd
              | Login.ExternalMsg.SignedIn session -> { model with ActivePage = Page.Login loginModel; Session = Some session }, Cmd.map LoginMsg loginCmd
 
         | Page.CMSRozcestnik cmsRozcestnikModel, CMSRozcestnikMsg cmsRozcestnikMsg

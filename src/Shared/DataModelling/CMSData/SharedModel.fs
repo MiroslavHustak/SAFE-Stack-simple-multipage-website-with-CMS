@@ -2,8 +2,8 @@ namespace Shared
 
 open System
 
-// = MessagesServerDomainModel (common model - from to storage to view, from view to storage)
-// = MessagesClientDto (common model - from to storage to view, from view to storage)
+//Common (shared) client/server domain model
+
 type MessagesShared =
     {
         Msg1: string
@@ -14,8 +14,6 @@ type MessagesShared =
         Msg6: string
     }  
 
-// = CenikValuesServerDomainModel (common model - from to storage to view, from view to storage)
-// = CenikValuesClientDto (common model - from to storage to view, from view to storage)
 type CenikValuesShared =
     {
         Id: int
@@ -32,8 +30,6 @@ type CenikValuesShared =
         Msgs: MessagesShared
     }   
 
-// = KontaktValuesServerDomainModel (common model - from to storage to view, from view to storage)
-// = KontaktValuesClientDto (common model - from to storage to view, from view to storage)
 type KontaktValuesShared =
     {
         V001: string
@@ -46,8 +42,6 @@ type KontaktValuesShared =
         Msgs: MessagesShared
     }    
 
-// = LinkValuesServerDomainModel (common model - from to storage to view, from view to storage)
-// = LinkValuesClientDto (common model - from to storage to view, from view to storage)
 type LinkValuesShared = 
     {
         V001: string

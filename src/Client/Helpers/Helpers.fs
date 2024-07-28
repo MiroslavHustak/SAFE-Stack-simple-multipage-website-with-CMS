@@ -1,5 +1,7 @@
 namespace Helpers.Client
 
+open Shared
+
 open System
     
     module Helper =
@@ -20,10 +22,14 @@ open System
             | x when x = c -> input.[1..]        
             | _            -> input                                               
 
-        let internal strContainsOnlySpace str = str |> Seq.forall (fun item -> item = (char)32) //for educational purposes, might come in handy...
+        //let internal strContainsOnlySpace str = str |> Seq.forall (fun item -> item = (char)32) //for educational purposes, might come in handy...
 
         let internal javaScriptMessageBox errorMsg =
 
-            match not (strContainsOnlySpace errorMsg || errorMsg = String.Empty) with //I know - String.IsNullOrWhiteSpace, String.IsNullOrEmpty :-)
-            | true  -> Browser.Dom.window.alert(errorMsg)
-            | false -> ()              
+            errorMsg
+            |> Option.ofNullEmptySpace
+            |> function
+                | Some value -> Browser.Dom.window.alert(errorMsg)
+                | None       -> ()
+
+              

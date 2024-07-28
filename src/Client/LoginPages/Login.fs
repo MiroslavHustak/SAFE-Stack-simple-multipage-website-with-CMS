@@ -7,7 +7,7 @@ open Elmish
 open Fable.Remoting.Client
 
 open Shared
-open Shared
+open Shared.SharedTypes
 
 module Login =
 
@@ -59,7 +59,7 @@ module Login =
         let model =
             {
                 User = FirstTimeRunAnonymous
-                ErrorMsg = { line1 = String.Empty; line2 = String.Empty }
+                ErrorMsg = { line1 = ErrorMsgLine1 String.Empty; line2 = ErrorMsgLine2 String.Empty }
                 InputUsr = String.Empty
                 InputPsw = String.Empty
                 Id = id
@@ -83,7 +83,7 @@ module Login =
              let model =           
                  match value with
                  | UsernameOrPasswordIncorrect problem -> { model with User = ApplicationUser.Anonymous; ErrorMsg = problem } //potrebne pro na konci modulu uvedeny kod
-                 | Shared.LoggedIn user                       -> { model with User = ApplicationUser.LoggedIn user } //potrebne pro na konci modulu uvedeny kod    
+                 | Shared.SharedTypes.LoggedIn user    -> { model with User = ApplicationUser.LoggedIn user } //potrebne pro na konci modulu uvedeny kod    
              model, Cmd.ofMsg (LoginCompleted value), NoOp
 
         | LoginCompleted session -> model, Cmd.none, SignedIn session
@@ -314,9 +314,9 @@ module Login =
                                                                                             style.fontFamily "sans-serif"
                                                                                         ]
                                                                                     prop.children [
-                                                                                        Html.text rcErrorMsg.line1
+                                                                                        Html.text (rcErrorMsg.line1 |> function ErrorMsgLine1 value -> value)
                                                                                         Html.br []
-                                                                                        Html.text rcErrorMsg.line2 
+                                                                                        Html.text (rcErrorMsg.line2 |> function ErrorMsgLine2 value -> value)
                                                                                     ]
                                                                                 ]          
                                                                                 Html.br []

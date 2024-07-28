@@ -97,14 +97,15 @@ module CMSKontakt =
              try
                  try
                      let buttonClickEvent: KontaktValuesShared =
-                         let input current old =
-                             match current = String.Empty with
-                             | true  -> old
-                             | false -> current 
-                         SharedKontaktValues.transferLayer 
-                         <| input model.V001Input model.OldKontaktValues.V001 <| input model.V002Input model.OldKontaktValues.V002 <| input model.V003Input model.OldKontaktValues.V003 
-                         <| input model.V004Input model.OldKontaktValues.V004 <| input model.V005Input model.OldKontaktValues.V005 <| input model.V006Input model.OldKontaktValues.V006
-                         <| input model.V007Input model.OldKontaktValues.V007 
+                                                
+                         SharedKontaktValues.transferLayer   //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
+                         <| model.V001Input
+                         <| model.V002Input
+                         <| model.V003Input
+                         <| model.V004Input
+                         <| model.V005Input
+                         <| model.V006Input
+                         <| model.V007Input                               
 
                      //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
                      let cmd = Cmd.OfAsyncImmediate.perform sendKontaktValuesApi.sendKontaktValues buttonClickEvent NewKontaktValues

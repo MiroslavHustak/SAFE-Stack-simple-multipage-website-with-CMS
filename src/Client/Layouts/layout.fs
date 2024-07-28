@@ -307,12 +307,12 @@ module Layout =
                             Html.a [
                                 prop.href "https://stackoverflow.com/questions/54970180/how-can-i-do-a-simple-elmish-router"
                                 prop.target "_blank"
-                                prop.title "F#/Elmish code"
-                                prop.text "F#/Elmish code"
+                                prop.title "Elmish (F#) code"
+                                prop.text "Elmish (F#) code"
                             ]   
                             Html.text " for client-side routing by "
                             Html.a [
-                                prop.href "https://stackoverflow.com/users/2911775/maxime-mangel"
+                                prop.href "https://github.com/MangelMaxime"
                                 prop.target "_blank"
                                 prop.title "Maxime Mangel"
                                 prop.text "Maxime Mangel"

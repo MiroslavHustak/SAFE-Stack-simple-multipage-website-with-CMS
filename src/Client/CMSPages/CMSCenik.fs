@@ -108,15 +108,19 @@ module CMSCenik =
              try
                  try
                      let buttonClickEvent: CenikValuesShared =                   
-                         let input current old =                  
-                             match strContainsOnlySpace current || String.IsNullOrEmpty current with //nebo String.IsNullOrWhiteSpace current || String.IsNullOrEmpty current
-                             | true  -> old
-                             | false -> current 
-                         SharedCenikValues.transferLayer //Unit type would suffice, nevertheless sending CenikValues and empty values to the server preserved in order to use the existing code on Server and Shared 
-                         <| SharedCenikValues.cenikValuesDomainDefault.Id <| SharedCenikValues.cenikValuesDomainDefault.ValueState //whatever Id and Value State
-                         <| input model.V001Input model.OldCenikValues.V001 <| input model.V002Input model.OldCenikValues.V002 <| input model.V003Input model.OldCenikValues.V003 
-                         <| input model.V004Input model.OldCenikValues.V004 <| input model.V005Input model.OldCenikValues.V005 <| input model.V006Input model.OldCenikValues.V006
-                         <| input model.V007Input model.OldCenikValues.V007 <| input model.V008Input model.OldCenikValues.V008 <| input model.V009Input model.OldCenikValues.V009
+                         
+                         SharedCenikValues.transferLayer  //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
+                         <| SharedCenikValues.cenikValuesDomainDefault.Id
+                         <| SharedCenikValues.cenikValuesDomainDefault.ValueState //whatever Id and Value State
+                         <| model.V001Input
+                         <| model.V002Input
+                         <| model.V003Input
+                         <| model.V004Input
+                         <| model.V005Input
+                         <| model.V006Input
+                         <| model.V007Input
+                         <| model.V008Input
+                         <| model.V009Input
 
                      //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
                      let cmd = Cmd.OfAsyncImmediate.perform sendCenikValuesApi.sendCenikValues buttonClickEvent NewCenikValues 

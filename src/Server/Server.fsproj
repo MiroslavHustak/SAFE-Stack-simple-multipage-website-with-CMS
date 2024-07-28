@@ -27,8 +27,6 @@
     <Compile Include="Helpers\Security2.fs" />
     <Compile Include="Helpers\Helpers.fs" />
     <Compile Include="Helpers\CopyOrMoveFiles.fs" />
-    <Compile Include="DataModelling\LoginData\DataModels\DataModels.fs" />
-    <Compile Include="DataModelling\LoginData\TransformationLayers\TransLayerLoginValues.fs" />
     <Compile Include="DataModelling\CMSData\DTOs\DtoFromStorage.fs" />
     <Compile Include="DataModelling\CMSData\DTOs\DtoToStorage.fs" />
     <Compile Include="DataModelling\CMSData\DTOs\DtoXml.fs" />
@@ -78,10 +76,6 @@
     <Content Update="Resources\JsonSchema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DataModelling\CMSData\DataModels\" />
-    <Folder Include="DataModelling\LoginData\DTOs\" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
   <ProjectExtensions><VisualStudio><UserProperties resources_4jsonlinkandlinknamevalues_1json__JsonSchema="https://json-schema.org/draft-07/schema" resources_4jsonlinkandlinknamevaluesbackup_1json__JsonSchema="https://json-schema.org/draft-07/schema" resources_4jsonschema_1json__JsonSchema="https://json-schema.org/draft-07/schema" /></VisualStudio></ProjectExtensions>

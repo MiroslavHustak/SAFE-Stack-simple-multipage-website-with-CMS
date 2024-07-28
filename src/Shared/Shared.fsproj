@@ -5,11 +5,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="LoginData\SharedTypes.fs" />
-    <Compile Include="LoginData\ClientDtoServerDm.fs" />
-    <Compile Include="LoginData\TransLayer.fs" />
-    <Compile Include="CMSData\ClientDtoServerDm.fs" />
-    <Compile Include="CMSData\TransLayer.fs" />
+    <Compile Include="Helpers\CEBuilders.fs" />
+    <Compile Include="Helpers\Helpers.fs" />
+    <Compile Include="SharedTypes.fs" />
+    <Compile Include="DataModelling\LoginData\SharedModel.fs" />
+    <Compile Include="DataModelling\LoginData\TransLayer.fs" />
+    <Compile Include="DataModelling\CMSData\SharedModel.fs" />
+    <Compile Include="DataModelling\CMSData\TransLayer.fs" />
     <Compile Include="GetApi.fs" />
   </ItemGroup>
   <ItemGroup>   

@@ -63,6 +63,3 @@ module Nenajdete =
             ]  
            
         layout <| contentNenajdete() <| nenajdeteRecord <| links
-
-
-

@@ -1,6 +1,7 @@
 namespace Shared
 
 open System
+open FsToolkit.ErrorHandling
 
 open Shared
 
@@ -16,7 +17,7 @@ module SharedMessageDefaultValues =
             Msg6 = String.Empty
         }
   
-module SharedCenikValues =    
+module SharedCenikValues =
 
     let internal cenikValuesDomainDefault = //fixed values
         {
@@ -35,23 +36,25 @@ module SharedCenikValues =
         }
           
     let internal transferLayer id valState v001 v002 v003 v004 v005 v006 v007 v008 v009 =
+                
         {
             Id = id
-            ValueState = valState
-            V001 = v001
-            V002 = v002
-            V003 = v003
-            V004 = v004
-            V005 = v005
-            V006 = v006
-            V007 = v007
-            V008 = v008
-            V009 = v009
+            ValueState = valState |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.ValueState
+            V001 = v001 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V001 
+            V002 = v002 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V002 
+            V003 = v003 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V003 
+            V004 = v004 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V004 
+            V005 = v005 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V005 
+            V006 = v006 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V006 
+            V007 = v007 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V007 
+            V008 = v008 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V008 
+            V009 = v009 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V009 
             Msgs = SharedMessageDefaultValues.messageDefault
         }
    
 module SharedDeserialisedCenikValues =
-   
+
+    //no need to do anything here, Option dealt with at Server transformation layer
     let internal transferLayer (cenikInputValues: CenikValuesShared) =
         {
             Id = cenikInputValues.Id
@@ -84,18 +87,19 @@ module SharedKontaktValues =
             
     let internal transferLayer v001 v002 v003 v004 v005 v006 v007 =
         {
-            V001 = v001
-            V002 = v002
-            V003 = v003
-            V004 = v004
-            V005 = v005
-            V006 = v006
-            V007 = v007
+            V001 = v001 |> Option.ofNullEmpty |> function Some value -> value | None -> kontaktValuesDomainDefault.V001
+            V002 = v002 |> Option.ofNullEmpty |> function Some value -> value | None -> kontaktValuesDomainDefault.V002
+            V003 = v003 |> Option.ofNullEmpty |> function Some value -> value | None -> kontaktValuesDomainDefault.V003
+            V004 = v004 |> Option.ofNullEmpty |> function Some value -> value | None -> kontaktValuesDomainDefault.V004
+            V005 = v005 |> Option.ofNullEmpty |> function Some value -> value | None -> kontaktValuesDomainDefault.V005
+            V006 = v006 |> Option.ofNullEmpty |> function Some value -> value | None -> kontaktValuesDomainDefault.V006
+            V007 = v007 |> Option.ofNullEmpty |> function Some value -> value | None -> kontaktValuesDomainDefault.V007
             Msgs = SharedMessageDefaultValues.messageDefault
         }
 
-module SharedDeserialisedKontaktValues =    
-   
+module SharedDeserialisedKontaktValues =
+    
+   //no need to do anything here, Option dealt with at Server transformation layer
     let internal transferLayer (kontaktInputValues: KontaktValuesShared) =
         {
             V001 = kontaktInputValues.V001
@@ -129,23 +133,24 @@ module SharedLinkValues =
     
     let internal transferLayer v001 v002 v003 v004 v005 v006 v001n v002n v003n v004n v005n v006n =
         {
-            V001 = v001
-            V002 = v002
-            V003 = v003
-            V004 = v004
-            V005 = v005
-            V006 = v006
-            V001n = v001n
-            V002n = v002n
-            V003n = v003n
-            V004n = v004n
-            V005n = v005n
-            V006n = v006n
+            V001 = v001 |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V001
+            V002 = v002 |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V002
+            V003 = v003 |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V003
+            V004 = v004 |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V004
+            V005 = v005 |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V005
+            V006 = v006 |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V006
+            V001n = v001n |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V001n
+            V002n = v002n |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V002n
+            V003n = v003n |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V003n
+            V004n = v004n |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V004n
+            V005n = v005n |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V005n
+            V006n = v006n |> Option.ofNullEmpty |> function Some value -> value | None -> linkValuesDomainDefault.V006n
             Msgs = SharedMessageDefaultValues.messageDefault    
         }
 
 module SharedDeserialisedValues =
-   
+
+    //no need to do anything here, Option dealt with at Server transformation layer
     let internal transferLayer (linkAndLinkNameInputValues: LinkValuesShared) =
         {
             V001 = linkAndLinkNameInputValues.V001
