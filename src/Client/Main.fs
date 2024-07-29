@@ -127,8 +127,8 @@ module App =
 
         | Some MaximeRouter.Router.Route.Home
             ->    
-            let (homeModel, homeCmd) = Home.init ()       
-            { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
+             let (homeModel, homeCmd) = Home.init ()       
+             { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues 
 
         | Some (MaximeRouter.Router.Route.Sluzby sluzbyId)
             ->

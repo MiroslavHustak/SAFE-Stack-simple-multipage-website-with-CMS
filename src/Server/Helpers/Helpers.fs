@@ -6,6 +6,7 @@ open System.IO
 open CEBuilders
 open FsToolkit.ErrorHandling
 
+[<RequireQualifiedAccess>]
 module Result =
 
     let internal toOption = 
@@ -13,6 +14,7 @@ module Result =
         | Ok value -> Some value 
         | Error _  -> None  
 
+[<RequireQualifiedAccess>]
 module Option =
 
     let internal ofBool = 
