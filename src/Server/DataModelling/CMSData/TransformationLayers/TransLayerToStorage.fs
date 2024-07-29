@@ -6,7 +6,7 @@ open DtoToStorage.Server.DtoToStorage
 
 module TransLayerSend =
 
-    let private messagesTransferLayerToStorage (messagesDomain: MessagesShared) : MessagesDtoToStorage =
+    let private messagesTransformLayerToStorage (messagesDomain: MessagesShared) : MessagesDtoToStorage =
         {
              Msg1 = messagesDomain.Msg1
              Msg2 = messagesDomain.Msg2   
@@ -16,7 +16,7 @@ module TransLayerSend =
              Msg6 = messagesDomain.Msg6                   
         }
 
-    let internal cenikValuesTransferLayerToStorage (cenikValuesDomain: CenikValuesShared) : CenikValuesDtoToStorage =
+    let internal cenikValuesTransformLayerToStorage (cenikValuesDomain: CenikValuesShared) : CenikValuesDtoToStorage =
         {
             Id = cenikValuesDomain.Id
             ValueState = cenikValuesDomain.ValueState
@@ -29,11 +29,11 @@ module TransLayerSend =
             V007 = cenikValuesDomain.V007
             V008 = cenikValuesDomain.V008
             V009 = cenikValuesDomain.V009
-            Msgs = messagesTransferLayerToStorage cenikValuesDomain.Msgs
+            Msgs = messagesTransformLayerToStorage cenikValuesDomain.Msgs
         }
 
     // Defined but currently unused; retained for potential future requirements or updates.    
-    let internal kontaktValuesTransferLayerToStorage (kontaktValuesDomain: KontaktValuesShared) : KontaktValuesDtoToStorage =
+    let internal kontaktValuesTransformLayerToStorage (kontaktValuesDomain: KontaktValuesShared) : KontaktValuesDtoToStorage =
         {            
             V001 = kontaktValuesDomain.V001
             V002 = kontaktValuesDomain.V002
@@ -42,10 +42,10 @@ module TransLayerSend =
             V005 = kontaktValuesDomain.V005
             V006 = kontaktValuesDomain.V006
             V007 = kontaktValuesDomain.V007          
-            Msgs = messagesTransferLayerToStorage kontaktValuesDomain.Msgs
+            Msgs = messagesTransformLayerToStorage kontaktValuesDomain.Msgs
         }
 
-    let internal linkValuesTransferLayerToStorage (linkValuesDomain: LinkValuesShared) : LinkValuesDtoToStorage =
+    let internal linkValuesTransformLayerToStorage (linkValuesDomain: LinkValuesShared) : LinkValuesDtoToStorage =
         {            
             V001 = linkValuesDomain.V001
             V002 = linkValuesDomain.V002
@@ -59,5 +59,5 @@ module TransLayerSend =
             V004n = linkValuesDomain.V004n
             V005n = linkValuesDomain.V005n
             V006n = linkValuesDomain.V006n
-            Msgs = messagesTransferLayerToStorage linkValuesDomain.Msgs
+            Msgs = messagesTransformLayerToStorage linkValuesDomain.Msgs
         }

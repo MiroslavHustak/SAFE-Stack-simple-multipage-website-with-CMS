@@ -97,7 +97,7 @@ module Select =
                                         |> List.ofSeq
                                         |> List.tryHead
                                         |> function
-                                            | Some value -> cenikValuesTransferLayerFromStorage value
+                                            | Some value -> cenikValuesTransformLayerFromStorage value
                                             | None       -> Error ReadingDbError
                          | Error err ->
                                       Error err     

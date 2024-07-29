@@ -296,7 +296,7 @@ module App =
              //LinkAndLinkNameValues need to be activated during the first download of any page        
         | _, AskServerForLinkAndLinkNameValues
             ->
-             let loadEvent = SharedDeserialisedValues.transferLayer model.LinkAndLinkNameInputValues
+             let loadEvent = SharedDeserialisedValues.transformLayer model.LinkAndLinkNameInputValues
              let cmd = Cmd.OfAsync.perform sendDeserialisedLinkAndLinkNameValuesApi.getDeserialisedLinkAndLinkNameValues loadEvent GetLinkAndLinkNameValues
              model, cmd
         

@@ -11,7 +11,7 @@ open DtoFromStorage.Server.DtoFromStorage
 
 module TransLayerFromStorage =
 
-    let private messagesTransferLayerFromStorage (messagesDto: MessagesDtoFromStorage) : MessagesShared =
+    let private messagesTransformLayerFromStorage (messagesDto: MessagesDtoFromStorage) : MessagesShared =
         {
              Msg1 = messagesDto.Msg1
              Msg2 = messagesDto.Msg2
@@ -21,7 +21,7 @@ module TransLayerFromStorage =
              Msg6 = messagesDto.Msg6             
         }
 
-    let private messagesTransferLayerFromStorageDefault : MessagesDtoFromStorage =
+    let private messagesTransformLayerFromStorageDefault : MessagesDtoFromStorage =
         {
             Msg1 = String.Empty
             Msg2 = String.Empty
@@ -31,7 +31,7 @@ module TransLayerFromStorage =
             Msg6 = String.Empty           
         } 
 
-    let internal cenikValuesTransferLayerFromStorage (cenikValuesDtoFromStorage: CenikValuesDtoFromStorage) =
+    let internal cenikValuesTransformLayerFromStorage (cenikValuesDtoFromStorage: CenikValuesDtoFromStorage) =
 
         pyramidOfDoom
             {
@@ -62,17 +62,17 @@ module TransLayerFromStorage =
                             V008 = v008
                             V009 = v009
                             Msgs =
-                                messagesTransferLayerFromStorage
+                                messagesTransformLayerFromStorage
                                     (
                                         match cenikValuesDtoFromStorage.MsgsDtoGet with
                                         | Some value -> value
-                                        | None       -> messagesTransferLayerFromStorageDefault
+                                        | None       -> messagesTransformLayerFromStorageDefault
                                     )
                         }
             }       
 
     // Defined but currently unused; retained for potential future requirements or updates.     
-    let internal kontaktValuesTransferLayerFromStorage (kontaktValuesDtoFromStorage: KontaktValuesDtoFromStorage) : KontaktValuesShared  =
+    let internal kontaktValuesTransformLayerFromStorage (kontaktValuesDtoFromStorage: KontaktValuesDtoFromStorage) : KontaktValuesShared  =
         {            
             V001 = kontaktValuesDtoFromStorage.V001
             V002 = kontaktValuesDtoFromStorage.V002
@@ -81,10 +81,10 @@ module TransLayerFromStorage =
             V005 = kontaktValuesDtoFromStorage.V005
             V006 = kontaktValuesDtoFromStorage.V006
             V007 = kontaktValuesDtoFromStorage.V007          
-            Msgs = messagesTransferLayerFromStorage kontaktValuesDtoFromStorage.Msgs
+            Msgs = messagesTransformLayerFromStorage kontaktValuesDtoFromStorage.Msgs
         }
 
-    let internal linkValuesTransferLayerFromStorage (linkValuesDtoFromStorage: LinkValuesDtoFromStorage) : LinkValuesShared  =
+    let internal linkValuesTransformLayerFromStorage (linkValuesDtoFromStorage: LinkValuesDtoFromStorage) : LinkValuesShared  =
         {            
             V001 = linkValuesDtoFromStorage.V001
             V002 = linkValuesDtoFromStorage.V002
@@ -98,7 +98,7 @@ module TransLayerFromStorage =
             V004n = linkValuesDtoFromStorage.V004n
             V005n = linkValuesDtoFromStorage.V005n
             V006n = linkValuesDtoFromStorage.V006n
-            Msgs = messagesTransferLayerFromStorage linkValuesDtoFromStorage.Msgs
+            Msgs = messagesTransformLayerFromStorage linkValuesDtoFromStorage.Msgs
         }
 
         

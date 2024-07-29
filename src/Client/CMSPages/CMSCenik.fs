@@ -97,7 +97,7 @@ module CMSCenik =
     
         | SendOldCenikValuesToServer
             ->   
-             let loadEvent = SharedDeserialisedCenikValues.transferLayer model.OldCenikValues
+             let loadEvent = SharedDeserialisedCenikValues.transformLayer model.OldCenikValues
              let cmd = Cmd.OfAsync.perform sendCenikValuesApi.getOldCenikValues loadEvent OldCenikValues  
              model, cmd
 
@@ -109,7 +109,7 @@ module CMSCenik =
                  try
                      let buttonClickEvent: CenikValuesShared =                   
                          
-                         SharedCenikValues.transferLayer  //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
+                         SharedCenikValues.transformLayer  //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
                          <| SharedCenikValues.cenikValuesDomainDefault.Id
                          <| SharedCenikValues.cenikValuesDomainDefault.ValueState //whatever Id and Value State
                          <| model.V001Input

@@ -13,7 +13,7 @@ let shared =
         [           
             testCase "testingExpectoMochaShared" <| fun _ ->
 
-                let x = SharedDeserialisedCenikValues.transferLayer SharedCenikValues.cenikValuesDomainDefault
+                let x = SharedDeserialisedCenikValues.transformLayer SharedCenikValues.cenikValuesDomainDefault
 
                 let expected = x.Msgs
                 let actual = Shared.SharedMessageDefaultValues.messageDefault

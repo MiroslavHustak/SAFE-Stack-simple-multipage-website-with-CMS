@@ -47,7 +47,7 @@ module Kontakt =
         match msg with       
         | AskServerForKontaktValues
             ->
-             let loadEvent = SharedDeserialisedKontaktValues.transferLayer model.KontaktInputValues
+             let loadEvent = SharedDeserialisedKontaktValues.transformLayer model.KontaktInputValues
              let cmd = Cmd.OfAsync.perform getDeserialisedKontaktValuesApi.getDeserialisedKontaktValues loadEvent NewKontaktValues
              model, cmd
 

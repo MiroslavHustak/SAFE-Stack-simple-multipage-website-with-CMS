@@ -74,7 +74,7 @@ module Login =
 
         | SendUsrPswToServer
             ->
-             let buttonClickEvent = SharedLoginValues.transferLayer model.InputUsr model.InputPsw
+             let buttonClickEvent = SharedLoginValues.transformLayer model.InputUsr model.InputPsw
              let cmd = Cmd.OfAsync.perform getLoginApi.login buttonClickEvent GetLoginResults 
              model, cmd, NoOp
 

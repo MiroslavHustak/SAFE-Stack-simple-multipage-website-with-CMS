@@ -47,7 +47,7 @@ module Cenik =
         match msg with       
         | AskServerForCenikValues
             -> 
-             let loadEvent = SharedDeserialisedCenikValues.transferLayer model.CenikInputValues
+             let loadEvent = SharedDeserialisedCenikValues.transformLayer model.CenikInputValues
              let cmd = Cmd.OfAsync.perform getDeserialisedCenikValuesApi.getDeserialisedCenikValues loadEvent GetCenikValues
              model, cmd
                 

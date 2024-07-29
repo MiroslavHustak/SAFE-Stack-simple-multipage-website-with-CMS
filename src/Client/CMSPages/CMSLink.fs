@@ -106,7 +106,7 @@ module CMSLink =
 
         | SendOldLinkValuesToServer
             ->
-             let loadEvent = SharedDeserialisedValues.transferLayer model.OldLinkValues
+             let loadEvent = SharedDeserialisedValues.transformLayer model.OldLinkValues
              let cmd = Cmd.OfAsync.perform sendLinkValuesApi.getOldLinkValues loadEvent OldLinkValues
              model, cmd
 
@@ -118,7 +118,7 @@ module CMSLink =
                  try
                      let buttonClickEvent: LinkValuesShared = 
                        
-                         SharedLinkValues.transferLayer   //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
+                         SharedLinkValues.transformLayer   //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
                          <| model.V001LinkInput
                          <| model.V002LinkInput
                          <| model.V003LinkInput

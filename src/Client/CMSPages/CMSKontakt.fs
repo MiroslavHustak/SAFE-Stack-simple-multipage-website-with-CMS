@@ -86,7 +86,7 @@ module CMSKontakt =
 
         | SendOldKontaktValuesToServer
             ->
-             let loadEvent = SharedDeserialisedKontaktValues.transferLayer model.OldKontaktValues
+             let loadEvent = SharedDeserialisedKontaktValues.transformLayer model.OldKontaktValues
              let cmd = Cmd.OfAsync.perform sendKontaktValuesApi.getOldKontaktValues loadEvent OldKontaktValues
              model, cmd
 
@@ -98,7 +98,7 @@ module CMSKontakt =
                  try
                      let buttonClickEvent: KontaktValuesShared =
                                                 
-                         SharedKontaktValues.transferLayer   //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
+                         SharedKontaktValues.transformLayer   //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
                          <| model.V001Input
                          <| model.V002Input
                          <| model.V003Input

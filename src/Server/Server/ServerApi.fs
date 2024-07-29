@@ -54,7 +54,7 @@ module ServerApi =
                                  | Ok ()   ->
                                             let dbNewCenikValues = { sendCenikValues with Id = 2; ValueState = "new" }
                                             let cond = dbNewCenikValues.Msgs.Msg1 = "First run"
-                                            let cenikValuesSend = cenikValuesTransferLayerToStorage dbNewCenikValues
+                                            let cenikValuesSend = cenikValuesTransformLayerToStorage dbNewCenikValues
                                             let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) cond
                                             
                                             { dbNewCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql } }
@@ -81,7 +81,7 @@ module ServerApi =
                              //********************************************************
                              let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                              let cond = dbCenikValues.Msgs.Msg1 = "First run"
-                             let cenikValuesSend = cenikValuesTransferLayerToStorage dbCenikValues
+                             let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
                              let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) cond
                            
                              //********************************************************
@@ -127,7 +127,7 @@ module ServerApi =
                                                     }
 
                                                 //failwith "Simulated exception10"
-                                                let sendKontaktValuesDtoXml = kontaktValuesTransferLayerDomainToXml sendKontaktValues
+                                                let sendKontaktValuesDtoXml = kontaktValuesTransformLayerDomainToXml sendKontaktValues
                                                 
                                                 match copyOrMoveFiles config Copy with
                                                 | Ok _      -> parseToXml3 sendKontaktValuesDtoXml pathToXml3
@@ -166,7 +166,7 @@ module ServerApi =
                                              let deserialize = parseFromXml3 pathToXmlBackup3
                                              let! deserialize = deserialize, SharedKontaktValues.kontaktValuesDomainDefault
 
-                                             return kontaktValuesTransferLayerXmlToDomain deserialize, String.Empty
+                                             return kontaktValuesTransformLayerXmlToDomain deserialize, String.Empty
                                          }                  
                                  with
                                  | ex -> SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě 1: " (string ex.Message)
@@ -198,7 +198,7 @@ module ServerApi =
                                              let deserialize = parseFromXml3 pathToXmlBackup3
                                              let! deserialize = deserialize, SharedKontaktValues.kontaktValuesDomainDefault
 
-                                             return kontaktValuesTransferLayerXmlToDomain deserialize, String.Empty
+                                             return kontaktValuesTransformLayerXmlToDomain deserialize, String.Empty
                                          }                                  
                                  with
                                  | ex -> SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě 2: " (string ex.Message) 
@@ -217,7 +217,7 @@ module ServerApi =
                                 | Ok ()   ->                                       
                                            try 
                                                //failwith "Simulated exception14"   
-                                               let sendLinkAndLinkNameValuesDtoSend = linkValuesTransferLayerToStorage sendLinkAndLinkNameValues                                               
+                                               let sendLinkAndLinkNameValuesDtoSend = linkValuesTransformLayerToStorage sendLinkAndLinkNameValues                                               
                                                match copyFiles pathToJson pathToJsonBackup true with
                                                | Ok _      -> serializeToJsonThoth2 sendLinkAndLinkNameValuesDtoSend pathToJson
                                                | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                   
@@ -249,7 +249,7 @@ module ServerApi =
                                              let deserialize = deserializeFromJsonThoth2<LinkValuesDtoFromStorage> pathToJsonBackup
                                              let! deserialize = deserialize, SharedLinkValues.linkValuesDomainDefault
 
-                                             return linkValuesTransferLayerFromStorage deserialize, String.Empty
+                                             return linkValuesTransformLayerFromStorage deserialize, String.Empty
                                          }                                      
                                  with
                                  | ex -> SharedLinkValues.linkValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message) 
@@ -273,7 +273,7 @@ module ServerApi =
                                             let deserialize = deserializeFromJsonThoth2<LinkValuesDtoFromStorage> pathToJsonBackup
                                             let! deserialize = deserialize, SharedLinkValues.linkValuesDomainDefault
 
-                                            return linkValuesTransferLayerFromStorage deserialize, String.Empty
+                                            return linkValuesTransformLayerFromStorage deserialize, String.Empty
                                         }                                      
                                 with
                                 | ex -> SharedLinkValues.linkValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message)  
@@ -311,7 +311,7 @@ module ServerApi =
     let app =
         //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
         let dbCenikValues = { SharedCenikValues.cenikValuesDomainDefault with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = "First run" } }
-        let cenikValuesSend = cenikValuesTransferLayerToStorage dbCenikValues
+        let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
         let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) true //true == first run
 
         application

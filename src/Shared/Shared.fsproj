@@ -8,10 +8,10 @@
     <Compile Include="Helpers\CEBuilders.fs" />
     <Compile Include="Helpers\Helpers.fs" />
     <Compile Include="SharedTypes.fs" />
-    <Compile Include="DataModelling\LoginData\SharedModel.fs" />
-    <Compile Include="DataModelling\LoginData\TransLayer.fs" />
-    <Compile Include="DataModelling\CMSData\SharedModel.fs" />
-    <Compile Include="DataModelling\CMSData\TransLayer.fs" />
+    <Compile Include="DataModelling\LoginData\SharedModels.fs" />
+    <Compile Include="DataModelling\LoginData\TransformationLayers.fs" />
+    <Compile Include="DataModelling\CMSData\SharedModels.fs" />
+    <Compile Include="DataModelling\CMSData\TransformationLayers.fs" />
     <Compile Include="GetApi.fs" />
   </ItemGroup>
   <ItemGroup>   

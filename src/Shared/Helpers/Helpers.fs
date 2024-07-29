@@ -27,17 +27,3 @@ module Option =
     
                 return Some value
             }
-
-module Miscellaneous = 
-
-    open System
-
-    let internal strContainsOnlySpace str =
-        str |> Seq.forall (fun item -> item = (char)32)  //A string is a sequence of characters => use Seq.forall to test directly //(char)32 = space*    
-    
-        
-       
-          
-
-
-
