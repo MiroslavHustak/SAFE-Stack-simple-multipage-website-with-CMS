@@ -10,17 +10,13 @@ open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
 
 open Shared
-open Shared
 
-open Errors
 open Settings
 open ServerVerify
 
 open Database.Select
 open Database.Errors.Errors
 open Database.InsertOrUpdate
-
-open ErrorTypes.Server
 
 open Connections.Connection
 
@@ -328,7 +324,7 @@ module ServerApi =
     [<EntryPoint>]
     let main _ =
 
-        Dapper.FSharp.OptionTypes.register()
+        //Dapper.FSharp.OptionTypes.register()
 
         //pswHash() //to be used only once && before bundling  
 

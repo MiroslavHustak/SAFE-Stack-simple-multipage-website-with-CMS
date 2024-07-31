@@ -4,20 +4,15 @@ open System
 open System.Data.SqlClient
 open FsToolkit.ErrorHandling
 
-open InsertOrUpdate
-
 open Shared
 open ErrorTypes.Server
 open Queries.SqlQueries
 
-open Helpers.Server
 open Helpers.Server.CEBuilders
 
 open DtoDefault.Server.DtoDefault
 open DtoFromStorage.Server.DtoFromStorage
 open TransLayerFromStorage.Server.TransLayerFromStorage
-
-open Connections.Connection
 
 //SQL type providers did not work in this app (they blocked the Somee database)
 module Select = 
@@ -105,7 +100,7 @@ module Select =
                                       Error err     
                                                         
                      finally
-                         ()// closeConnection connection                      
+                         () // closeConnection connection                      
                  with
                  | _ -> Error ReadingDbError                          
 
