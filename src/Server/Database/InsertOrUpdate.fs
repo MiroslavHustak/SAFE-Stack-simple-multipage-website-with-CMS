@@ -21,14 +21,14 @@ module InsertOrUpdate =
     //See the file SQL Queries.fs
        
     //**************** Sql queries - inner functions  *****************
-    let internal insertOrUpdate (sendCenikValues : CenikValuesDtoToStorage) = 
+    let internal insertOrUpdate (createConnection: unit -> SqlConnection) (sendCenikValues : CenikValuesDtoToStorage) = 
                             
         try
             //failwith "Simulated exception SqlInsertOrUpdate"
 
             let isolationLevel = System.Data.IsolationLevel.Serializable //Transaction locking behaviour
                             
-            let connection: SqlConnection = getConnection()
+            let connection: SqlConnection = createConnection()
             let transaction: SqlTransaction = connection.BeginTransaction(isolationLevel) //Transaction to be implemented for all commands linked to the connection
 
             try
@@ -86,7 +86,7 @@ module InsertOrUpdate =
                                 
             finally
                 transaction.Dispose()
-                closeConnection connection //just in case :-)                         
+                //closeConnection connection                     
         with
         | _ ->            
              Error InsertOrUpdateError

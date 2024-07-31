@@ -10,11 +10,11 @@ open TransLayerSend.Server.TransLayerSend
 
 module Errors =
 
-    let internal insertDefaultValues insertOrUpdate =     
+    let internal insertDefaultValues insertOrUpdate createConnection =     
         
         let cenikValuesDtoSendDefault = cenikValuesTransformLayerToStorage SharedCenikValues.cenikValuesDomainDefault
 
-        match insertOrUpdate cenikValuesDtoSendDefault with
+        match insertOrUpdate createConnection cenikValuesDtoSendDefault with
         | Ok _    -> InsertOrUpdateError1
         | Error _ -> InsertOrUpdateError2
 

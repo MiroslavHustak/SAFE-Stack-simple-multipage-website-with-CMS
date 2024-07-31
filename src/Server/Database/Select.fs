@@ -23,11 +23,11 @@ open Connections.Connection
 module Select = 
 
     //******************************************************************************************************************
-    let internal selectValues insertDefaultValues idInt =
+    let internal selectValues (createConnection: unit -> SqlConnection) insertDefaultValues idInt =
         
          try
              //failwith "Simulated exception SqlSelectValues"            
-             let connection = getConnection()
+             let connection = createConnection()
                     
              let getValues: Result<CenikValuesShared, SelectErrorOptions> =
 
@@ -105,7 +105,7 @@ module Select =
                                       Error err     
                                                         
                      finally
-                         closeConnection connection  //just in case :-)                      
+                         ()// closeConnection connection                      
                  with
                  | _ -> Error ReadingDbError                          
 

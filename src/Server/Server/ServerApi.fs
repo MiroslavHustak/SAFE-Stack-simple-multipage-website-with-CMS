@@ -2,6 +2,7 @@ namespace Server
 
 open System
 open System.IO
+open System.Data.SqlClient
 
 open Saturn
 
@@ -37,9 +38,10 @@ open TransLayerXml.Server.TransLayerXml
 open TransLayerSend.Server.TransLayerSend
 open TransLayerFromStorage.Server.TransLayerFromStorage
 
+
 module ServerApi =
 
-    let internal IGetApi errMsg =
+    let internal IGetApi createConnection errMsg =
         {            
             login = fun login -> async { return (verifyLogin login) }
 
@@ -55,7 +57,7 @@ module ServerApi =
                                             let dbNewCenikValues = { sendCenikValues with Id = 2; ValueState = "new" }
                                             let cond = dbNewCenikValues.Msgs.Msg1 = "First run"
                                             let cenikValuesSend = cenikValuesTransformLayerToStorage dbNewCenikValues
-                                            let exnSql = errorMsgBoxIU (insertOrUpdate cenikValuesSend) cond
+                                            let exnSql = errorMsgBoxIU (insertOrUpdate createConnection cenikValuesSend) cond
                                             
                                             { dbNewCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql } }
                                                                            
@@ -74,7 +76,7 @@ module ServerApi =
                              let IdOld = 3
                             
                              let (dbGetNewCenikValues, exnSql2) =                              
-                                 match selectValues (insertDefaultValues insertOrUpdate) IdNew with   
+                                 match selectValues createConnection (insertDefaultValues insertOrUpdate createConnection) IdNew with   
                                  | Ok value  -> value, String.Empty                                            
                                  | Error err -> errorMsgBoxS err
 
@@ -82,11 +84,11 @@ module ServerApi =
                              let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                              let cond = dbCenikValues.Msgs.Msg1 = "First run"
                              let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
-                             let exnSql = errorMsgBoxIU (insertOrUpdate cenikValuesSend) cond
+                             let exnSql = errorMsgBoxIU (insertOrUpdate createConnection cenikValuesSend) cond
                            
                              //********************************************************
                              let (dbSendOldCenikValues, exnSql3) =  
-                                 match selectValues (insertDefaultValues insertOrUpdate) IdOld with   
+                                 match selectValues createConnection (insertDefaultValues insertOrUpdate createConnection) IdOld with   
                                  | Ok value  -> value, String.Empty                                            
                                  | Error err -> errorMsgBoxS err 
 
@@ -101,7 +103,7 @@ module ServerApi =
                             let IdNew = 2
                     
                             let (dbSendCenikValues, exnSql1) =                                                          
-                                match selectValues (insertDefaultValues insertOrUpdate) IdNew with   
+                                match selectValues createConnection (insertDefaultValues insertOrUpdate createConnection) IdNew with   
                                 | Ok value  -> value, String.Empty                                            
                                 | Error err -> errorMsgBoxS err
                                                                     
@@ -302,29 +304,42 @@ module ServerApi =
             *)
         }
 
-    let webApp exnSql =
+    let webApp (createConnection: unit -> SqlConnection) exnSql =
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
-        |> Remoting.fromValue (IGetApi exnSql)
+        |> Remoting.fromValue (IGetApi createConnection exnSql)
         |> Remoting.buildHttpHandler
 
-    let app =
+    let app createConnection =
+
         //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
         let dbCenikValues = { SharedCenikValues.cenikValuesDomainDefault with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = "First run" } }
         let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
-        let exnSql = errorMsgBoxIU (insertOrUpdate cenikValuesSend) true //true == first run
+        let exnSql = errorMsgBoxIU (insertOrUpdate createConnection cenikValuesSend) true //true == first run
 
         application
             {
-                use_router (webApp exnSql)
+                use_router (webApp createConnection exnSql)
                 memory_cache
                 use_static "public"
                 use_gzip
             }
 
     [<EntryPoint>]
-    let main _ =   
+    let main _ =
+
         Dapper.FSharp.OptionTypes.register()
-        //pswHash() //to be used only once && before bundling 
-        run app    
+
+        //pswHash() //to be used only once && before bundling  
+
+        try
+            let createConnection = fun () -> Connections.Connection.getConnection()
+
+            try
+                app >> run <| createConnection
+            finally                
+                createConnection >> closeConnection <| ()
+        with
+        | _ -> ()    
+
         0
