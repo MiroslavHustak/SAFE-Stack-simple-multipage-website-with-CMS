@@ -5,7 +5,6 @@ open System
 open Shared
 
 open ErrorTypes.Server
-open Connections.Connection
 open Helpers.Server.CEBuilders
 open TransLayerSend.Server.TransLayerSend
 
@@ -15,7 +14,7 @@ module Errors =
         
         let cenikValuesDtoSendDefault = cenikValuesTransformLayerToStorage SharedCenikValues.cenikValuesDomainDefault
 
-        match insertOrUpdate getConnection closeConnection cenikValuesDtoSendDefault with
+        match insertOrUpdate cenikValuesDtoSendDefault with
         | Ok _    -> InsertOrUpdateError1
         | Error _ -> InsertOrUpdateError2
 

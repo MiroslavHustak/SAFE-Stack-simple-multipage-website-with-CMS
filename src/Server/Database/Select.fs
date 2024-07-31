@@ -17,11 +17,13 @@ open DtoDefault.Server.DtoDefault
 open DtoFromStorage.Server.DtoFromStorage
 open TransLayerFromStorage.Server.TransLayerFromStorage
 
+open Connections.Connection
+
 //SQL type providers did not work in this app (they blocked the Somee database)
 module Select = 
 
     //******************************************************************************************************************
-    let internal selectValues getConnection closeConnection insertDefaultValues idInt =
+    let internal selectValues insertDefaultValues idInt =
         
          try
              //failwith "Simulated exception SqlSelectValues"            

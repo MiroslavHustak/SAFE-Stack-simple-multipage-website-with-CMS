@@ -13,13 +13,15 @@ open DtoToStorage.Server.DtoToStorage
 open Helpers.Server
 open Helpers.Server.CEBuilders
 
+open Connections.Connection
+
 module InsertOrUpdate = 
 
     //**************** Sql query strings *****************
     //See the file SQL Queries.fs
        
     //**************** Sql queries - inner functions  *****************
-    let internal insertOrUpdate getConnection closeConnection (sendCenikValues : CenikValuesDtoToStorage) = 
+    let internal insertOrUpdate (sendCenikValues : CenikValuesDtoToStorage) = 
                             
         try
             //failwith "Simulated exception SqlInsertOrUpdate"

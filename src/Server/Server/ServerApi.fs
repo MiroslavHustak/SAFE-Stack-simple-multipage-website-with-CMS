@@ -55,7 +55,7 @@ module ServerApi =
                                             let dbNewCenikValues = { sendCenikValues with Id = 2; ValueState = "new" }
                                             let cond = dbNewCenikValues.Msgs.Msg1 = "First run"
                                             let cenikValuesSend = cenikValuesTransformLayerToStorage dbNewCenikValues
-                                            let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) cond
+                                            let exnSql = errorMsgBoxIU (insertOrUpdate cenikValuesSend) cond
                                             
                                             { dbNewCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql } }
                                                                            
@@ -74,7 +74,7 @@ module ServerApi =
                              let IdOld = 3
                             
                              let (dbGetNewCenikValues, exnSql2) =                              
-                                 match selectValues getConnection closeConnection (insertDefaultValues insertOrUpdate) IdNew with   
+                                 match selectValues (insertDefaultValues insertOrUpdate) IdNew with   
                                  | Ok value  -> value, String.Empty                                            
                                  | Error err -> errorMsgBoxS err
 
@@ -82,11 +82,11 @@ module ServerApi =
                              let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                              let cond = dbCenikValues.Msgs.Msg1 = "First run"
                              let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
-                             let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) cond
+                             let exnSql = errorMsgBoxIU (insertOrUpdate cenikValuesSend) cond
                            
                              //********************************************************
                              let (dbSendOldCenikValues, exnSql3) =  
-                                 match selectValues getConnection closeConnection (insertDefaultValues insertOrUpdate) IdOld with   
+                                 match selectValues (insertDefaultValues insertOrUpdate) IdOld with   
                                  | Ok value  -> value, String.Empty                                            
                                  | Error err -> errorMsgBoxS err 
 
@@ -101,7 +101,7 @@ module ServerApi =
                             let IdNew = 2
                     
                             let (dbSendCenikValues, exnSql1) =                                                          
-                                match selectValues getConnection closeConnection (insertDefaultValues insertOrUpdate) IdNew with   
+                                match selectValues (insertDefaultValues insertOrUpdate) IdNew with   
                                 | Ok value  -> value, String.Empty                                            
                                 | Error err -> errorMsgBoxS err
                                                                     
@@ -312,7 +312,7 @@ module ServerApi =
         //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
         let dbCenikValues = { SharedCenikValues.cenikValuesDomainDefault with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = "First run" } }
         let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
-        let exnSql = errorMsgBoxIU (insertOrUpdate getConnection closeConnection cenikValuesSend) true //true == first run
+        let exnSql = errorMsgBoxIU (insertOrUpdate cenikValuesSend) true //true == first run
 
         application
             {
