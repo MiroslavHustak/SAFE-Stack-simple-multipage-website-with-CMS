@@ -382,7 +382,6 @@ module ServerApi =
 
             finally                
                 createConnection >> closeConnection <| ()
-                closeConnection <| createConnection ()
         
         with
         | ex -> Error (string ex.Message)
