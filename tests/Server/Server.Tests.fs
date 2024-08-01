@@ -41,9 +41,9 @@ let private server =
                                            | true  -> LegitimateTrue
                                            | false -> LegitimateFalse
                             | Error _     ->
-                                           Exception
+                                           ExceptionError
                         with
-                        | _ -> Exception  
+                        | _ -> ExceptionError  
                           
                     let uberHash =
                         try 

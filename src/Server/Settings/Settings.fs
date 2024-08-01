@@ -1,6 +1,5 @@
 namespace Server
 
-open System
 open Helpers.Server.Resources
 
 module Settings =
@@ -18,10 +17,3 @@ module Settings =
     let internal pathToXml3 = pathToResources @"xmlKontaktValues3.xml"
 
     let internal pathToUberHashTxt = pathToResources @"uberHash.txt"
-       
-   
-
-   
-
-   
-

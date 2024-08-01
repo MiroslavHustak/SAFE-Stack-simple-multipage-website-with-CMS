@@ -16,9 +16,10 @@ open Thoth.Json.Net
 open System
 open System.IO
 open System.Xml.Linq
-open Newtonsoft.Json
 open System.Xml.Serialization
 open System.Runtime.Serialization
+
+open Newtonsoft.Json
 
 open FsToolkit.ErrorHandling
 
@@ -29,7 +30,6 @@ open DtoXml.Server.DtoXml
 open DtoToStorage.Server.DtoToStorage
 
 open Serialization.Coders.Server.ThothCoders
-
 
 // Implement 'try with' block for serialization at each location in the code where it is used.
 module Serialisation =

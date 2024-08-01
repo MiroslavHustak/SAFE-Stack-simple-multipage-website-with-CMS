@@ -1,3 +1,5 @@
+//*********************************************************************************
+
 // Author: Nathan B. Evans
 // Twitter: @nbevans
 // Blog: http://nbevans.wordpress.com/2014/03/13/pbkdf2-hash-function-for-fsharp/

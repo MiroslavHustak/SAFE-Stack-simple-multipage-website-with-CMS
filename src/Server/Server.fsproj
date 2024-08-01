@@ -42,6 +42,7 @@
     <Compile Include="Database\Errors.fs" />
     <Compile Include="Database\InsertOrUpdate.fs" />
     <Compile Include="Database\Select.fs" />
+    <Compile Include="Server\PasswordCreation.fs" />
     <Compile Include="Server\ServerVerify.fs" />
     <Compile Include="Server\ServerApi.fs" />
   </ItemGroup>

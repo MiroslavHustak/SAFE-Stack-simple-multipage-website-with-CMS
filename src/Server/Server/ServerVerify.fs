@@ -3,14 +3,11 @@ namespace Server
 open System
 open System.IO
 
-open FsToolkit
 open FsToolkit.ErrorHandling
 
 //open Errors
 //open Saturn
 //open Fable.Remoting.Giraffe
-
-open Fable.Remoting.Server
 
 open Shared
 open Shared.SharedTypes
@@ -25,27 +22,6 @@ open Helpers.Server.Miscellaneous
 
 module ServerVerify =
 
-    //************************************************************************
-    //Password creation
-    //To be used one-time only
-    //TODO create a separate project and include a try with block
-    let private pswHash() = //to be used only once before bundling             
-        
-        let usr = uberHash "" //delete username before bundling
-        let psw = uberHash "" //delete password before bundling
-        let mySeq = seq { usr; psw }
-
-        use sw = 
-            match Path.GetFullPath(pathToUberHashTxt) |> Option.ofNull with
-            | Some value ->
-                          new StreamWriter(Path.GetFullPath(pathToUberHashTxt)) //non-nullable, ex caught with tryWith
-            | None       ->
-                          //to be manually verified at this code location 
-                          new StreamWriter(Path.GetFullPath(String.Empty)) //ex caught with tryWith      
-           
-        mySeq |> Seq.iter (fun item -> do sw.WriteLine(item)) 
-    //************************************************************************
-
     let internal verifyLogin (login: LoginValuesShared) =   // LoginInfo -> Async<LoginResult>>
 
         let isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)            
@@ -55,14 +31,14 @@ module ServerVerify =
             try
                 pyramidOfDoom  // pyramidOfHell and Result.isOk not possible to use
                     {
-                        let! uberHash = uberHash |> Result.toOption, Exception
-                        let! _ = not (uberHash |> Seq.isEmpty) |> Option.ofBool, Exception
+                        let! uberHash = uberHash |> Result.toOption, ExceptionError
+                        let! _ = not (uberHash |> Seq.isEmpty) |> Option.ofBool, ExceptionError
                         let! _ = verify (uberHash |> seqFn) credential |> Option.ofBool, LegitimateFalse
                     
                         return LegitimateTrue
                     }
             with
-            | ex -> Exception                   
+            | ex -> ExceptionError                   
 
         pyramidOfHell  
             {
@@ -112,10 +88,10 @@ module ServerVerify =
                 let! _ = isValidLogin usr psw, UsernameOrPasswordIncorrect rc3
 
                 let verify1 = uberHashError uberHash usr Seq.head 
-                let! _ = (<>) verify1 Exception, UsernameOrPasswordIncorrect rc2
+                let! _ = (<>) verify1 ExceptionError, UsernameOrPasswordIncorrect rc2
 
                 let verify2 = uberHashError uberHash psw Seq.last 
-                let! _ = (<>) verify2 Exception, UsernameOrPasswordIncorrect rc2
+                let! _ = (<>) verify2 ExceptionError, UsernameOrPasswordIncorrect rc2
                 let! _ = (&&) (verify1 = LegitimateTrue) (verify2 = LegitimateTrue), UsernameOrPasswordIncorrect rc3 
                                                                         
                 return LoggedIn { Username = login.Username } //{ Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }

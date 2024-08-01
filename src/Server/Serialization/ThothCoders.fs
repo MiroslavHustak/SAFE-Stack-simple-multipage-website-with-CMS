@@ -72,7 +72,7 @@ module ThothCoders =
                                                      Msg5 = get1.Required.Field "Msg5" Decode.string
                                                      Msg6 = get1.Required.Field "Msg6" Decode.string
                                                  }
-                                    )
-                                )
-                    }
+                                      )
+                                  )
+                      }
             )

@@ -18,10 +18,10 @@ type InsertErrorOptions =
 type ErrorVerifyOptions = 
    | LegitimateTrue 
    | LegitimateFalse 
-   | Exception
+   | ExceptionError
 
 [<Struct>]
 type ErrorCopyingFiles = 
    | LegitimateTrue 
    | LegitimateFalse 
-   | Exception
+   | ExceptionError
