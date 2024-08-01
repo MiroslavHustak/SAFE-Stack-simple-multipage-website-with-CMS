@@ -165,6 +165,7 @@
         <Compile Include="ContentForNotUsedPages\contentCMSForbidden.fs" />       
         <Compile Include="Layouts\Layout.fs" />       
         <Compile Include="NotUsedPages\Maintenance.fs" />       
+        <Compile Include="PublicPages\ErrorPage.fs" />       
         <Compile Include="PublicPages\Kontakt.fs" />       
         <Compile Include="PublicPages\Nenajdete.fs" />       
         <Compile Include="PublicPages\Cenik.fs" />       

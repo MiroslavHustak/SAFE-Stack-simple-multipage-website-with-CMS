@@ -18,7 +18,7 @@ module Router =
         | Kontakt of int
         | Login of int
         | Logout       //not in use 
-        | Maintenance  //not in use 
+        | Maintenance  //not in use
         | CMSRozcestnik of int
         | CMSCenik of int
         | CMSKontakt of int
@@ -33,7 +33,7 @@ module Router =
         | Kontakt id       -> "#kontakt" </> id
         | Login id         -> "#login" </> id
         | Logout           -> "#home"          //not in use 
-        | Maintenance      -> "#maintenance"   //not in use 
+        | Maintenance      -> "#maintenance"   //not in use
         | CMSRozcestnik id -> "#cmsRozcestnik" </> id
         | CMSCenik id      -> "#cmsCenik" </> id
         | CMSKontakt id    -> "#cmsKontakt" </> id
@@ -51,8 +51,8 @@ module Router =
                 map (fun domainId -> Route.Nenajdete domainId) (s "nenajdete" </> i32)
                 map (fun domainId -> Route.Kontakt domainId) (s "kontakt" </> i32)
                 map (fun domainId -> Route.Login domainId) (s "login" </> i32)
-                map Route.Logout (s "home") //not in use 
-                map Route.Maintenance (s "maintenance") //not in use 
+                map Route.Logout (s "home")             //not in use 
+                map Route.Maintenance (s "maintenance") //not in use
                 map (fun domainId -> Route.CMSRozcestnik domainId) (s "cmsRozcestnik" </> i32)
                 map (fun domainId -> Route.CMSCenik domainId) (s "cmsCenik" </> i32)
                 map (fun domainId -> Route.CMSKontakt domainId) (s "cmsKontakt" </> i32)

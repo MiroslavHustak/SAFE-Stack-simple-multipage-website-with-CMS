@@ -5,6 +5,7 @@ open System.IO
 open System.Data.SqlClient
 
 open Saturn
+open Giraffe
 
 open Fable.Remoting.Server
 open Fable.Remoting.Giraffe
@@ -27,13 +28,11 @@ open Helpers.Server.CopyOrMoveFilesFM
 open Serialization.Server.Serialisation
 open Serialization.Server.Deserialisation
 
-open DtoXml.Server.DtoXml
 open DtoFromStorage.Server.DtoFromStorage
 
 open TransLayerXml.Server.TransLayerXml
 open TransLayerSend.Server.TransLayerSend
 open TransLayerFromStorage.Server.TransLayerFromStorage
-
 
 module ServerApi =
 
@@ -41,7 +40,8 @@ module ServerApi =
         {            
             login = fun login -> async { return (verifyLogin login) }
 
-            //************* plain SQL or Dapper.FSharp ********************  
+            //************* plain SQL or Dapper.FSharp ********************
+
             sendCenikValues =  
                 fun sendCenikValues
                     ->
@@ -106,7 +106,8 @@ module ServerApi =
                             return { dbSendCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql1; Msg2 = errMsg } } 
                         }
 
-            //************* testing XML ********************          
+            //************* testing XML ********************
+            
             sendKontaktValues =
 
                 fun sendKontaktValues
@@ -149,6 +150,8 @@ module ServerApi =
                          {
                              let (getOldKontaktValues, err) =
                                  try
+                                     Ok
+                                     <|
                                      pyramidOfInferno
                                          {
                                              let config = 
@@ -167,8 +170,15 @@ module ServerApi =
                                              return kontaktValuesTransformLayerXmlToDomain deserialize, String.Empty
                                          }                  
                                  with
-                                 | ex -> SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě 1: " (string ex.Message)
-                             
+                                 | ex -> Error (string ex.Message)
+
+                                 |> function
+                                     | Ok value  ->
+                                                  value  
+                                     | Error err ->
+                                                  let errMsg = "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě 1: "  
+                                                  SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" errMsg err
+
                              return { getOldKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                 
                          } 
 
@@ -180,6 +190,8 @@ module ServerApi =
                              let (getKontaktValues, err) =
                                  try
                                      //failwith "Simulated exception12"
+                                     Ok
+                                     <|
                                      pyramidOfInferno
                                          {
                                              let config = 
@@ -198,13 +210,22 @@ module ServerApi =
 
                                              return kontaktValuesTransformLayerXmlToDomain deserialize, String.Empty
                                          }                                  
+                                 
                                  with
-                                 | ex -> SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě 2: " (string ex.Message) 
+                                 | ex -> Error (string ex.Message)
+
+                                 |> function
+                                     | Ok value  ->
+                                                  value  
+                                     | Error err ->
+                                                  let errMsg = "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě 2: "
+                                                  SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" errMsg err
 
                              return { getKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                   
                          }
 
-            //************* testing JSON ********************                               
+            //************* testing JSON ********************
+            
             sendLinkAndLinkNameValues =
                fun sendLinkAndLinkNameValues
                    ->
@@ -239,6 +260,8 @@ module ServerApi =
                              let (getOldLinkAndLinkNameValues, err) =
                                  try
                                      //failwith "Simulated exception15"
+                                     Ok
+                                     <|
                                      pyramidOfInferno
                                          {
                                              let copy = copyFiles pathToJson pathToJsonBackup true
@@ -249,8 +272,16 @@ module ServerApi =
 
                                              return linkValuesTransformLayerFromStorage deserialize, String.Empty
                                          }                                      
+                                 
                                  with
-                                 | ex -> SharedLinkValues.linkValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message) 
+                                 | ex -> Error (string ex.Message)
+
+                                 |> function
+                                     | Ok value  ->
+                                                  value 
+                                     | Error err ->
+                                                  let errMsg = "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: "
+                                                  SharedLinkValues.linkValuesDomainDefault, sprintf"%s %s" errMsg err
 
                              return { getOldLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }  
                          } 
@@ -263,6 +294,8 @@ module ServerApi =
                             let (getLinkAndLinkNameValues, err) =
                                 try
                                     //failwith "Simulated exception15"
+                                    Ok
+                                    <|
                                     pyramidOfInferno
                                         {
                                             let copy = copyFiles pathToJson pathToJsonBackup true
@@ -273,8 +306,16 @@ module ServerApi =
 
                                             return linkValuesTransformLayerFromStorage deserialize, String.Empty
                                         }                                      
+                                
                                 with
-                                | ex -> SharedLinkValues.linkValuesDomainDefault, sprintf"%s %s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: " (string ex.Message)  
+                                | ex -> Error (string ex.Message)
+
+                                |> function
+                                    | Ok value  ->
+                                                 value 
+                                    | Error err ->
+                                                 let errMsg = "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: "
+                                                 SharedLinkValues.linkValuesDomainDefault, sprintf"%s %s" errMsg err
 
                             return { getLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }  
                         }
@@ -284,38 +325,36 @@ module ServerApi =
                 fun getSecurityTokenFile -> async { return File.Exists(Path.GetFullPath("securityToken.txt")) }             
                 
             getSecurityToken =
-                fun getSecurityToken ->  //TODO try with
-                                     async
-                                         {       
-                                            //some code
-                                         }        
+                fun getSecurityToken
+                    ->  //TODO try with
+                     async
+                         {       
+                             //some code
+                         }        
                  
             deleteSecurityTokenFile =
-                fun deleteSecurityTokenFile ->  //TODO try with
-                                            async
-                                                {
-                                                    File.Delete(Path.GetFullPath("securityToken.txt"))
-                                                    return ()
-                                                }   
+                fun deleteSecurityTokenFile
+                    ->  //TODO try with
+                     async
+                         {
+                             File.Delete(Path.GetFullPath("securityToken.txt"))
+                             return ()
+                         }   
             *)
         }
 
-    let webApp (createConnection: unit -> SqlConnection) exnSql =
+    let handler (createConnection: unit -> SqlConnection) exnSql : HttpHandler =
+
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.fromValue (IGetApi createConnection exnSql)
         |> Remoting.buildHttpHandler
 
-    let app createConnection =
-
-        //let exnSql = insertOrUpdate { GetCenikValues.Default with Msgs = { Messages.Default with Msg1 = "First run" } }
-        let dbCenikValues = { SharedCenikValues.cenikValuesDomainDefault with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = "First run" } }
-        let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
-        let exnSql = errorMsgBoxIU (insertOrUpdate createConnection cenikValuesSend) true //true == first run
-
+    let app exnSql (createConnection: unit -> SqlConnection) =
+    
         application
             {
-                use_router (webApp createConnection exnSql)
+                use_router (handler createConnection exnSql)
                 memory_cache
                 use_static "public"
                 use_gzip
@@ -332,10 +371,25 @@ module ServerApi =
             let createConnection = fun () -> Connections.Connection.getConnection()
 
             try
-                app >> run <| createConnection
+                //failwith "DB connection exception test"
+                let dbCenikValues = { SharedCenikValues.cenikValuesDomainDefault with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = "First run" } }
+                let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
+                let exnSql = errorMsgBoxIU (insertOrUpdate createConnection cenikValuesSend) true //true == first run
+
+                (app exnSql) >> run <| createConnection
+
+                Ok ()
+
             finally                
                 createConnection >> closeConnection <| ()
+        
         with
-        | _ -> ()    
+        | ex -> Error (string ex.Message)
 
+        |> function
+            | Ok value  ->
+                         value 
+            | Error err ->                
+                         let exnSql = sprintf "Došlo k následující chybě na serveru: %s" err
+                         (app exnSql) >> run <| (fun () -> new SqlConnection(String.Empty)) //dummy connection
         0
