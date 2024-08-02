@@ -42,7 +42,7 @@ module Logging =
                                    
         |> function
             | Ok value  -> value  
-            | Error err -> String.Empty //proste s tim nic nezrobime, kdyz to nebude fungovat...
+            | Error err -> String.Empty //There is nothing I can do with it, so the app will silently continue....
                            
 
     //***************************Log files******************************       
@@ -54,7 +54,6 @@ module Logging =
                              logFileName, 
                              fun fileLoggerOpts
                                  ->     
-                                  //ostatni properties nefungovaly, TODO zjistit cemu  
                                   fileLoggerOpts.FileSizeLimitBytes <- 52428800
                                   fileLoggerOpts.MaxRollingFiles <- 10   
                                   fileLoggerOpts.FormatLogEntry <- formatLogEntry

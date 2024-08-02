@@ -391,6 +391,16 @@ module ServerApi =
     [<EntryPoint>]
     let main _ =
 
+        (*
+        <!-- Add this xml code into Directory.Build.props in the root (or create the file if missing)  -->
+        <Project>
+            <PropertyGroup>
+                <!-- <WarningsAsErrors>0025</WarningsAsErrors> -->
+                <TreatWarningsAsErrors>true</TreatWarningsAsErrors>        
+            </PropertyGroup>
+        </Project>
+        *)
+
         //Dapper.FSharp.OptionTypes.register()
 
         //pswHash() //to be used only once && before bundling  

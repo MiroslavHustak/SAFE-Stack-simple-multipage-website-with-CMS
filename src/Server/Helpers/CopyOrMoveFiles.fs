@@ -161,7 +161,7 @@ module CopyOrMoveFiles =
         try
             let action sourceFilepath destinFilepath = File.Move(sourceFilepath, destinFilepath, true) 
                 in processFile source destination action
-        with _ -> Error <| sprintf "Chyba při přemísťování souboru %s do %s" source destination
+        with ex -> Error <| sprintf "Chyba při přemísťování souboru %s do %s. %s." source destination (string ex.Message)
 
 (*
     module CopyOrMoveFiles where

@@ -22,9 +22,7 @@ module InsertOrUpdate =
         try
             //failwith "Simulated exception SqlInsertOrUpdate"
 
-            let isolationLevel = System.Data.IsolationLevel.Serializable //Transaction locking behaviour
-                            
-            //let connection: SqlConnection = createConnection()
+            let isolationLevel = System.Data.IsolationLevel.Serializable //Transaction locking behaviour                            
             let transaction: SqlTransaction = connection.BeginTransaction(isolationLevel) //Transaction to be implemented for all commands linked to the connection
 
             try
