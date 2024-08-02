@@ -5,6 +5,7 @@ open System.Data.SqlClient
 open FsToolkit.ErrorHandling
 
 open Shared
+open Logging.Logging
 open ErrorTypes.Server
 open Queries.SqlQueries
 
@@ -17,41 +18,36 @@ open TransLayerFromStorage.Server.TransLayerFromStorage
 //SQL type providers did not work in this app (they blocked the Somee database)
 module Select = 
 
-    //******************************************************************************************************************
-    let internal selectValues (createConnection: unit -> SqlConnection) insertDefaultValues idInt =
+    let internal selectValues (connection: SqlConnection) insertDefaultValues idInt =
         
          try
              //failwith "Simulated exception SqlSelectValues"            
-             let connection = createConnection()
                     
              let getValues: Result<CenikValuesShared, SelectErrorOptions> =
 
                  try
+                     use cmdExists = new SqlCommand(queryExists, connection) //non-nullable, ex caught with tryWith                                     
+                     use cmdSelect = new SqlCommand(querySelect, connection) //non-nullable, ex caught with tryWith
+
+                     cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
+                     cmdSelect.Parameters.AddWithValue("@Id", idInt) |> ignore
+
+                     let reader =
+                         match cmdExists.ExecuteScalar() |> Option.ofNull with
+                         | Some _ ->
+                                   Ok <| cmdSelect.ExecuteReader() 
+                         | None   ->
+                                   logInfoMsg <| sprintf "Error015 %s" String.Empty
+                                   Error insertDefaultValues 
+
                      try
                          //failwith "Simulated exception SqlSelectValues" 
 
-                         //**************** SqlCommands *****************
-                         
-                         use cmdExists = new SqlCommand(queryExists, connection) //non-nullable, ex caught with tryWith                                     
-                         use cmdSelect = new SqlCommand(querySelect, connection) //non-nullable, ex caught with tryWith                                                   
-                        
                          //**************** Read values from DB *****************
-
-                         let reader =  
-                             pyramidOfDoom
-                                 {
-                                     cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
-                                     cmdSelect.Parameters.AddWithValue("@Id", idInt) |> ignore
-
-                                     //Objects handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)). 
-                                     let! _ = cmdExists.ExecuteScalar() |> Option.ofNull, Error insertDefaultValues
-                                     let reader = cmdSelect.ExecuteReader()  //non-nullable, ex caught with tryWith (monadic operation discontinued)   
-
-                                     return Ok reader
-                                 }
-                                      
+                         
                          match reader with
                          | Ok reader ->
+                                      use reader = reader  
                                       //Seq not strictly necessary here, but retained for potential future requirements or updates.                                             
                                       Seq.initInfinite (fun _ -> reader.Read() && reader.HasRows = true)
                                       |> Seq.takeWhile ((=) true)  //compare |> Seq.skipWhile ((=) false)
@@ -90,22 +86,32 @@ module Select =
                                                                   MsgsDtoGet = MessagesDtoFromStorageDefault |> Option.ofNull
                                                               }
                                                       } 
-                                        )
-                                        |> List.ofSeq
-                                        |> List.tryHead
-                                        |> function
-                                            | Some value -> cenikValuesTransformLayerFromStorage value
-                                            | None       -> Error ReadingDbError
+                                          )
+                                          |> List.ofSeq
+                                          |> List.tryHead
+                                          |> function
+                                              | Some value ->
+                                                            //reader.Dispose() //not necesary, use reader = reader really works :-)
+                                                            cenikValuesTransformLayerFromStorage value
+                                              | None       ->                                                            
+                                                            //reader.Dispose() //not necesary, use reader = reader really works :-)
+                                                            logInfoMsg <| sprintf "Error015A %s" String.Empty
+                                                            Error ReadingDbError                                      
                          | Error err ->
+                                      logInfoMsg <| sprintf "Error016 %s" String.Empty
                                       Error err     
                                                         
                      finally
-                         () // closeConnection connection                      
+                         ()                
                  with
-                 | _ -> Error ReadingDbError                          
+                 | ex ->
+                       logInfoMsg <| sprintf "Error017 %s" (string ex.Message)
+                       Error ReadingDbError                          
 
              getValues
 
          with
-         | _ -> Error ConnectionError
+         | ex ->
+               logInfoMsg <| sprintf "Error018 %s" (string ex.Message)
+               Error ConnectionError
                               

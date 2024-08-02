@@ -13,6 +13,7 @@ open Shared
 open Shared.SharedTypes
 
 open Settings
+open Logging.Logging
 open ErrorTypes.Server
 
 open Helpers.Server
@@ -38,7 +39,9 @@ module ServerVerify =
                         return LegitimateTrue
                     }
             with
-            | ex -> ExceptionError                   
+            | ex ->
+                  logInfoMsg <| sprintf "Error012 %s" (string ex.Message)
+                  ExceptionError                   
 
         pyramidOfHell  
             {
@@ -82,7 +85,9 @@ module ServerVerify =
                                 return Ok (value |> Seq.ofArray) 
                             } 
                     with
-                    | ex -> Error (string ex.Message)
+                    | ex ->
+                          logInfoMsg <| sprintf "Error013 %s" (string ex.Message)
+                          Error (string ex.Message)
 
                 let! _ = uberHash |> Result.isOk, UsernameOrPasswordIncorrect rc1                
                 let! _ = isValidLogin usr psw, UsernameOrPasswordIncorrect rc3

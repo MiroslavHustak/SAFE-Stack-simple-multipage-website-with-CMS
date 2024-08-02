@@ -12,7 +12,12 @@ module Result =
     let internal toOption = 
         function   
         | Ok value -> Some value 
-        | Error _  -> None  
+        | Error _  -> None
+
+    let internal fromOption = 
+        function   
+        | Some value -> Ok value
+        | None       -> Error String.Empty  
 
 [<RequireQualifiedAccess>]
 module Option =
@@ -53,15 +58,6 @@ module Option =
     
                 return Some value
             }
-
-module Resources =
-
-    let internal pathToResources path = 
-        try
-            //sprintf "%s%s%s" AppDomain.CurrentDomain.BaseDirectory "Resources" path //nefunguje, haze to do debug
-            Path.Combine("Resources", path) //CopyAlways
-        with
-        | ex -> failwith (sprintf "Kontaktuj programátora, závažná chyba na serveru !!! %s" ex.Message)
 
 module Casting =
 

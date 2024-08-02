@@ -1,0 +1,2 @@
+"08/02/2024 21:51:59"["Error021 There is already an open DataReader associated with this Command which must be closed first."]
+"08/02/2024 22:03:36"["Error017 Invalid attempt to call Read when reader is closed."]

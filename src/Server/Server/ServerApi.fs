@@ -19,6 +19,7 @@ open Database.Select
 open Database.Errors.Errors
 open Database.InsertOrUpdate
 
+open Logging.Logging
 open Connections.Connection
 
 open Helpers.Server.CEBuilders
@@ -36,7 +37,7 @@ open TransLayerFromStorage.Server.TransLayerFromStorage
 
 module ServerApi =
 
-    let internal IGetApi createConnection errMsg =
+    let internal IGetApi connection errMsg =
         {            
             login = fun login -> async { return (verifyLogin login) }
 
@@ -53,11 +54,12 @@ module ServerApi =
                                             let dbNewCenikValues = { sendCenikValues with Id = 2; ValueState = "new" }
                                             let cond = dbNewCenikValues.Msgs.Msg1 = "First run"
                                             let cenikValuesSend = cenikValuesTransformLayerToStorage dbNewCenikValues
-                                            let exnSql = errorMsgBoxIU (insertOrUpdate createConnection cenikValuesSend) cond
+                                            let exnSql = errorMsgBoxIU (insertOrUpdate connection cenikValuesSend) cond
                                             
                                             { dbNewCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql } }
                                                                            
                                  | Error _ ->
+                                            logInfoMsg <| sprintf "Error001 %s" String.Empty
                                             SharedCenikValues.cenikValuesDomainDefault
 
                              return sendNewCenikValues
@@ -72,21 +74,27 @@ module ServerApi =
                              let IdOld = 3
                             
                              let (dbGetNewCenikValues, exnSql2) =                              
-                                 match selectValues createConnection (insertDefaultValues insertOrUpdate createConnection) IdNew with   
-                                 | Ok value  -> value, String.Empty                                            
-                                 | Error err -> errorMsgBoxS err
+                                 match selectValues connection (insertDefaultValues insertOrUpdate connection) IdNew with   
+                                 | Ok value  ->
+                                              value, String.Empty                                            
+                                 | Error err ->
+                                              logInfoMsg <| sprintf "Error002 %s" String.Empty 
+                                              errorMsgBoxS err
 
                              //********************************************************
                              let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                              let cond = dbCenikValues.Msgs.Msg1 = "First run"
                              let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
-                             let exnSql = errorMsgBoxIU (insertOrUpdate createConnection cenikValuesSend) cond
+                             let exnSql = errorMsgBoxIU (insertOrUpdate connection cenikValuesSend) cond
                            
                              //********************************************************
                              let (dbSendOldCenikValues, exnSql3) =  
-                                 match selectValues createConnection (insertDefaultValues insertOrUpdate createConnection) IdOld with   
-                                 | Ok value  -> value, String.Empty                                            
-                                 | Error err -> errorMsgBoxS err 
+                                 match selectValues connection (insertDefaultValues insertOrUpdate connection) IdOld with   
+                                 | Ok value  ->
+                                              value, String.Empty                                            
+                                 | Error err ->
+                                              logInfoMsg <| sprintf "Error003 %s" String.Empty
+                                              errorMsgBoxS err 
 
                              return { dbSendOldCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql; Msg2 = exnSql2; Msg3 = exnSql3 } }
                           }
@@ -99,9 +107,12 @@ module ServerApi =
                             let IdNew = 2
                     
                             let (dbSendCenikValues, exnSql1) =                                                          
-                                match selectValues createConnection (insertDefaultValues insertOrUpdate createConnection) IdNew with   
-                                | Ok value  -> value, String.Empty                                            
-                                | Error err -> errorMsgBoxS err
+                                match selectValues connection (insertDefaultValues insertOrUpdate connection) IdNew with   
+                                | Ok value  ->
+                                             value, String.Empty                                            
+                                | Error err ->
+                                             logInfoMsg <| sprintf "Error004 %s" String.Empty 
+                                             errorMsgBoxS err
                                                                     
                             return { dbSendCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql1; Msg2 = errMsg } } 
                         }
@@ -130,14 +141,20 @@ module ServerApi =
                                                 
                                                 match copyOrMoveFiles config Copy with
                                                 | Ok _      -> parseToXml3 sendKontaktValuesDtoXml pathToXml3
-                                                | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                                                                       
+                                                | Error err ->
+                                                             logInfoMsg <| sprintf "Error005 %s" err
+                                                             Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                                                                       
                                             with
                                             | ex -> Error (string ex.Message)
 
                                             |> function
-                                                | Ok _      -> sendKontaktValues  
-                                                | Error err -> { sendKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                                                                             
+                                                | Ok _      ->
+                                                             sendKontaktValues  
+                                                | Error err ->
+                                                             logInfoMsg <| sprintf "Error005A %s" err  
+                                                             { sendKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                                                                             
                                  | Error _ ->
+                                            logInfoMsg <| sprintf "Error005B %s" String.Empty   
                                             SharedKontaktValues.kontaktValuesDomainDefault
 
                              return sendNewKontaktValues
@@ -176,6 +193,7 @@ module ServerApi =
                                      | Ok value  ->
                                                   value  
                                      | Error err ->
+                                                  logInfoMsg <| sprintf "Error006 %s" err 
                                                   let errMsg = "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě 1: "  
                                                   SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" errMsg err
 
@@ -218,6 +236,7 @@ module ServerApi =
                                      | Ok value  ->
                                                   value  
                                      | Error err ->
+                                                  logInfoMsg <| sprintf "Error007 %s" err 
                                                   let errMsg = "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, neb došlo k této chybě 2: "
                                                   SharedKontaktValues.kontaktValuesDomainDefault, sprintf"%s %s" errMsg err
 
@@ -238,15 +257,22 @@ module ServerApi =
                                                //failwith "Simulated exception14"   
                                                let sendLinkAndLinkNameValuesDtoSend = linkValuesTransformLayerToStorage sendLinkAndLinkNameValues                                               
                                                match copyFiles pathToJson pathToJsonBackup true with
-                                               | Ok _      -> serializeToJsonThoth2 sendLinkAndLinkNameValuesDtoSend pathToJson
-                                               | Error err -> Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                   
+                                               | Ok _      ->
+                                                            serializeToJsonThoth2 sendLinkAndLinkNameValuesDtoSend pathToJson
+                                               | Error err ->
+                                                            logInfoMsg <| sprintf "Error008 %s" String.Empty 
+                                                            Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                   
                                            with
                                            | ex -> Error (string ex.Message)
 
                                            |> function
-                                               | Ok _      -> sendLinkAndLinkNameValues  
-                                               | Error err -> { sendLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }    
+                                               | Ok _      ->                                                            
+                                                            sendLinkAndLinkNameValues  
+                                               | Error err ->
+                                                            logInfoMsg <| sprintf "Error008A %s" err 
+                                                            { sendLinkAndLinkNameValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }    
                                 | Error _ ->
+                                           logInfoMsg <| sprintf "Error008B %s" String.Empty 
                                            SharedLinkValues.linkValuesDomainDefault
 
                             return sendNewLinkAndLinkNameValues
@@ -280,6 +306,7 @@ module ServerApi =
                                      | Ok value  ->
                                                   value 
                                      | Error err ->
+                                                  logInfoMsg <| sprintf "Error009 %s" err 
                                                   let errMsg = "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: "
                                                   SharedLinkValues.linkValuesDomainDefault, sprintf"%s %s" errMsg err
 
@@ -314,6 +341,7 @@ module ServerApi =
                                     | Ok value  ->
                                                  value 
                                     | Error err ->
+                                                 logInfoMsg <| sprintf "Error010 %s" err 
                                                  let errMsg = "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, neb došlo k této chybě: "
                                                  SharedLinkValues.linkValuesDomainDefault, sprintf"%s %s" errMsg err
 
@@ -343,14 +371,14 @@ module ServerApi =
             *)
         }
 
-    let handler (createConnection: unit -> SqlConnection) exnSql : HttpHandler =
+    let handler (createConnection: SqlConnection) exnSql : HttpHandler =
 
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
         |> Remoting.fromValue (IGetApi createConnection exnSql)
         |> Remoting.buildHttpHandler
 
-    let app exnSql (createConnection: unit -> SqlConnection) =
+    let app exnSql (createConnection: SqlConnection) =
     
         application
             {
@@ -368,7 +396,7 @@ module ServerApi =
         //pswHash() //to be used only once && before bundling  
 
         try
-            let createConnection = fun () -> Connections.Connection.getConnection()
+            let createConnection : SqlConnection = Connections.Connection.getConnection()
 
             try
                 //failwith "DB connection exception test"
@@ -381,7 +409,7 @@ module ServerApi =
                 Ok ()
 
             finally                
-                createConnection >> closeConnection <| ()
+                closeConnection createConnection
         
         with
         | ex -> Error (string ex.Message)
@@ -389,7 +417,8 @@ module ServerApi =
         |> function
             | Ok value  ->
                          value 
-            | Error err ->                
+            | Error err ->
+                         logInfoMsg <| sprintf "Error011 %s" err  
                          let exnSql = sprintf "Došlo k následující chybě na serveru: %s" err
-                         (app exnSql) >> run <| (fun () -> new SqlConnection(String.Empty)) //dummy connection
+                         (app exnSql) >> run <| (new SqlConnection(String.Empty)) //dummy connection
         0

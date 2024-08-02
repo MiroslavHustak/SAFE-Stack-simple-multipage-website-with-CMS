@@ -7,6 +7,7 @@ open Fable.Remoting.Server
 open FsToolkit.ErrorHandling
 
 open Settings
+open Logging.Logging
 open Helpers.Server.Security2
 
 module PasswordCreation =
@@ -27,7 +28,7 @@ module PasswordCreation =
                               new StreamWriter(Path.GetFullPath(pathToUberHashTxt)) //non-nullable, ex caught with tryWith
                 | None       ->
                               //to be manually verified at this code location
-                              //TODO log 
+                              logInfoMsg <| sprintf "Error014 %s" String.Empty
                               new StreamWriter(Path.GetFullPath(String.Empty)) //ex caught with tryWith      
            
             mySeq
@@ -39,4 +40,4 @@ module PasswordCreation =
 
         |> function
             | Ok value  -> value
-            | Error err -> () //TODO log 
+            | Error err -> logInfoMsg <| sprintf "Error014A %s" err

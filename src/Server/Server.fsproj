@@ -20,13 +20,14 @@
     <Content Include="Resources\uberHash.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Compile Include="Connections\Connection.fs" />
     <None Include="paket.references" />
     <Compile Include="Types\ErrorTypes.fs" />
+    <Compile Include="Settings\Settings.fs" />
     <Compile Include="Helpers\CEBuilders.fs" />
     <Compile Include="Helpers\Security2.fs" />
     <Compile Include="Helpers\Helpers.fs" />
     <Compile Include="Helpers\CopyOrMoveFiles.fs" />
+    <Compile Include="LogFile\Logging.fs" />
     <Compile Include="DataModelling\CMSData\DTOs\DtoFromStorage.fs" />
     <Compile Include="DataModelling\CMSData\DTOs\DtoToStorage.fs" />
     <Compile Include="DataModelling\CMSData\DTOs\DtoXml.fs" />
@@ -36,7 +37,7 @@
     <Compile Include="DataModelling\CMSData\TransformationLayers\TransLayerXml.fs" />
     <Compile Include="Serialization\ThothCoders.fs" />
     <Compile Include="Serialization\Serialization.fs" />
-    <Compile Include="Settings\Settings.fs" />
+    <Compile Include="Connections\Connection.fs" />
     <Content Include="Database\Queries\Sql_Queries.txt" />
     <Compile Include="Database\Queries\Sql_Queries.fs" />
     <Compile Include="Database\Errors.fs" />
@@ -56,6 +57,7 @@
     <PackageReference Include="FSharp.Data.SqlClient" Version="2.1.2" />
     <PackageReference Include="FsToolkit.ErrorHandling" Version="4.10.0" />
     <PackageReference Include="jose-jwt" Version="4.0.1" />
+    <PackageReference Include="NReco.Logging.File" Version="1.2.1" />
     <PackageReference Include="PasswordGenerator" Version="2.1.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <PackageReference Include="FSharp.Core" Version="6.0.7" />

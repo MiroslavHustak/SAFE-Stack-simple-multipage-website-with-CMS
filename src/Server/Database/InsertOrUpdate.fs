@@ -4,6 +4,7 @@ open System
 open System.Data.SqlClient
 open FsToolkit.ErrorHandling
 
+open Logging.Logging
 open ErrorTypes.Server
 
 open Queries.SqlQueries
@@ -15,14 +16,15 @@ module InsertOrUpdate =
     //See the file SQL Queries.fs
        
     //**************** Sql queries - inner functions  *****************
-    let internal insertOrUpdate (createConnection: unit -> SqlConnection) (sendCenikValues : CenikValuesDtoToStorage) = 
+    //let internal insertOrUpdate (createConnection: unit -> SqlConnection) (sendCenikValues : CenikValuesDtoToStorage) =
+    let internal insertOrUpdate (connection: SqlConnection) (sendCenikValues : CenikValuesDtoToStorage) = 
                             
         try
             //failwith "Simulated exception SqlInsertOrUpdate"
 
             let isolationLevel = System.Data.IsolationLevel.Serializable //Transaction locking behaviour
                             
-            let connection: SqlConnection = createConnection()
+            //let connection: SqlConnection = createConnection()
             let transaction: SqlTransaction = connection.BeginTransaction(isolationLevel) //Transaction to be implemented for all commands linked to the connection
 
             try
@@ -59,7 +61,8 @@ module InsertOrUpdate =
                           cmdUpdate.ExecuteNonQuery() > 0 //rowsAffected, non-nullable, ex caught with tryWith
                           |> function
                               | false ->
-                                       transaction.Rollback()                                
+                                       transaction.Rollback()
+                                       logInfoMsg <| sprintf "Error019 %s" String.Empty
                                        Error InsertOrUpdateError 
                               | true  ->
                                        Ok <| transaction.Commit()
@@ -74,13 +77,14 @@ module InsertOrUpdate =
                           |> function
                               | false ->
                                        transaction.Rollback()
+                                       logInfoMsg <| sprintf "Error020 %s" String.Empty
                                        Error InsertOrUpdateError 
                               | true  ->
                                        Ok <| transaction.Commit() 
                                 
             finally
                 transaction.Dispose()
-                //closeConnection connection                     
         with
-        | _ ->            
-             Error InsertOrUpdateError
+        | ex ->
+              logInfoMsg <| sprintf "Error021 %s" (string ex.Message)
+              Error InsertOrUpdateError
