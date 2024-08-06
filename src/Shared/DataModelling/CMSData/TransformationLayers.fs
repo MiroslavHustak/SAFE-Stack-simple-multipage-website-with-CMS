@@ -35,8 +35,7 @@ module SharedCenikValues =
             Msgs = SharedMessageDefaultValues.messageDefault
         }
           
-    let internal transformLayer id valState v001 v002 v003 v004 v005 v006 v007 v008 v009 =
-                
+    let internal transformLayer id valState v001 v002 v003 v004 v005 v006 v007 v008 v009 =                
         {
             Id = id
             ValueState = valState |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.ValueState
