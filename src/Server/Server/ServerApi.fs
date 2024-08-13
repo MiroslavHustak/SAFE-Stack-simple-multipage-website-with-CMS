@@ -39,7 +39,7 @@ module ServerApi =
 
     let internal IGetApi connection errMsg =
         {            
-            login = fun login -> async { return (verifyLogin login) }
+            login = fun login -> async { return (verifyLogin () login) }
 
             //************* plain SQL or Dapper.FSharp ********************
 

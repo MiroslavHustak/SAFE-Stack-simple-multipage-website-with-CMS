@@ -23,7 +23,7 @@ open Helpers.Server.Miscellaneous
 
 module ServerVerify =
 
-    let internal verifyLogin (login: LoginValuesShared) =   // LoginInfo -> Async<LoginResult>>
+    let internal verifyLogin () (login: LoginValuesShared) =   // LoginInfo -> Async<LoginResult>>
 
         let isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)            
 

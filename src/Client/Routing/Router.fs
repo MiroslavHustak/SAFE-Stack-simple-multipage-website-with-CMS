@@ -61,4 +61,3 @@ module Router =
                 // Default Route
                 map Route.Home top
             ]
-
