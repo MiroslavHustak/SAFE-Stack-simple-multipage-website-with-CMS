@@ -35,7 +35,7 @@ open Serialization.Coders.Server.ThothCoders
 module Serialisation =
    
     //System.Runtime.Serialization (requires equal types for serialization and deserialization; hence separated DTOs)
-    let internal serializeToXml (record: 'a) (xmlFile: string) =
+    let internal serializeToXml (record : 'a) (xmlFile : string) =
         
         pyramidOfDoom 
             {
@@ -53,7 +53,7 @@ module Serialisation =
             }
 
     //System.Xml.Serialization          
-    let internal serializeToXml2 (record: 'a) (xmlFile: string) =
+    let internal serializeToXml2 (record : 'a) (xmlFile : string) =
 
         pyramidOfDoom 
             {
@@ -71,7 +71,7 @@ module Serialisation =
             }
 
     //LINQ to XML System.Xml.Linq
-    let internal parseToXml3 (record: KontaktValuesDtoXml3) (xmlFile: string) = //no reflection
+    let internal parseToXml3 (record : KontaktValuesDtoXml3) (xmlFile : string) = //no reflection
 
         let msgsElements = //non-nullable if the strings are not nulls (ensured)
             [
@@ -137,7 +137,7 @@ module Serialisation =
     //**************************************************************************************
 
     //Newtonsoft.Json 
-    let internal serializeToJson (record: 'a) (jsonFile: string) =
+    let internal serializeToJson (record : 'a) (jsonFile : string) =
 
         pyramidOfDoom 
             {
@@ -153,7 +153,7 @@ module Serialisation =
            }
 
     //Thoth.Json.Net, Thoth.Json + Newtonsoft.Json
-    let internal serializeToJsonThoth (record: LinkValuesDtoToStorage) (jsonFile: string) =
+    let internal serializeToJsonThoth (record : LinkValuesDtoToStorage) (jsonFile : string) =
        
         pyramidOfDoom 
             {
@@ -169,14 +169,14 @@ module Serialisation =
            }
 
     //Thoth.Json.Net, Thoth.Json + StreamWriter (System.IO (File.WriteAllText) did not work)    
-    let internal serializeToJsonThoth2 (record: LinkValuesDtoToStorage) (jsonFile: string) =
+    let internal serializeToJsonThoth2 (record : LinkValuesDtoToStorage) (jsonFile : string) =
 
         pyramidOfDoom
             {
                 let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při čtení cesty k souboru " jsonFile)
     
-                let json = Encode.toString 2 (encoder record) |> Option.ofNullEmpty // Serialize the record to JSON with indentation
+                let json = Encode.toString 2 (encoder record) |> Option.ofNullEmpty // Serialize the record to JSON with indentation, 2 = the number of spaces used for indentation in the JSON structure
                 let! json = json, Error (sprintf "%s%s" "Zadané hodnoty nebyly uloženy, chyba při serializaci do " jsonFile)
     
                 use writer = new StreamWriter(filepath, false)                
@@ -198,7 +198,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
 
-                let fInfodat: FileInfo = new FileInfo(filepath)
+                let fInfodat : FileInfo = new FileInfo(filepath)
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Soubor %s nenalezen" xmlFile)                      
 
                 let xmlSerializer = new DataContractSerializer(typeof<'a>) //cannot be null, exn caught with tryWith elsewhere            
@@ -223,7 +223,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty  
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
 
-                let fInfodat: FileInfo = new FileInfo(filepath)
+                let fInfodat : FileInfo = new FileInfo(filepath)
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Soubor %s nenalezen" xmlFile)                      
 
                 let xmlSerializer = new XmlSerializer(typeof<'a>) //cannot be null, exn caught with tryWith elsewhere   
@@ -292,7 +292,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty  
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " jsonFile)
 
-                let fInfodat: FileInfo = new FileInfo(filepath)
+                let fInfodat : FileInfo = new FileInfo(filepath)
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, soubor %s nenalezen" jsonFile) 
                  
                 let json = File.ReadAllText(filepath) |> Option.ofNullEmpty 
@@ -312,7 +312,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " jsonFile)
 
-                let fInfodat: FileInfo = new FileInfo(filepath)
+                let fInfodat : FileInfo = new FileInfo(filepath)
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, soubor %s nenalezen" jsonFile) 
                  
                 let json = File.ReadAllText(filepath) |> Option.ofNullEmpty
@@ -331,7 +331,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " jsonFile)
 
-                let fInfodat: FileInfo = new FileInfo(filepath)
+                let fInfodat : FileInfo = new FileInfo(filepath)
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, soubor %s nenalezen" jsonFile) 
                  
                 use fs = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.None) 
