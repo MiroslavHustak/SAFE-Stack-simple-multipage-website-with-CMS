@@ -21,6 +21,7 @@ open TransLayerFromStorage.Server.TransLayerFromStorage
 module Select =
 
     let internal selectValuesAsync (connection: SqlConnection) insertDefaultValues idInt =
+
         async
             {
                 try
@@ -129,8 +130,8 @@ module Select =
                     return getValues
                 with
                 | ex ->
-                    logInfoMsg <| sprintf "Error018A %s" (string ex.Message)
-                    return Error ConnectionError
+                      logInfoMsg <| sprintf "Error018A %s" (string ex.Message)
+                      return Error ConnectionError
         }
     
     let internal selectValues (connection: SqlConnection) insertDefaultValues idInt =
