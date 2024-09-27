@@ -79,7 +79,7 @@ module CopyOrMoveFilesFM =
                                                   let! value = Path.GetFullPath(source) |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" source   
                                                   let! value = 
                                                       (
-                                                          let fInfodat: FileInfo = new FileInfo(value)   
+                                                          let fInfodat: FileInfo = FileInfo value   
                                                           Option.fromBool value fInfodat.Exists
                                                       ), Error <| sprintf "Zdrojový soubor %s neexistuje" value
                                                   return Ok value
@@ -95,7 +95,7 @@ module CopyOrMoveFilesFM =
                                                   (*
                                                       let! value = 
                                                           (
-                                                              let dInfodat: DirectoryInfo = new DirectoryInfo(value)   
+                                                              let dInfodat: DirectoryInfo = DirectoryInfo value   
                                                               Option.fromBool value dInfodat.Exists
                                                           ), Error <| sprintf "Chyba při čtení cesty k %s" value
                                                   *) 

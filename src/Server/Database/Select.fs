@@ -30,22 +30,22 @@ module Select =
                     let! getValues = 
                         async
                             {
-                                 let! existenceCheck = 
-                                     async
-                                         {
-                                             try
-                                                 use cmdExists = new SqlCommand(queryExists, connection)
-                                                 cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
+                                let! existenceCheck = 
+                                    async
+                                        {
+                                            try
+                                                use cmdExists = new SqlCommand(queryExists, connection)
+                                                cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
     
-                                                 let! exist = cmdExists.ExecuteScalarAsync() |> Async.AwaitTask
+                                                let! exist = cmdExists.ExecuteScalarAsync() |> Async.AwaitTask
     
-                                                 match exist |> Option.ofNull with
-                                                 | Some value -> return Ok exist
-                                                 | None       -> return Error ReadingDbError
+                                                match exist |> Option.ofNull with
+                                                | Some value -> return Ok exist
+                                                | None       -> return Error ReadingDbError
     
-                                             with
-                                             | _ -> return Error ReadingDbError
-                                         }
+                                            with
+                                            | _ -> return Error ReadingDbError
+                                        }
     
                                 match existenceCheck with
                                 | Ok value ->                    
@@ -201,7 +201,7 @@ module Select =
 
                                                                  MsgsDtoGet = MessagesDtoFromStorageDefault |> Option.ofNull
                                                              }
-                                                     } 
+                                                     }     
                                          )
                                          |> List.ofSeq
                                          |> List.tryHead
