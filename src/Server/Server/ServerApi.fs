@@ -72,9 +72,11 @@ module ServerApi =
                          {                     
                              let IdNew = 2
                              let IdOld = 3
+
+                             let! result = selectValuesAsync connection (insertDefaultValues insertOrUpdate connection) IdNew 
                             
                              let (dbGetNewCenikValues, exnSql2) =                              
-                                 match selectValues connection (insertDefaultValues insertOrUpdate connection) IdNew with   
+                                 match result with   
                                  | Ok value  ->
                                               value, String.Empty                                            
                                  | Error err ->
@@ -88,8 +90,11 @@ module ServerApi =
                              let exnSql = errorMsgBoxIU (insertOrUpdate connection cenikValuesSend) cond
                            
                              //********************************************************
+
+                             let! result = selectValuesAsync connection (insertDefaultValues insertOrUpdate connection) IdOld 
+
                              let (dbSendOldCenikValues, exnSql3) =  
-                                 match selectValues connection (insertDefaultValues insertOrUpdate connection) IdOld with   
+                                 match result with   
                                  | Ok value  ->
                                               value, String.Empty                                            
                                  | Error err ->
@@ -105,9 +110,11 @@ module ServerApi =
                     async
                         {           
                             let IdNew = 2
+
+                            let! result = selectValuesAsync connection (insertDefaultValues insertOrUpdate connection) IdNew 
                     
                             let (dbSendCenikValues, exnSql1) =                                                          
-                                match selectValues connection (insertDefaultValues insertOrUpdate connection) IdNew with   
+                                match result with   
                                 | Ok value  ->
                                              value, String.Empty                                            
                                 | Error err ->
