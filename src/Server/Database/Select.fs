@@ -56,7 +56,7 @@ module Select =
                                                             use cmdSelect = new SqlCommand(querySelect, connection)
                                                             cmdSelect.Parameters.AddWithValue("@Id", idInt) |> ignore
     
-                                                            let! reader = cmdSelect.ExecuteReaderAsync() |> Async.AwaitTask
+                                                            let! reader = cmdSelect.ExecuteReaderAsync() |> Async.AwaitTask //TODO test "use! reader = ..." sometime
     
                                                             try
                                                                 let records = 
@@ -94,6 +94,7 @@ module Select =
                                                                                                           V007DtoGet = reader.GetString(v007Index) |> Option.ofNull
                                                                                                           V008DtoGet = reader.GetString(v008Index) |> Option.ofNull
                                                                                                           V009DtoGet = reader.GetString(v009Index) |> Option.ofNull
+
                                                                                                           MsgsDtoGet = MessagesDtoFromStorageDefault |> Option.ofNull
                                                                                                       }
     
@@ -105,6 +106,7 @@ module Select =
                                                                         )
     
                                                                 let! results = records |> AsyncSeq.toListAsync
+
                                                                 return
                                                                     results
                                                                     |> List.tryHead

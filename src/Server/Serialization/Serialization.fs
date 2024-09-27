@@ -198,7 +198,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
 
-                let fInfodat : FileInfo = new FileInfo(filepath)
+                let fInfodat : FileInfo = FileInfo filepath
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Soubor %s nenalezen" xmlFile)                      
 
                 let xmlSerializer = new DataContractSerializer(typeof<'a>) //cannot be null, exn caught with tryWith elsewhere            
@@ -223,7 +223,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty  
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
 
-                let fInfodat : FileInfo = new FileInfo(filepath)
+                let fInfodat : FileInfo = FileInfo filepath
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Soubor %s nenalezen" xmlFile)                      
 
                 let xmlSerializer = new XmlSerializer(typeof<'a>) //cannot be null, exn caught with tryWith elsewhere   
@@ -248,7 +248,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(xmlFile) |> Option.ofNullEmpty  
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot kontaktů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " xmlFile)
 
-                let fInfodat: FileInfo = new FileInfo(filepath)
+                let fInfodat: FileInfo = FileInfo filepath
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Soubor %s nenalezen" xmlFile)                      
 
                 let xmlString = File.ReadAllText(Path.GetFullPath(filepath)) |> Option.ofNullEmpty
@@ -292,7 +292,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty  
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " jsonFile)
 
-                let fInfodat : FileInfo = new FileInfo(filepath)
+                let fInfodat : FileInfo = FileInfo filepath
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, soubor %s nenalezen" jsonFile) 
                  
                 let json = File.ReadAllText(filepath) |> Option.ofNullEmpty 
@@ -312,7 +312,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " jsonFile)
 
-                let fInfodat : FileInfo = new FileInfo(filepath)
+                let fInfodat : FileInfo = FileInfo filepath
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, soubor %s nenalezen" jsonFile) 
                  
                 let json = File.ReadAllText(filepath) |> Option.ofNullEmpty
@@ -331,7 +331,7 @@ module Deserialisation =
                 let filepath = Path.GetFullPath(jsonFile) |> Option.ofNullEmpty 
                 let! filepath = filepath, Error (sprintf "%s%s" "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, chyba při čtení cesty k souboru " jsonFile)
 
-                let fInfodat : FileInfo = new FileInfo(filepath)
+                let fInfodat : FileInfo = FileInfo filepath
                 let! _ =  fInfodat.Exists |> Option.ofBool, Error (sprintf "Pro zobrazování navrhovaných a předchozích hodnot odkazů byly dosazeny defaultní hodnoty, soubor %s nenalezen" jsonFile) 
                  
                 use fs = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.None) 
