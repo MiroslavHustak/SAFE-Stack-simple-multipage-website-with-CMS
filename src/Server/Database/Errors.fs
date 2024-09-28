@@ -10,6 +10,19 @@ open TransLayerSend.Server.TransLayerSend
 
 module Errors =
 
+    let internal insertDefaultValuesAsync insertOrUpdateAsync createConnection =     
+
+        async
+            {
+                 let cenikValuesDtoSendDefault = cenikValuesTransformLayerToStorage SharedCenikValues.cenikValuesDomainDefault
+
+                 let! insert = insertOrUpdateAsync createConnection cenikValuesDtoSendDefault
+
+                 match insert with
+                 | Ok _    -> return InsertOrUpdateError1
+                 | Error _ -> return InsertOrUpdateError2
+            }       
+
     let internal insertDefaultValues insertOrUpdate createConnection =     
         
         let cenikValuesDtoSendDefault = cenikValuesTransformLayerToStorage SharedCenikValues.cenikValuesDomainDefault
@@ -51,7 +64,7 @@ module Errors =
     let internal errorMsgBoxS =
         
         function
-        | InsertOrUpdateError1 -> SharedCenikValues.cenikValuesDomainDefault, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
-        | InsertOrUpdateError2 -> SharedCenikValues.cenikValuesDomainDefault, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
-        | ReadingDbError       -> SharedCenikValues.cenikValuesDomainDefault, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
-        | ConnectionError      -> SharedCenikValues.cenikValuesDomainDefault, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."
+        | InsertOrUpdateError1  -> SharedCenikValues.cenikValuesDomainDefault, "Byly dosazeny defaultní nebo předchozí hodnoty, neb došlo k chybě při ověřování existující databáze."
+        | InsertOrUpdateError2  -> SharedCenikValues.cenikValuesDomainDefault, "Došlo k chybě při načítání hodnot z databáze a dosazování defaultních hodnot. Zobrazované hodnoty mohou být chybné."
+        | ReadingDbError        -> SharedCenikValues.cenikValuesDomainDefault, "Chyba při načítání hodnot z databáze. Dosazeny defaultní hodnoty místo chybných hodnot."
+        | SelectConnectionError -> SharedCenikValues.cenikValuesDomainDefault, "Chyba připojení k databázi. Dosazeny defaultní hodnoty místo chybných hodnot."

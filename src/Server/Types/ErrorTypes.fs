@@ -5,7 +5,7 @@ type SelectErrorOptions =
    | InsertOrUpdateError1
    | InsertOrUpdateError2
    | ReadingDbError
-   | ConnectionError
+   | SelectConnectionError
 
 [<Struct>]
 type InsertErrorOptions =   

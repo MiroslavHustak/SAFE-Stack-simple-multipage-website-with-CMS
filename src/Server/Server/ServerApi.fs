@@ -48,19 +48,27 @@ module ServerApi =
                     ->
                      async
                          {                   
-                             let sendNewCenikValues: CenikValuesShared =                        
-                                 match verifyCenikValues sendCenikValues with                
-                                 | Ok ()   ->
-                                            let dbNewCenikValues = { sendCenikValues with Id = 2; ValueState = "new" }
-                                            let cond = dbNewCenikValues.Msgs.Msg1 = "First run"
-                                            let cenikValuesSend = cenikValuesTransformLayerToStorage dbNewCenikValues
-                                            let exnSql = errorMsgBoxIU (insertOrUpdate connection cenikValuesSend) cond
+                             let! sendNewCenikValues =  //CenikValuesShared 
+                                 async
+                                     {
+                                         match verifyCenikValues sendCenikValues with                
+                                         | Ok ()   ->                                           
+                                                    let dbNewCenikValues = { sendCenikValues with Id = 2; ValueState = "new" }
+                                                    let cond = dbNewCenikValues.Msgs.Msg1 = "First run"
+                                                    let cenikValuesSend = cenikValuesTransformLayerToStorage dbNewCenikValues
+
+                                                    let! insert2 = insertOrUpdateAsync connection cenikValuesSend
+
+                                                    let exnSql = errorMsgBoxIU insert2 cond
                                             
-                                            { dbNewCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql } }
+                                                    return { dbNewCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql } }
+                                               
                                                                            
-                                 | Error _ ->
-                                            logInfoMsg <| sprintf "Error001 %s" String.Empty
-                                            SharedCenikValues.cenikValuesDomainDefault
+                                         | Error _ ->
+                                                    logInfoMsg <| sprintf "Error001 %s" String.Empty
+                                                    return SharedCenikValues.cenikValuesDomainDefault
+
+                                     }
 
                              return sendNewCenikValues
                          }
@@ -73,10 +81,11 @@ module ServerApi =
                              let IdNew = 2
                              let IdOld = 3
 
-                             let! result = selectValuesAsync connection (insertDefaultValues insertOrUpdate connection) IdNew 
+                             let! insert = insertDefaultValuesAsync insertOrUpdateAsync connection
+                             let! select = selectValuesAsync connection insert IdNew 
                             
                              let (dbGetNewCenikValues, exnSql2) =                              
-                                 match result with   
+                                 match select with   
                                  | Ok value  ->
                                               value, String.Empty                                            
                                  | Error err ->
@@ -84,17 +93,21 @@ module ServerApi =
                                               errorMsgBoxS err
 
                              //********************************************************
+
                              let dbCenikValues = { dbGetNewCenikValues with Id = IdOld; ValueState = "old" }
                              let cond = dbCenikValues.Msgs.Msg1 = "First run"
                              let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
-                             let exnSql = errorMsgBoxIU (insertOrUpdate connection cenikValuesSend) cond
+
+                             let! insert2 = insertOrUpdateAsync connection cenikValuesSend
+
+                             let exnSql = errorMsgBoxIU insert2 cond
                            
                              //********************************************************
 
-                             let! result = selectValuesAsync connection (insertDefaultValues insertOrUpdate connection) IdOld 
+                             let! select2 = selectValuesAsync connection insert IdOld 
 
                              let (dbSendOldCenikValues, exnSql3) =  
-                                 match result with   
+                                 match select2 with   
                                  | Ok value  ->
                                               value, String.Empty                                            
                                  | Error err ->
@@ -111,10 +124,11 @@ module ServerApi =
                         {           
                             let IdNew = 2
 
-                            let! result = selectValuesAsync connection (insertDefaultValues insertOrUpdate connection) IdNew 
+                            let! insert = insertDefaultValuesAsync insertOrUpdateAsync connection
+                            let! select = selectValuesAsync connection insert IdNew 
                     
                             let (dbSendCenikValues, exnSql1) =                                                          
-                                match result with   
+                                match select with   
                                 | Ok value  ->
                                              value, String.Empty                                            
                                 | Error err ->

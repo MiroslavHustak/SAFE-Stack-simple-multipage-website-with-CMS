@@ -16,7 +16,91 @@ module InsertOrUpdate =
     //See the file SQL Queries.fs
        
     //**************** Sql queries - inner functions  *****************
-    //let internal insertOrUpdate (createConnection: unit -> SqlConnection) (sendCenikValues : CenikValuesDtoToStorage) =
+
+    let internal insertOrUpdateAsync (connection: SqlConnection) (sendCenikValues : CenikValuesDtoToStorage) =
+
+        async
+            {
+                try
+                    // failwith "Simulated exception ConnectionFailure"
+    
+                    let isolationLevel = System.Data.IsolationLevel.Serializable // Transaction locking behaviour
+                    let transaction: SqlTransaction = connection.BeginTransaction(isolationLevel) // Transaction to be implemented for all commands linked to the connection
+    
+                    let! insertOrUpdateResult = 
+                        async
+                            {
+                                try
+                                    let idInt = sendCenikValues.Id // Primary Key for new/old/fixed value state
+                                    let valState = sendCenikValues.ValueState
+                            
+                                    // Parameters for command.Parameters.AddWithValue("@val", some value)
+                                    let newParamList =
+                                        [
+                                            ("@valState", valState)
+                                            ("@val01", sendCenikValues.V001)
+                                            ("@val02", sendCenikValues.V002)
+                                            ("@val03", sendCenikValues.V003)
+                                            ("@val04", sendCenikValues.V004)
+                                            ("@val05", sendCenikValues.V005)
+                                            ("@val06", sendCenikValues.V006)
+                                            ("@val07", sendCenikValues.V007)
+                                            ("@val08", sendCenikValues.V008)
+                                            ("@val09", sendCenikValues.V009)
+                                        ]
+    
+                                    use cmdExists = new SqlCommand(queryExists, connection, transaction)
+                                    cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
+    
+                                    let! exist = cmdExists.ExecuteScalarAsync() |> Async.AwaitTask
+    
+                                    match exist |> Option.ofNull with
+                                    | Some _ ->
+                                              use cmdUpdate = new SqlCommand(queryUpdate, connection, transaction)
+                                              cmdUpdate.Parameters.AddWithValue("@Id", idInt) |> ignore
+    
+                                              newParamList |> List.iter (fun (param, value) -> cmdUpdate.Parameters.AddWithValue(param, value) |> ignore)
+    
+                                              let! rowsAffected = cmdUpdate.ExecuteNonQueryAsync() |> Async.AwaitTask
+
+                                              match rowsAffected > 0 with
+                                              | true  ->
+                                                       transaction.Commit()
+                                                       return Ok ()
+                                              | false ->
+                                                       transaction.Rollback()
+                                                       logInfoMsg <| sprintf "Error019C %s" String.Empty
+                                                       return Error InsertOrUpdateError
+    
+                                    | None   ->
+                                              // Record does not exist, insert it
+                                              use cmdInsert = new SqlCommand(queryInsert, connection, transaction)
+                                              cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
+    
+                                              newParamList |> List.iter (fun (param, value) -> cmdInsert.Parameters.AddWithValue(param, value) |> ignore)
+    
+                                              let! rowsAffected = cmdInsert.ExecuteNonQueryAsync() |> Async.AwaitTask
+
+                                              match rowsAffected > 0 with
+                                              | true  ->
+                                                       transaction.Commit()
+                                                       return Ok ()
+                                              | false ->
+                                                       transaction.Rollback()
+                                                       logInfoMsg <| sprintf "Error020C %s" String.Empty
+                                                       return Error InsertOrUpdateError
+    
+                                with
+                                | _ -> return Error InsertOrUpdateError
+                            }
+    
+                    return insertOrUpdateResult
+                with
+                | ex ->
+                      logInfoMsg <| sprintf "Error018C %s" (string ex.Message)
+                      return Error InsertConnectionError
+            }
+            
     let internal insertOrUpdate (connection: SqlConnection) (sendCenikValues : CenikValuesDtoToStorage) = 
                             
         try

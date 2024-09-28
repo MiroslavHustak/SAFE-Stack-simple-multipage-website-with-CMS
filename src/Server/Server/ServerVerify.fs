@@ -102,7 +102,6 @@ module ServerVerify =
                 return LoggedIn { Username = login.Username } //{ Username = login.Username; AccessToken = SharedApi.AccessToken accessToken }
             }
 
-
 //************** TODO validation upon request from the user *************************
 
     let private isValidCenik param = ()   

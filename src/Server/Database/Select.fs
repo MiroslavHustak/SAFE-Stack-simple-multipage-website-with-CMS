@@ -133,7 +133,7 @@ module Select =
                 with
                 | ex ->
                       logInfoMsg <| sprintf "Error018A %s" (string ex.Message)
-                      return Error ConnectionError
+                      return Error SelectConnectionError
         }
     
     let internal selectValues (connection: SqlConnection) insertDefaultValues idInt =
@@ -227,4 +227,4 @@ module Select =
         with
         | ex ->
               logInfoMsg <| sprintf "Error018 %s" (string ex.Message)
-              Error ConnectionError
+              Error SelectConnectionError
