@@ -20,123 +20,129 @@ open TransLayerFromStorage.Server.TransLayerFromStorage
 //SQL type providers did not work in this app (they blocked the Somee database)
 module Select =
 
-    let internal selectValuesAsync (connection: SqlConnection) insertDefaultValues idInt =
+    let internal selectValuesAsync (connection: Async<Result<SqlConnection, string>>) insertDefaultValues idInt =
 
         async
             {
-                try
-                    //failwith "Simulated exception ConnectionFailure"
+                match! connection with
+                | Ok connection
+                    ->
+                    try
+                        //failwith "Simulated exception ConnectionFailure"
 
-                    let! getValues = 
-                        async
-                            {
-                                let! existenceCheck = 
-                                    async
-                                        {
-                                            try
-                                                use cmdExists = new SqlCommand(queryExists, connection)
-                                                cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
+                        return! 
+                            async
+                                {
+                                    let existenceCheck = 
+                                        async
+                                            {
+                                                try
+                                                    use cmdExists = new SqlCommand(queryExists, connection)
+                                                    cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
     
-                                                let! exist = cmdExists.ExecuteScalarAsync() |> Async.AwaitTask
+                                                    let! exist = cmdExists.ExecuteScalarAsync() |> Async.AwaitTask
     
-                                                match exist |> Option.ofNull with
-                                                | Some value -> return Ok exist
-                                                | None       -> return Error ReadingDbError
+                                                    match exist |> Option.ofNull with
+                                                    | Some value -> return Ok exist
+                                                    | None       -> return Error ReadingDbError
     
-                                            with
-                                            | _ -> return Error ReadingDbError
-                                        }
+                                                with
+                                                | _ -> return Error ReadingDbError
+                                            }
     
-                                match existenceCheck with
-                                | Ok value ->                    
-                                            let! result = 
-                                                async
-                                                    {
-                                                        try
-                                                            use cmdSelect = new SqlCommand(querySelect, connection)
-                                                            cmdSelect.Parameters.AddWithValue("@Id", idInt) |> ignore
-    
-                                                            let! reader = cmdSelect.ExecuteReaderAsync() |> Async.AwaitTask //TODO test "use! reader = ..." sometime
-    
+                                    match! existenceCheck with
+                                    | Ok value ->                    
+                                                return! 
+                                                    async
+                                                        {
                                                             try
-                                                                let records = 
-                                                                    ()
-                                                                    |> AsyncSeq.unfoldAsync //Seq not strictly necessary here, but retained for potential future requirements or updates.   
-                                                                        (fun () -> 
-                                                                                 async
-                                                                                     {
-                                                                                         let! successfullyRead = reader.ReadAsync() |> Async.AwaitTask
+                                                                use cmdSelect = new SqlCommand(querySelect, connection)
+                                                                cmdSelect.Parameters.AddWithValue("@Id", idInt) |> ignore
     
-                                                                                         match successfullyRead with
-                                                                                         | true  ->
-                                                                                                  let indexId = reader.GetOrdinal("Id")                                                                  
-                                                                                                  let indexValueState = reader.GetOrdinal("ValueState")
-                                                                                                  let v001Index = reader.GetOrdinal("V001")
-                                                                                                  let v002Index = reader.GetOrdinal("V002")
-                                                                                                  let v003Index = reader.GetOrdinal("V003")
-                                                                                                  let v004Index = reader.GetOrdinal("V004")
-                                                                                                  let v005Index = reader.GetOrdinal("V005")
-                                                                                                  let v006Index = reader.GetOrdinal("V006")
-                                                                                                  let v007Index = reader.GetOrdinal("V007")
-                                                                                                  let v008Index = reader.GetOrdinal("V008")
-                                                                                                  let v009Index = reader.GetOrdinal("V009")
+                                                                let! reader = cmdSelect.ExecuteReaderAsync() |> Async.AwaitTask //TODO test "use! reader = ..." sometime
     
-                                                                                                  let record =
-                                                                                                      {
-                                                                                                          IdDtoGet = reader.GetInt32(indexId) |> Option.ofNull
-                                                                                                          ValueStateDtoGet = reader.GetString(indexValueState) |> Option.ofNull
-                                                                                                          V001DtoGet = reader.GetString(v001Index) |> Option.ofNull
-                                                                                                          V002DtoGet = reader.GetString(v002Index) |> Option.ofNull
-                                                                                                          V003DtoGet = reader.GetString(v003Index) |> Option.ofNull
-                                                                                                          V004DtoGet = reader.GetString(v004Index) |> Option.ofNull 
-                                                                                                          V005DtoGet = reader.GetString(v005Index) |> Option.ofNull
-                                                                                                          V006DtoGet = reader.GetString(v006Index) |> Option.ofNull
-                                                                                                          V007DtoGet = reader.GetString(v007Index) |> Option.ofNull
-                                                                                                          V008DtoGet = reader.GetString(v008Index) |> Option.ofNull
-                                                                                                          V009DtoGet = reader.GetString(v009Index) |> Option.ofNull
+                                                                try
+                                                                    let records = 
+                                                                        ()
+                                                                        |> AsyncSeq.unfoldAsync //Seq not strictly necessary here, but retained for potential future requirements or updates.   
+                                                                            (fun () -> 
+                                                                                     async
+                                                                                         {
+                                                                                             let successfullyRead = reader.ReadAsync() |> Async.AwaitTask
+    
+                                                                                             match! successfullyRead with
+                                                                                             | true  ->
+                                                                                                      let indexId = reader.GetOrdinal "Id"                                                                  
+                                                                                                      let indexValueState = reader.GetOrdinal "ValueState"
+                                                                                                      let v001Index = reader.GetOrdinal "V001"
+                                                                                                      let v002Index = reader.GetOrdinal "V002"
+                                                                                                      let v003Index = reader.GetOrdinal "V003"
+                                                                                                      let v004Index = reader.GetOrdinal "V004"
+                                                                                                      let v005Index = reader.GetOrdinal "V005"
+                                                                                                      let v006Index = reader.GetOrdinal "V006"
+                                                                                                      let v007Index = reader.GetOrdinal "V007"
+                                                                                                      let v008Index = reader.GetOrdinal "V008"
+                                                                                                      let v009Index = reader.GetOrdinal "V009"
+    
+                                                                                                      let record =
+                                                                                                          {
+                                                                                                              //I know GetInt32 is not nullable here. But it simplifies code elsewhere.
+                                                                                                              IdDtoGet = reader.GetInt32 indexId |> Option.ofNull  
+                                                                                                              ValueStateDtoGet = reader.GetString indexValueState |> Option.ofNull
+                                                                                                              V001DtoGet = reader.GetString v001Index |> Option.ofNull
+                                                                                                              V002DtoGet = reader.GetString v002Index |> Option.ofNull
+                                                                                                              V003DtoGet = reader.GetString v003Index |> Option.ofNull
+                                                                                                              V004DtoGet = reader.GetString v004Index |> Option.ofNull 
+                                                                                                              V005DtoGet = reader.GetString v005Index |> Option.ofNull
+                                                                                                              V006DtoGet = reader.GetString v006Index |> Option.ofNull
+                                                                                                              V007DtoGet = reader.GetString v007Index |> Option.ofNull
+                                                                                                              V008DtoGet = reader.GetString v008Index |> Option.ofNull
+                                                                                                              V009DtoGet = reader.GetString v009Index |> Option.ofNull
 
-                                                                                                          MsgsDtoGet = MessagesDtoFromStorageDefault |> Option.ofNull
-                                                                                                      }
+                                                                                                              MsgsDtoGet = MessagesDtoFromStorageDefault |> Option.ofNull
+                                                                                                          }
     
-                                                                                                  return Some (record, ())
+                                                                                                      return Some (record, ())
     
-                                                                                         | false ->
-                                                                                                  return None
-                                                                                    }
-                                                                        )
+                                                                                             | false ->
+                                                                                                      return None
+                                                                                        }
+                                                                            )
     
-                                                                let! results = records |> AsyncSeq.toListAsync
+                                                                    let! results = records |> AsyncSeq.toListAsync
 
-                                                                return
-                                                                    results
-                                                                    |> List.tryHead
-                                                                    |> function
-                                                                        | Some value ->
-                                                                                      cenikValuesTransformLayerFromStorage value
-                                                                        | None       ->         
-                                                                                      logInfoMsg <| sprintf "Error015B %s" String.Empty
-                                                                                      Error ReadingDbError
-                                                            finally
-                                                                reader.Dispose()
-                                                        with
-                                                        | _ -> return Error ReadingDbError
-                                                    }
-    
-                                            return result
-    
-                                | Error _ -> 
-                                           logInfoMsg <| sprintf "Error016A %s" String.Empty
-                                           return Error insertDefaultValues
-                            }
-    
-                    return getValues
-                with
-                | ex ->
-                      logInfoMsg <| sprintf "Error018A %s" (string ex.Message)
-                      return Error SelectConnectionError
+                                                                    return
+                                                                        results
+                                                                        |> List.tryHead
+                                                                        |> function
+                                                                            | Some value ->
+                                                                                          cenikValuesTransformLayerFromStorage value
+                                                                            | None       ->         
+                                                                                          logInfoMsg <| sprintf "Error015B %s" String.Empty
+                                                                                          Error ReadingDbError
+                                                                finally
+                                                                    async { return! reader.DisposeAsync().AsTask() |> Async.AwaitTask } |> Async.StartImmediate
+
+                                                            with
+                                                            | _ -> return Error ReadingDbError
+                                                        }                                                        
+                                    | Error _ -> 
+                                               logInfoMsg <| sprintf "Error016A %s" String.Empty
+                                               return Error insertDefaultValues
+                                }
+                    with
+                    | ex ->
+                          logInfoMsg <| sprintf "Error018A %s" (string ex.Message)
+                          return Error SelectConnectionError
+
+                | Error err ->
+                             logInfoMsg <| sprintf "Error020Z %s" err
+                             return Error SelectConnectionError 
         }
-    
-    let internal selectValues (connection: SqlConnection) insertDefaultValues idInt =
+
+    //************************** Sync variant *********************************
+
+    let internal selectValuesSync (connection: SqlConnection) insertDefaultValues idInt =
         
         try
              //failwith "Simulated exception ConnectionFailure"            
@@ -172,32 +178,32 @@ module Select =
                                          (fun _ ->
                                                  seq 
                                                      {                                                          
-                                                         let indexId = reader.GetOrdinal("Id")                                                                  
-                                                         let indexValueState = reader.GetOrdinal("ValueState")
-                                                         let v001Index = reader.GetOrdinal("V001")
-                                                         let v001Index = reader.GetOrdinal("V001")
-                                                         let v002Index = reader.GetOrdinal("V002")
-                                                         let v003Index = reader.GetOrdinal("V003")
-                                                         let v004Index = reader.GetOrdinal("V004")
-                                                         let v005Index = reader.GetOrdinal("V005")
-                                                         let v006Index = reader.GetOrdinal("V006")
-                                                         let v007Index = reader.GetOrdinal("V007")
-                                                         let v008Index = reader.GetOrdinal("V008")
-                                                         let v009Index = reader.GetOrdinal("V009")
+                                                         let indexId = reader.GetOrdinal "Id"                                                                  
+                                                         let indexValueState = reader.GetOrdinal "ValueState"
+                                                         let v001Index = reader.GetOrdinal "V001"
+                                                         let v001Index = reader.GetOrdinal "V001"
+                                                         let v002Index = reader.GetOrdinal "V002"
+                                                         let v003Index = reader.GetOrdinal "V003"
+                                                         let v004Index = reader.GetOrdinal "V004"
+                                                         let v005Index = reader.GetOrdinal "V005"
+                                                         let v006Index = reader.GetOrdinal "V006"
+                                                         let v007Index = reader.GetOrdinal "V007"
+                                                         let v008Index = reader.GetOrdinal "V008"
+                                                         let v009Index = reader.GetOrdinal "V009"
 
                                                          yield    
                                                              {
-                                                                 IdDtoGet = reader.GetInt32(indexId) |> Option.ofNull  //I know GetInt32 is not nullable here. But it simplifies code elsewhere.
-                                                                 ValueStateDtoGet = reader.GetString(indexValueState) |> Option.ofNull 
-                                                                 V001DtoGet = reader.GetString(v001Index) |> Option.ofNull
-                                                                 V002DtoGet = reader.GetString(v002Index) |> Option.ofNull
-                                                                 V003DtoGet = reader.GetString(v003Index) |> Option.ofNull
-                                                                 V004DtoGet = reader.GetString(v004Index) |> Option.ofNull 
-                                                                 V005DtoGet = reader.GetString(v005Index) |> Option.ofNull
-                                                                 V006DtoGet = reader.GetString(v006Index) |> Option.ofNull
-                                                                 V007DtoGet = reader.GetString(v007Index) |> Option.ofNull
-                                                                 V008DtoGet = reader.GetString(v008Index) |> Option.ofNull
-                                                                 V009DtoGet = reader.GetString(v009Index) |> Option.ofNull
+                                                                 IdDtoGet = reader.GetInt32 indexId |> Option.ofNull  //I know GetInt32 is not nullable here. But it simplifies code elsewhere.
+                                                                 ValueStateDtoGet = reader.GetString indexValueState |> Option.ofNull 
+                                                                 V001DtoGet = reader.GetString v001Index |> Option.ofNull
+                                                                 V002DtoGet = reader.GetString v002Index |> Option.ofNull
+                                                                 V003DtoGet = reader.GetString v003Index |> Option.ofNull
+                                                                 V004DtoGet = reader.GetString v004Index |> Option.ofNull 
+                                                                 V005DtoGet = reader.GetString v005Index |> Option.ofNull
+                                                                 V006DtoGet = reader.GetString v006Index |> Option.ofNull
+                                                                 V007DtoGet = reader.GetString v007Index |> Option.ofNull
+                                                                 V008DtoGet = reader.GetString v008Index |> Option.ofNull
+                                                                 V009DtoGet = reader.GetString v009Index |> Option.ofNull
 
                                                                  MsgsDtoGet = MessagesDtoFromStorageDefault |> Option.ofNull
                                                              }

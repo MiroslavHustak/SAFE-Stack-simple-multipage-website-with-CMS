@@ -62,12 +62,10 @@ module ServerApi =
                                                     let exnSql = errorMsgBoxIU insert2 cond
                                             
                                                     return { dbNewCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql } }
-                                               
-                                                                           
+                                                                                                                          
                                          | Error _ ->
                                                     logInfoMsg <| sprintf "Error001 %s" String.Empty
                                                     return SharedCenikValues.cenikValuesDomainDefault
-
                                      }
 
                              return sendNewCenikValues
@@ -392,18 +390,18 @@ module ServerApi =
             *)
         }
 
-    let handler (createConnection: SqlConnection) exnSql : HttpHandler =
+    let handler asyncConnection exnSql : HttpHandler =
 
         Remoting.createApi ()
         |> Remoting.withRouteBuilder Route.builder
-        |> Remoting.fromValue (IGetApi createConnection exnSql)
+        |> Remoting.fromValue (IGetApi asyncConnection exnSql)
         |> Remoting.buildHttpHandler
 
-    let app exnSql (createConnection: SqlConnection) =
+    let app exnSql asyncConnection =
     
         application
             {
-                use_router (handler createConnection exnSql)
+                use_router (handler asyncConnection exnSql)
                 memory_cache
                 use_static "public"
                 use_gzip
@@ -424,32 +422,35 @@ module ServerApi =
 
         //Dapper.FSharp.OptionTypes.register()
 
-        //pswHash() //to be used only once && before bundling  
+        //pswHash() //to be used only once && before bundling
 
-        try
-            let createConnection : SqlConnection = Connections.Connection.getConnection()
+        async
+            {
+                try
+                    let createAsyncConnection = getAsyncConnection()
 
-            try
-                //failwith "DB connection exception test"
-                let dbCenikValues = { SharedCenikValues.cenikValuesDomainDefault with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = "First run" } }
-                let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
-                let exnSql = errorMsgBoxIU (insertOrUpdate createConnection cenikValuesSend) true //true == first run
+                    try                      
+                        //failwith "DB connection exception test"
+                        let dbCenikValues = { SharedCenikValues.cenikValuesDomainDefault with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = "First run" } }
+                        let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
+                        let! result = insertOrUpdateAsync createAsyncConnection cenikValuesSend 
+                        let exnSql = errorMsgBoxIU result true //true == first run
 
-                (app exnSql) >> run <| createConnection
+                        return (app exnSql) >> run <| createAsyncConnection                           
 
-                Ok ()
-
-            finally                
-                closeConnection createConnection
+                    finally
+                        async
+                            {
+                                match! closeAsyncConnection createAsyncConnection with
+                                | Ok _      -> ()
+                                | Error err -> logInfoMsg <| sprintf "Error011X %s" err  
+                                            
+                            }
+                        |> Async.StartImmediate                         
         
-        with
-        | ex -> Error (string ex.Message)
+                with
+                | ex -> logInfoMsg <| sprintf "Error011: %s" (string ex.Message)              
+            }
+        |> Async.RunSynchronously
 
-        |> function
-            | Ok value  ->
-                         value 
-            | Error err ->
-                         logInfoMsg <| sprintf "Error011 %s" err  
-                         let exnSql = sprintf "Došlo k následující chybě na serveru: %s" err
-                         (app exnSql) >> run <| (new SqlConnection(String.Empty)) //dummy connection
         0
