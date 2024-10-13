@@ -17,25 +17,25 @@ module CMSCenik =
     type Model =
         {
             //***** ClientDtoToView *********
-            CenikValues: CenikValuesShared
-            OldCenikValues: CenikValuesShared
+            CenikValues : CenikValuesShared
+            OldCenikValues : CenikValuesShared
             //******************************
 
             //***** ClientDtoFromView *********
-            V001Input: string
-            V002Input: string
-            V003Input: string
-            V004Input: string
-            V005Input: string
-            V006Input: string
-            V007Input: string
-            V008Input: string
-            V009Input: string
+            V001Input : string
+            V002Input : string
+            V003Input : string
+            V004Input : string
+            V005Input : string
+            V006Input : string
+            V007Input : string
+            V008Input : string
+            V009Input : string
             //******************************
 
-            Id: int
-            DelayMsg: string
-            ErrorMsg: string
+            Id : int
+            DelayMsg : string
+            ErrorMsg : string
         }
 
     type Msg =
@@ -80,7 +80,7 @@ module CMSCenik =
             }
         model, Cmd.ofMsg SendOldCenikValuesToServer
 
-    let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+    let update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
 
         match msg with
         //SetInput takhle nelze - viz poznamka ve view
@@ -124,7 +124,7 @@ module CMSCenik =
 
                      //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
                      let cmd = Cmd.OfAsyncImmediate.perform sendCenikValuesApi.sendCenikValues buttonClickEvent NewCenikValues 
-                     let cmd2 (cmd: Cmd<Msg>) delayedCmd = Cmd.batch <| seq { cmd; Cmd.ofSub delayedCmd }               
+                     let cmd2 (cmd : Cmd<Msg>) delayedCmd = Cmd.batch <| seq { cmd; Cmd.ofSub delayedCmd }               
 
                      let delayedCmd (dispatch: Msg -> unit): unit =                    
                          let delayedDispatch: Async<unit> =                      
@@ -146,37 +146,37 @@ module CMSCenik =
             ->
              {
                  model with
-                           CenikValues =
-                              {
-                                  Id = valueNew.Id; ValueState = valueNew.ValueState;
-                                  V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
-                                  V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
-                                  V007 = valueNew.V007; V008 = valueNew.V008; V009 = valueNew.V009;
-                                  Msgs = valueNew.Msgs
-                              }                           
-                           ErrorMsg =
-                               let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3   
-                               removeSpaces <| sprintf "%s %s %s" p1 p2 p3
-             },  Cmd.none
+                     CenikValues =
+                         {
+                             Id = valueNew.Id; ValueState = valueNew.ValueState
+                             V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003
+                             V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006
+                             V007 = valueNew.V007; V008 = valueNew.V008; V009 = valueNew.V009
+                             Msgs = valueNew.Msgs
+                         }                           
+                     ErrorMsg =
+                         let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3   
+                         removeSpaces <| sprintf "%s %s %s" p1 p2 p3
+             }, Cmd.none
 
         | OldCenikValues valueOld
             ->    
              {
                  model with
-                           OldCenikValues =
-                              {
-                                  Id = valueOld.Id; ValueState = valueOld.ValueState;
-                                  V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
-                                  V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
-                                  V007 = valueOld.V007; V008 = valueOld.V008; V009 = valueOld.V009;
-                                  Msgs = valueOld.Msgs 
-                              }
-                           ErrorMsg =
-                               let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3  
-                               removeSpaces <| sprintf "%s %s %s" p1 p2 p3                      
-             },  Cmd.none
+                     OldCenikValues =
+                         {
+                             Id = valueOld.Id; ValueState = valueOld.ValueState
+                             V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003
+                             V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006
+                             V007 = valueOld.V007; V008 = valueOld.V008; V009 = valueOld.V009
+                             Msgs = valueOld.Msgs 
+                         }
+                     ErrorMsg =
+                         let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3  
+                         removeSpaces <| sprintf "%s %s %s" p1 p2 p3                      
+             }, Cmd.none
 
-    let view (model: Model) (dispatch: Msg -> unit) =        
+    let view (model : Model) (dispatch : Msg -> unit) =        
 
         let completeContent() =
 

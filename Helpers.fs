@@ -27,7 +27,7 @@ module Proc =
                 ConsoleColor.DarkCyan
             |]
 
-        let print color (colored: string) (line: string) =
+        let print color (colored : string) (line: string) =
             lock locker
                 (fun () ->
                          let currentColor = Console.ForegroundColor
@@ -37,7 +37,7 @@ module Proc =
                          Console.WriteLine line
                 )
 
-        let onStdout index name (line: string) =
+        let onStdout index name (line : string) =
             let color = colors.[index % colors.Length]
             match isNull line with
             | true  ->
@@ -51,7 +51,7 @@ module Proc =
             //else if String.isNotNullOrEmpty line then
                // print color $"{name}: " line
 
-        let onStderr name (line: string) =
+        let onStderr name (line : string) =
             let color = ConsoleColor.Red
             match isNull line |> not with
             | true  -> print color $"{name}: " line
@@ -65,7 +65,7 @@ module Proc =
             |> CreateProcess.withOutputEvents (onStdout index name) (onStderr name)
 
         let printStarting indexed =
-            for (index, (name, c: CreateProcess<_>)) in indexed do
+            for (index, (name, c : CreateProcess<_>)) in indexed do
                 let color = colors.[index % colors.Length]
                 let wd =
                     c.WorkingDirectory

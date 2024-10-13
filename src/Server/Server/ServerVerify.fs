@@ -23,7 +23,7 @@ open Helpers.Server.Miscellaneous
 
 module ServerVerify =
 
-    let internal verifyLogin () (login: LoginValuesShared) =   // LoginInfo -> Async<LoginResult>>
+    let internal verifyLogin () (login : LoginValuesShared) =   // LoginInfo -> Async<LoginResult>>
 
         let isValidLogin inputUsrString inputPswString = not (strContainsOnlySpace inputUsrString || strContainsOnlySpace inputPswString)            
 
@@ -70,19 +70,18 @@ module ServerVerify =
                     try
                         pyramidOfDoom 
                             {
-                                let! _ = File.Exists(Path.GetFullPath(pathToUberHashTxt)) |> Option.ofBool, Error String.Empty
-                                let value = File.ReadAllLines(pathToUberHashTxt) //non-nullable, ex caught with tryWith
-                                //array item --> string -> Strings handled with extra care due to potential type-related concerns (you can call it "paranoia" :-)).
+                                let! _ = File.Exists(Path.GetFullPath pathToUberHashTxt) |> Option.ofBool, Error String.Empty
+                                let value = File.ReadAllLines pathToUberHashTxt |> Seq.ofArray //non-nullable, ex caught with tryWith
                                 let! _ =
                                     not
                                         (
                                             value
-                                            |> Array.map (fun item -> item |> Option.ofNull)
-                                            |> Array.exists (fun item -> item.IsNone)
+                                            |> Seq.map (fun item -> item |> Option.ofNull)
+                                            |> Seq.exists (fun item -> item.IsNone)
                                         )
                                         |> Option.ofBool, Error String.Empty
 
-                                return Ok (value |> Seq.ofArray) 
+                                return Ok value 
                             } 
                     with
                     | ex ->

@@ -16,10 +16,10 @@ module Kontakt =
 
     type Model =
         {
-            KontaktValues: KontaktValuesShared
-            KontaktInputValues: KontaktValuesShared
-            ErrorMsg: string
-            Id: int
+            KontaktValues : KontaktValuesShared
+            KontaktInputValues : KontaktValuesShared
+            ErrorMsg : string
+            Id : int
         }
 
     type Msg =   
@@ -42,7 +42,7 @@ module Kontakt =
             }
         model, Cmd.ofMsg AskServerForKontaktValues
 
-    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+    let internal update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
         
         match msg with       
         | AskServerForKontaktValues
@@ -55,16 +55,16 @@ module Kontakt =
             ->
              {
                  model with
-                           KontaktValues =
-                                {
-                                    V001 = value.V001; V002 = value.V002; V003 = value.V003;
-                                    V004 = value.V004; V005 = value.V005; V006 = value.V006;
-                                    V007 = value.V007; Msgs = value.Msgs 
-                                }
-                           ErrorMsg = sprintf "%s %s %s" value.Msgs.Msg1 value.Msgs.Msg2 value.Msgs.Msg3
+                    KontaktValues =
+                        {
+                            V001 = value.V001; V002 = value.V002; V003 = value.V003
+                            V004 = value.V004; V005 = value.V005; V006 = value.V006
+                            V007 = value.V007; Msgs = value.Msgs 
+                        }
+                    ErrorMsg = sprintf "%s %s %s" value.Msgs.Msg1 value.Msgs.Msg2 value.Msgs.Msg3
              }, Cmd.none    
  
-    let internal view (model: Model) (dispatch: Msg -> unit) links =
+    let internal view (model : Model) (dispatch : Msg -> unit) links =
     
         let kontaktRecord =
            {

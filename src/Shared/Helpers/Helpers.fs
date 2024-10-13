@@ -4,9 +4,10 @@ open System
 
 open CEBuilders
 
+[<RequireQualifiedAccess>]   
 module Option =    
 
-    let internal ofNullEmpty (value: 'nullableValue) = //NullOrEmpty
+    let internal ofNullEmpty (value : 'nullableValue) = //NullOrEmpty
 
         pyramidOfHell
             {
@@ -17,7 +18,7 @@ module Option =
                 return Some value
             }
 
-    let internal ofNullEmptySpace (value: 'nullableValue) = //NullOrEmpty, NullOrWhiteSpace
+    let internal ofNullEmptySpace (value : 'nullableValue) = //NullOrEmpty, NullOrWhiteSpace
     
         pyramidOfHell
             {

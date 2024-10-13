@@ -17,7 +17,7 @@ module InsertOrUpdate =
        
     //**************** Sql queries - inner functions  *****************
 
-    let internal insertOrUpdateAsync (connection: Async<Result<SqlConnection, string>>) (sendCenikValues : CenikValuesDtoToStorage) =
+    let internal insertOrUpdateAsync (connection : Async<Result<SqlConnection, string>>) (sendCenikValues : CenikValuesDtoToStorage) =
 
         async
             {                
@@ -106,7 +106,7 @@ module InsertOrUpdate =
 
     //************************** Sync variant *********************************
            
-    let internal insertOrUpdateSync (connection: SqlConnection) (sendCenikValues : CenikValuesDtoToStorage) = 
+    let internal insertOrUpdateSync (connection : SqlConnection) (sendCenikValues : CenikValuesDtoToStorage) = 
                             
         try
             //failwith "Simulated exception SqlInsertOrUpdate"

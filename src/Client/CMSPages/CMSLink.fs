@@ -16,28 +16,28 @@ module CMSLink =
     type Model =
         {
             //***** ClientDtoToView *********
-            LinkValues: LinkValuesShared
-            OldLinkValues: LinkValuesShared
+            LinkValues : LinkValuesShared
+            OldLinkValues : LinkValuesShared
             //******************************
 
             //***** ClientDtoFromView *********            
-            V001LinkInput: string
-            V002LinkInput: string
-            V003LinkInput: string
-            V004LinkInput: string
-            V005LinkInput: string
-            V006LinkInput: string
-            V001LinkNameInput: string
-            V002LinkNameInput: string
-            V003LinkNameInput: string
-            V004LinkNameInput: string
-            V005LinkNameInput: string
-            V006LinkNameInput: string
+            V001LinkInput : string
+            V002LinkInput : string
+            V003LinkInput : string
+            V004LinkInput : string
+            V005LinkInput : string
+            V006LinkInput : string
+            V001LinkNameInput : string
+            V002LinkNameInput : string
+            V003LinkNameInput : string
+            V004LinkNameInput : string
+            V005LinkNameInput : string
+            V006LinkNameInput : string
             //******************************
 
-            Id: int
-            DelayMsg: string
-            ErrorMsg: string
+            Id : int
+            DelayMsg : string
+            ErrorMsg : string
         }
 
     type Msg =
@@ -88,7 +88,7 @@ module CMSLink =
             }
         model, Cmd.ofMsg SendOldLinkValuesToServer
 
-    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+    let internal update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
 
         match msg with
         | SetV001LinkInput value -> { model with V001LinkInput = value }, Cmd.none
@@ -136,7 +136,7 @@ module CMSLink =
                      let cmd = Cmd.OfAsyncImmediate.perform sendLinkValuesApi.sendLinkAndLinkNameValues buttonClickEvent NewLinkValues
                      let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }    
 
-                     let delayedCmd (dispatch: Msg -> unit): unit =                                                  
+                     let delayedCmd (dispatch : Msg -> unit) : unit =                                                  
                          let delayedDispatch: Async<unit> =
                              async
                                  {
@@ -158,18 +158,18 @@ module CMSLink =
             ->
              {
                  model with
-                           LinkValues =
-                              {
-                                  V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
-                                  V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
-                                  V001n = valueNew.V001n; V002n = valueNew.V002n; V003n = valueNew.V003n;
-                                  V004n = valueNew.V004n; V005n = valueNew.V005n; V006n = "Facebook";
-                                  Msgs = valueNew.Msgs
-                              }
-                           ErrorMsg = 
-                               let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3
-                               removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
-             },  Cmd.none
+                     LinkValues =
+                         {
+                             V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003
+                             V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006
+                             V001n = valueNew.V001n; V002n = valueNew.V002n; V003n = valueNew.V003n
+                             V004n = valueNew.V004n; V005n = valueNew.V005n; V006n = "Facebook"
+                             Msgs = valueNew.Msgs
+                         }
+                     ErrorMsg = 
+                         let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3
+                         removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
+             }, Cmd.none
 
         | OldLinkValues valueOld
             ->
@@ -177,18 +177,18 @@ module CMSLink =
                  model with
                             OldLinkValues =
                                 {
-                                    V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
-                                    V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
-                                    V001n = valueOld.V001n; V002n = valueOld.V002n; V003n = valueOld.V003n;
-                                    V004n = valueOld.V004n; V005n = valueOld.V005n; V006n = "Facebook";
+                                    V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003
+                                    V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006
+                                    V001n = valueOld.V001n; V002n = valueOld.V002n; V003n = valueOld.V003n
+                                    V004n = valueOld.V004n; V005n = valueOld.V005n; V006n = "Facebook"
                                     Msgs = valueOld.Msgs
                                 }
                             ErrorMsg = 
                                 let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3
                                 removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
-             },  Cmd.none
+             }, Cmd.none
    
-    let internal view (model: Model) (dispatch: Msg -> unit) =
+    let internal view (model : Model) (dispatch : Msg -> unit) =
 
         let completeContent() =
 

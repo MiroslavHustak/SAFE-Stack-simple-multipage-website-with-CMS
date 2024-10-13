@@ -11,7 +11,7 @@ module CMSRozcestnik =
 
     type Model =
         {        
-          Id: int   
+          Id : int   
         }
 
     type Msg =
@@ -25,7 +25,7 @@ module CMSRozcestnik =
             }
         model, Cmd.none
 
-    let internal update (msg: Msg) (model: Model): Model * Cmd<Msg> =
+    let internal update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
 
         match msg with
         | Dummy -> model, Cmd.none 

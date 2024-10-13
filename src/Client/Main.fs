@@ -47,13 +47,13 @@ module App =
 
     type Model =
         {
-            ActivePage: Page      
-            CurrentRoute: MaximeRouter.Router.Route option 
-            A_User: ApplicationUser 
-            User: User
-            Session: LoginResult option
-            LinkAndLinkNameValues: LinkValuesShared
-            LinkAndLinkNameInputValues: LinkValuesShared
+            ActivePage : Page      
+            CurrentRoute : MaximeRouter.Router.Route option 
+            A_User : ApplicationUser 
+            User : User
+            Session : LoginResult option
+            LinkAndLinkNameValues : LinkValuesShared
+            LinkAndLinkNameInputValues : LinkValuesShared
         }
 
     type Msg =
@@ -94,8 +94,8 @@ module App =
                 
             {
                 model with
-                           CurrentRoute = optRoute //currentRoute //Not necessary as User = applicationUser in pattern matching will take care of the correct routing
-                           A_User = applicationUser                                          
+                    CurrentRoute = optRoute //currentRoute //Not necessary as User = applicationUser in pattern matching will take care of the correct routing
+                    A_User = applicationUser                                          
             }    
 
         (*
@@ -220,7 +220,7 @@ module App =
                               let (homeModel, homeCmd) = Home.init () //or Login.init       
                               { model with ActivePage = Page.Home homeModel }, cmd1 HomeMsg homeCmd AskServerForLinkAndLinkNameValues
 
-    let internal init (location: MaximeRouter.Router.Route option) =
+    let internal init (location : MaximeRouter.Router.Route option) =
         
         setRoute location
             {
@@ -233,7 +233,7 @@ module App =
                 LinkAndLinkNameInputValues = SharedLinkValues.linkValuesDomainDefault
             }    
 
-    let internal update (msg: Msg) (model: Model) =
+    let internal update (msg : Msg) (model : Model) =
        
         match model.ActivePage, msg with
         | Page.NotFound, _
@@ -302,15 +302,16 @@ module App =
         
         | _, GetLinkAndLinkNameValues value
             ->
-             { model with
-                         LinkAndLinkNameValues =
-                            {
-                                V001 = value.V001; V002 = value.V002; V003 = value.V003;
-                                V004 = value.V004; V005 = value.V005; V006 = value.V006;
-                                V001n = value.V001n; V002n = value.V002n; V003n = value.V003n;
-                                V004n = value.V004n; V005n = value.V005n; V006n = value.V006n;
-                                Msgs = value.Msgs 
-                            }                                                       
+             {
+                 model with
+                     LinkAndLinkNameValues =
+                         {
+                             V001 = value.V001; V002 = value.V002; V003 = value.V003
+                             V004 = value.V004; V005 = value.V005; V006 = value.V006
+                             V001n = value.V001n; V002n = value.V002n; V003n = value.V003n
+                             V004n = value.V004n; V005n = value.V005n; V006n = value.V006n
+                             Msgs = value.Msgs 
+                         }                                                       
              }, Cmd.none
                                             
         | _, msg
@@ -318,7 +319,7 @@ module App =
              model, Cmd.none
              //Browser.console.warn("Message discarded:\n", string msg)    
 
-    let internal view (model: Model) (dispatch: Dispatch<Msg>) =
+    let internal view (model : Model) (dispatch : Dispatch<Msg>) =
          
         match model.ActivePage with
         | Page.NotFound                      -> str "404 Page not found"       

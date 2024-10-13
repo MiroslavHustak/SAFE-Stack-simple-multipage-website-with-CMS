@@ -20,7 +20,7 @@ open TransLayerFromStorage.Server.TransLayerFromStorage
 //SQL type providers did not work in this app (they blocked the Somee database)
 module Select =
 
-    let internal selectValuesAsync (connection: Async<Result<SqlConnection, string>>) insertDefaultValues idInt =
+    let internal selectValuesAsync (connection : Async<Result<SqlConnection, string>>) insertDefaultValues idInt =
 
         async
             {
@@ -149,7 +149,7 @@ module Select =
 
     //************************** Sync variant *********************************
 
-    let internal selectValuesSync (connection: SqlConnection) insertDefaultValues idInt =
+    let internal selectValuesSync (connection : SqlConnection) insertDefaultValues idInt =
         
         try
              //failwith "Simulated exception ConnectionFailure"            

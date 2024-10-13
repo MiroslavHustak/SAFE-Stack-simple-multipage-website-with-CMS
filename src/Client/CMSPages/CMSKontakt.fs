@@ -16,23 +16,23 @@ module CMSKontakt =
     type Model =
         {
             //***** ClientDtoToView *********
-            KontaktValues: KontaktValuesShared
-            OldKontaktValues: KontaktValuesShared
+            KontaktValues : KontaktValuesShared
+            OldKontaktValues : KontaktValuesShared
             //******************************
 
             //***** ClientDtoFromView *********
-            V001Input: string
-            V002Input: string
-            V003Input: string
-            V004Input: string
-            V005Input: string
-            V006Input: string
-            V007Input: string
+            V001Input : string
+            V002Input : string
+            V003Input : string
+            V004Input : string
+            V005Input : string
+            V006Input : string
+            V007Input : string
             //******************************
 
             Id: int
-            DelayMsg: string
-            ErrorMsg: string
+            DelayMsg : string
+            ErrorMsg : string
         }
 
     type Msg =    
@@ -73,7 +73,7 @@ module CMSKontakt =
             }
         model, Cmd.ofMsg SendOldKontaktValuesToServer
 
-    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
+    let internal update (msg : Msg) (model : Model) : Model * Cmd<Msg> =
 
         match msg with
         | SetV001Input value -> { model with V001Input = value }, Cmd.none
@@ -109,9 +109,9 @@ module CMSKontakt =
 
                      //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
                      let cmd = Cmd.OfAsyncImmediate.perform sendKontaktValuesApi.sendKontaktValues buttonClickEvent NewKontaktValues
-                     let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }
+                     let cmd2 (cmd : Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }
 
-                     let delayedCmd (dispatch: Msg -> unit): unit =                                                  
+                     let delayedCmd (dispatch : Msg -> unit) : unit =                                                  
                          let delayedDispatch: Async<unit> =
                              async
                                  {
@@ -131,33 +131,33 @@ module CMSKontakt =
             ->
              {
                  model with
-                           KontaktValues =
-                              {
-                                  V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003;
-                                  V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006;
-                                  V007 = valueNew.V007; Msgs = valueNew.Msgs
-                              }
-                           ErrorMsg = 
-                               let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3
-                               removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
-             },  Cmd.none
+                     KontaktValues =
+                         {
+                             V001 = valueNew.V001; V002 = valueNew.V002; V003 = valueNew.V003
+                             V004 = valueNew.V004; V005 = valueNew.V005; V006 = valueNew.V006
+                             V007 = valueNew.V007; Msgs = valueNew.Msgs
+                         }
+                     ErrorMsg = 
+                         let (p1, p2, p3) = compare valueNew.Msgs.Msg1 valueNew.Msgs.Msg2 valueNew.Msgs.Msg3
+                         removeSpaces <| sprintf "%s %s %s" p1 p2 p3 
+             }, Cmd.none
 
         | OldKontaktValues valueOld
             ->
              {
                  model with
-                           OldKontaktValues =
-                              {
-                                  V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003;
-                                  V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006;
-                                  V007 = valueOld.V007; Msgs = valueOld.Msgs
-                              }
-                           ErrorMsg =
-                               let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3  
-                               removeSpaces <| sprintf "%s %s %s" p1 p2 p3  
-             },  Cmd.none  
+                     OldKontaktValues =
+                         {
+                             V001 = valueOld.V001; V002 = valueOld.V002; V003 = valueOld.V003
+                             V004 = valueOld.V004; V005 = valueOld.V005; V006 = valueOld.V006
+                             V007 = valueOld.V007; Msgs = valueOld.Msgs
+                         }
+                     ErrorMsg =
+                         let (p1, p2, p3) = compare valueOld.Msgs.Msg1 valueOld.Msgs.Msg2 valueOld.Msgs.Msg3  
+                         removeSpaces <| sprintf "%s %s %s" p1 p2 p3  
+             }, Cmd.none  
    
-    let internal view (model: Model) (dispatch: Msg -> unit) =        
+    let internal view (model : Model) (dispatch : Msg -> unit) =        
 
         let completeContent() =
 

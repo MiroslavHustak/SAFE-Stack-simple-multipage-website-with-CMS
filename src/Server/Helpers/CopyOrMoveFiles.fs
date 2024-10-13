@@ -42,9 +42,9 @@ module CopyOrMoveFilesFM =
     [<Struct>]
     type internal Config =
         {
-            source: string
-            destination: string
-            fileName: string
+            source : string
+            destination : string
+            fileName : string
         }
 
     [<Struct>]
@@ -76,7 +76,7 @@ module CopyOrMoveFilesFM =
                                       let sourceFilepath source =                                        
                                           pyramidOfDoom
                                               {
-                                                  let! value = Path.GetFullPath(source) |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" source   
+                                                  let! value = Path.GetFullPath source |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" source   
                                                   let! value = 
                                                       (
                                                           let fInfodat: FileInfo = FileInfo value   
@@ -91,7 +91,7 @@ module CopyOrMoveFilesFM =
                                       let destinFilepath destination =                                        
                                           pyramidOfDoom
                                               {
-                                                  let! value = Path.GetFullPath(destination) |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" destination
+                                                  let! value = Path.GetFullPath destination |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" destination
                                                   (*
                                                       let! value = 
                                                           (
@@ -143,9 +143,9 @@ module CopyOrMoveFiles =
                                                 
         pyramidOfDoom 
             {
-                let! sourceFilepath = Path.GetFullPath(source) |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" source
-                let! destinFilepath = Path.GetFullPath(destination) |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" destination
-                let! _ = (new FileInfo(sourceFilepath)).Exists |> Option.ofBool, Error <| sprintf "Zdrojový soubor %s neexistuje" sourceFilepath
+                let! sourceFilepath = Path.GetFullPath source |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" source
+                let! destinFilepath = Path.GetFullPath destination |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" destination
+                let! _ = (FileInfo sourceFilepath).Exists |> Option.ofBool, Error <| sprintf "Zdrojový soubor %s neexistuje" sourceFilepath
 
                 return Ok <| action sourceFilepath destinFilepath
             }           

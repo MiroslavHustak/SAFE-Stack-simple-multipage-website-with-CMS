@@ -20,9 +20,9 @@ module Maintenance =
         let model = { Dummy = () } 
         model, Cmd.none
 
-    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none
+    let internal update (msg : Msg) (model : Model) : Model * Cmd<Msg> = model, Cmd.none
 
-    let internal view (model: Model) (dispatch: Msg -> unit) = contentMaintenance()
+    let internal view (model : Model) (dispatch : Msg -> unit) = contentMaintenance()
 
 
     

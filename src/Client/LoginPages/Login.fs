@@ -24,15 +24,15 @@ module Login =
 
     type Model =
         {
-            User: ApplicationUser
-            ErrorMsg: LoginErrorMsgShared
+            User : ApplicationUser
+            ErrorMsg : LoginErrorMsgShared
 
             //********** ClientDtoLoginData**********
-            InputUsr: string
-            InputPsw: string
+            InputUsr : string
+            InputPsw : string
             //******************************************
 
-            Id: int
+            Id : int
         }
         
     [<RequireQualifiedAccess>]
@@ -66,7 +66,7 @@ module Login =
             }
         model, Cmd.none
 
-    let internal update (msg: Msg) (model: Model): Model * Cmd<Msg> * ExternalMsg =
+    let internal update (msg : Msg) (model : Model) : Model * Cmd<Msg> * ExternalMsg =
 
         match msg with
         | SetUsrInput value -> { model with InputUsr = value }, Cmd.none, NoOp
@@ -91,7 +91,7 @@ module Login =
         | CMSRozcestnikMsg _     -> model, Cmd.none, NoOp
         | CMSRozcestnikModel _   -> model, Cmd.none, NoOp
 
-    let internal view (model: Model) (dispatch: Msg -> unit) =
+    let internal view (model : Model) (dispatch : Msg -> unit) =
 
         let proponClick =
             prop.onClick (fun e ->

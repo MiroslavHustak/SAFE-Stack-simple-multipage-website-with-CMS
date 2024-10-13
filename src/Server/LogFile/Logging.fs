@@ -14,7 +14,7 @@ open Server.Settings
 module Logging =     
 
     // Function to format log entry as JSON array
-    let private formatLogEntry (msg: LogMessage) =
+    let private formatLogEntry (msg : LogMessage) =
         try
             let sb = System.Text.StringBuilder()
 

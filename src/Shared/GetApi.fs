@@ -8,15 +8,15 @@ type IGetApi =
 
     {
         login : LoginValuesShared -> Async<LoginResult> 
-        sendCenikValues: CenikValuesShared -> Async<CenikValuesShared> 
-        getOldCenikValues: CenikValuesShared -> Async<CenikValuesShared>
-        getDeserialisedCenikValues: CenikValuesShared -> Async<CenikValuesShared>
-        sendKontaktValues: KontaktValuesShared -> Async<KontaktValuesShared> 
-        getOldKontaktValues: KontaktValuesShared -> Async<KontaktValuesShared>
-        getDeserialisedKontaktValues: KontaktValuesShared -> Async<KontaktValuesShared>
-        sendLinkAndLinkNameValues: LinkValuesShared -> Async<LinkValuesShared> 
-        getOldLinkValues: LinkValuesShared -> Async<LinkValuesShared>
-        getDeserialisedLinkAndLinkNameValues: LinkValuesShared -> Async<LinkValuesShared>
+        sendCenikValues : CenikValuesShared -> Async<CenikValuesShared> 
+        getOldCenikValues : CenikValuesShared -> Async<CenikValuesShared>
+        getDeserialisedCenikValues : CenikValuesShared -> Async<CenikValuesShared>
+        sendKontaktValues : KontaktValuesShared -> Async<KontaktValuesShared> 
+        getOldKontaktValues : KontaktValuesShared -> Async<KontaktValuesShared>
+        getDeserialisedKontaktValues : KontaktValuesShared -> Async<KontaktValuesShared>
+        sendLinkAndLinkNameValues : LinkValuesShared -> Async<LinkValuesShared> 
+        getOldLinkValues : LinkValuesShared -> Async<LinkValuesShared>
+        getDeserialisedLinkAndLinkNameValues : LinkValuesShared -> Async<LinkValuesShared>
     }
 
 module Route =

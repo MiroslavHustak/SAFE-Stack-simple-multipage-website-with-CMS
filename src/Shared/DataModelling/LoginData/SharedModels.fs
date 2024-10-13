@@ -7,6 +7,6 @@ open System
 [<Struct>]
 type LoginValuesShared =
     {
-        Username: SharedTypes.Username
-        Password: SharedTypes.Password
+        Username : SharedTypes.Username
+        Password : SharedTypes.Password
     }

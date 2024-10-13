@@ -11,7 +11,7 @@ module Nenajdete =
 
     type Model =
         {      
-            Id: int
+            Id : int
         }
 
     type Msg =
@@ -22,9 +22,9 @@ module Nenajdete =
         let model = { Id = id }
         model, Cmd.none
 
-    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none
+    let internal update (msg : Msg) (model : Model) : Model * Cmd<Msg> = model, Cmd.none
 
-    let internal view (model: Model) (dispatch: Msg -> unit) links =
+    let internal view (model : Model) (dispatch : Msg -> unit) links =
 
         let nenajdeteRecord =
            {

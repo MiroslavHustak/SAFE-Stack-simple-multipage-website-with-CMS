@@ -62,7 +62,7 @@ module Option =
 module Casting =
 
     //For xml deserialization
-    let internal castAs<'a> (o: obj) : 'a option =    //SRTPs are not applicable for this specific type casting.
+    let internal castAs<'a> (o : obj) : 'a option =    //SRTPs are not applicable for this specific type casting.
         match Option.ofNull o with
         | Some (:? 'a as result) -> Some result
         | _                      -> None

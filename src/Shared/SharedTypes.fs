@@ -19,19 +19,19 @@ module SharedTypes =
     [<Struct>]
     type LoginErrorMsgShared = //no DDD aplied for these data 
         {
-            line1: ErrorMsgLine1
-            line2: ErrorMsgLine2
+            line1 : ErrorMsgLine1
+            line2 : ErrorMsgLine2
         }    
     
     [<Struct>]
     type User =
         {
-            Username: Username
+            Username : Username
             //AccessToken: AccessToken
         }         
                      
     //https://stackoverflow.com/questions/59738472/struct-attribute-on-discriminated-unions
     [<Struct>]
     type LoginResult =
-        | UsernameOrPasswordIncorrect of UsernameOrPasswordIncorrect: LoginErrorMsgShared
-        | LoggedIn of LoggedIn: User
+        | UsernameOrPasswordIncorrect of UsernameOrPasswordIncorrect : LoginErrorMsgShared
+        | LoggedIn of LoggedIn : User

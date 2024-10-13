@@ -13,8 +13,8 @@ module Home =
 
     type Model =
         {        
-            Dummy: unit
-            ErrorMsg: string
+            Dummy : unit
+            ErrorMsg : string
         }
 
     type Msg =
@@ -29,9 +29,9 @@ module Home =
             } 
         model, Cmd.none
 
-    let internal update (msg: Msg) (model: Model) : Model * Cmd<Msg> = model, Cmd.none
+    let internal update (msg : Msg) (model : Model) : Model * Cmd<Msg> = model, Cmd.none
 
-    let internal view (model: Model) (dispatch: Msg -> unit) links =
+    let internal view (model : Model) (dispatch: Msg -> unit) links =
 
        let homeRecord =
           {

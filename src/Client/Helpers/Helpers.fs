@@ -14,7 +14,7 @@ open System
             | (a, b, c) when b = c -> (a, b, String.Empty)
             | (a, b, c)            -> (a, b, c)
 
-        let internal removeSpaces (input: string) =
+        let internal removeSpaces (input : string) =
 
             let c = (char)32         
 
