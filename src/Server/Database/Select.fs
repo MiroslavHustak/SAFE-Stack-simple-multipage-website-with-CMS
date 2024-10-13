@@ -43,8 +43,11 @@ module Select =
                                                     let! exist = cmdExists.ExecuteScalarAsync() |> Async.AwaitTask
     
                                                     match exist |> Option.ofNull with
-                                                    | Some value -> return Ok exist
-                                                    | None       -> return Error insertDefaultValues
+                                                    | Some value ->
+                                                                  return Ok exist
+                                                    | None       ->
+                                                                  logInfoMsg <| sprintf "Error215A %s" String.Empty   
+                                                                  return Error insertDefaultValues
     
                                                 with
                                                 | ex ->

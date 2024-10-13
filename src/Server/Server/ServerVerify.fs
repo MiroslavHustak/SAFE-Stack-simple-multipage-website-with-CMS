@@ -122,5 +122,3 @@ module ServerVerify =
        match isValidLink () with
        | ()  -> Ok ()        
        //| _ -> Error _
-
- 
