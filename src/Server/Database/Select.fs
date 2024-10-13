@@ -59,7 +59,7 @@ module Select =
                                                                 use cmdSelect = new SqlCommand(querySelect, connection)
                                                                 cmdSelect.Parameters.AddWithValue("@Id", idInt) |> ignore
     
-                                                                let! reader = cmdSelect.ExecuteReaderAsync() |> Async.AwaitTask //TODO test "use! reader = ..." sometime
+                                                                use! reader = cmdSelect.ExecuteReaderAsync() |> Async.AwaitTask 
     
                                                                 try
                                                                     let records = 
@@ -121,7 +121,7 @@ module Select =
                                                                                           logInfoMsg <| sprintf "Error015B %s" String.Empty
                                                                                           Error ReadingDbError
                                                                 finally
-                                                                    async { return! reader.DisposeAsync().AsTask() |> Async.AwaitTask } |> Async.StartImmediate
+                                                                    () //async { return! reader.DisposeAsync().AsTask() |> Async.AwaitTask } |> Async.StartImmediate
 
                                                             with
                                                             | _ -> return Error ReadingDbError
