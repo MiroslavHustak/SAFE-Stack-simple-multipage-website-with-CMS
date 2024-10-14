@@ -20,6 +20,7 @@
     <Content Include="Resources\uberHash.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\logs\app.log" />
     <None Include="paket.references" />
     <Compile Include="Types\ErrorTypes.fs" />
     <Compile Include="Settings\Settings.fs" />

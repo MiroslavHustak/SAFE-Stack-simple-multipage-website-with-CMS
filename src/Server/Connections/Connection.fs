@@ -11,7 +11,7 @@ module Connection =
     //Switch between the databases (always comment out the option you will not use)
    
     //nutricniterapie.somee.com
-    //let [<Literal>] connStringSomee = @"workstation id= ..........." 
+    //let [<Literal>] connStringSomee = @"workstation id= ..........."
 
     //nterapie.somee.com //testing website
     //let [<Literal>] internal connStringSomee = @"" 
@@ -25,6 +25,7 @@ module Connection =
             {
                 try          
                     let connection = new SqlConnection(connStringLocal)
+                    //let connection = new SqlConnection(connStringSomee)
                     do! connection.OpenAsync() |> Async.AwaitTask
 
                     return Ok connection   

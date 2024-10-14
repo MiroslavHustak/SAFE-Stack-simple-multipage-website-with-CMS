@@ -4,3 +4,4 @@
 "10/14/2024 01:45:54"["Error020X One or more errors occurred. (Transaction (Process ID 77) was deadlocked on lock resources with another process and has been chosen as the deadlock victim. Rerun the transaction.)"]
 "10/14/2024 02:07:05"["Error011: Failed to bind to address http://127.0.0.1:5000: address already in use."]
 "10/14/2024 04:44:51"["Error020W One or more errors occurred. (Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.)"]
+"10/14/2024 15:22:53"["Error011: DB connection exception test"]

@@ -27,4 +27,4 @@ module Settings =
 
     let internal pathToUberHashTxt = Resources.pathToResources @"uberHash.txt"
 
-    let internal logFileName = "logs/app.log"
+    let internal logFileName = Resources.pathToResources @"logs/app.log"
