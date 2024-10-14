@@ -30,7 +30,7 @@ module CMSRozcestnik =
         match msg with
         | Dummy -> model, Cmd.none 
 
-    let internal view model (user: User) (dispatch: Msg -> unit) = 
+    let internal view model (user : User) (dispatch : Msg -> unit) = 
 
         let usr = user.Username |> function SharedTypes.Username value -> value
 

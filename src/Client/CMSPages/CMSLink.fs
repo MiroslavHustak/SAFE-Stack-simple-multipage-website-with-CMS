@@ -116,28 +116,35 @@ module CMSLink =
             ->
              try
                  try
-                     let buttonClickEvent: LinkValuesShared = 
+                     let buttonClickEvent: LinkValuesShared =
+
+                         let input newValue oldValue = //I cannot enforce the value of the placeholder in any other way, TODO find a better way
+                             match newValue with
+                             | value
+                                 when
+                                     value = String.Empty -> oldValue
+                             | _                          -> newValue
                        
                          SharedLinkValues.transformLayer   //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
-                         <| model.V001LinkInput
-                         <| model.V002LinkInput
-                         <| model.V003LinkInput
-                         <| model.V004LinkInput
-                         <| model.V005LinkInput
-                         <| model.V006LinkInput
-                         <| model.V001LinkNameInput
-                         <| model.V002LinkNameInput
-                         <| model.V003LinkNameInput
-                         <| model.V004LinkNameInput
-                         <| model.V005LinkNameInput
-                         <| model.V006LinkNameInput                        
+                         <| input model.V001LinkInput model.OldLinkValues.V001
+                         <| input model.V002LinkInput model.OldLinkValues.V002
+                         <| input model.V003LinkInput model.OldLinkValues.V003
+                         <| input model.V004LinkInput model.OldLinkValues.V004
+                         <| input model.V005LinkInput model.OldLinkValues.V005
+                         <| input model.V006LinkInput model.OldLinkValues.V006
+                         <| input model.V001LinkNameInput model.OldLinkValues.V001n
+                         <| input model.V002LinkNameInput model.OldLinkValues.V002n
+                         <| input model.V003LinkNameInput model.OldLinkValues.V003n
+                         <| input model.V004LinkNameInput model.OldLinkValues.V004n
+                         <| input model.V005LinkNameInput model.OldLinkValues.V005n
+                         <| input model.V006LinkNameInput model.OldLinkValues.V006n                        
 
                      //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
                      let cmd = Cmd.OfAsyncImmediate.perform sendLinkValuesApi.sendLinkAndLinkNameValues buttonClickEvent NewLinkValues
                      let cmd2 (cmd: Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }    
 
                      let delayedCmd (dispatch : Msg -> unit) : unit =                                                  
-                         let delayedDispatch: Async<unit> =
+                         let delayedDispatch : Async<unit> =
                              async
                                  {
                                      let! completor = Async.StartChild (async { return dispatch SendOldLinkValuesToServer })
@@ -582,9 +589,11 @@ module CMSLink =
                                                                 prop.type' "submit"
                                                                 prop.value "Uložit nové údaje"
                                                                 prop.id "Button1"
-                                                                prop.onClick (fun e -> e.preventDefault()
-                                                                                       dispatch SendLinkValuesToServer
-                                                                             )
+                                                                prop.onClick
+                                                                    <|
+                                                                    fun e ->
+                                                                           e.preventDefault()
+                                                                           dispatch SendLinkValuesToServer
                                                                 prop.style
                                                                     [
                                                                         style.width(200)
@@ -596,7 +605,6 @@ module CMSLink =
                                                             ]
                                                         ]                                                  
                                                     ]
-
                                                 ]            
                                             ]
                                         ]           

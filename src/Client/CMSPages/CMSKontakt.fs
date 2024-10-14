@@ -97,22 +97,29 @@ module CMSKontakt =
              try
                  try
                      let buttonClickEvent: KontaktValuesShared =
+
+                         let input newValue oldValue = //I cannot enforce the value of the placeholder in any other way, TODO find a better way
+                             match newValue with
+                             | value
+                                 when
+                                     value = String.Empty -> oldValue
+                             | _                          -> newValue
                                                 
                          SharedKontaktValues.transformLayer   //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
-                         <| model.V001Input
-                         <| model.V002Input
-                         <| model.V003Input
-                         <| model.V004Input
-                         <| model.V005Input
-                         <| model.V006Input
-                         <| model.V007Input                               
+                         <| input model.V001Input model.OldKontaktValues.V001
+                         <| input model.V002Input model.OldKontaktValues.V002
+                         <| input model.V003Input model.OldKontaktValues.V003
+                         <| input model.V004Input model.OldKontaktValues.V004
+                         <| input model.V005Input model.OldKontaktValues.V005
+                         <| input model.V006Input model.OldKontaktValues.V006
+                         <| input model.V007Input model.OldKontaktValues.V007                              
 
                      //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
                      let cmd = Cmd.OfAsyncImmediate.perform sendKontaktValuesApi.sendKontaktValues buttonClickEvent NewKontaktValues
                      let cmd2 (cmd : Cmd<Msg>) delayedDispatch = Cmd.batch <| seq { cmd; Cmd.ofSub delayedDispatch }
 
                      let delayedCmd (dispatch : Msg -> unit) : unit =                                                  
-                         let delayedDispatch: Async<unit> =
+                         let delayedDispatch : Async<unit> =
                              async
                                  {
                                      let! completor = Async.StartChild (async { return dispatch SendOldKontaktValuesToServer })
@@ -565,9 +572,11 @@ module CMSKontakt =
                                                                 prop.type' "submit"
                                                                 prop.value "Uložit nové údaje"
                                                                 prop.id "Button1"
-                                                                prop.onClick (fun e -> e.preventDefault()
-                                                                                       dispatch SendKontaktValuesToServer
-                                                                             )
+                                                                prop.onClick
+                                                                    <|
+                                                                    fun e ->
+                                                                           e.preventDefault()
+                                                                           dispatch SendKontaktValuesToServer
                                                                 prop.style
                                                                     [
                                                                       style.width(200)

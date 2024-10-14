@@ -24,7 +24,7 @@ module SharedCenikValues =
             Id = 1
             ValueState = "fixed"
             V001 = "500"
-            V002 = "500"
+            V002 = "300"
             V003 = "2500"
             V004 = "250"
             V005 = String.Empty
@@ -47,7 +47,7 @@ module SharedCenikValues =
             V006 = v006 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V006 
             V007 = v007 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V007 
             V008 = v008 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V008 
-            V009 = v009 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V009 
+            V009 = v009 |> Option.ofNullEmptySpace |> function Some value -> value | None -> cenikValuesDomainDefault.V001 
             Msgs = SharedMessageDefaultValues.messageDefault
         }
    

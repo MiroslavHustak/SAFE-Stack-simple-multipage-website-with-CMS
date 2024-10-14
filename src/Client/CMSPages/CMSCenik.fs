@@ -107,27 +107,34 @@ module CMSCenik =
             ->
              try
                  try
-                     let buttonClickEvent: CenikValuesShared =                   
+                     let buttonClickEvent: CenikValuesShared =
+
+                         let input newValue oldValue = //I cannot enforce the value of the placeholder in any other way, TODO find a better way
+                             match newValue with
+                             | value
+                                 when
+                                     value = String.Empty -> oldValue
+                             | _                          -> newValue
                          
                          SharedCenikValues.transformLayer  //sending model in the parameter would mean defining Model in Shared what would distort the MVU model
                          <| SharedCenikValues.cenikValuesDomainDefault.Id
                          <| SharedCenikValues.cenikValuesDomainDefault.ValueState //whatever Id and Value State
-                         <| model.V001Input
-                         <| model.V002Input
-                         <| model.V003Input
-                         <| model.V004Input
-                         <| model.V005Input
-                         <| model.V006Input
-                         <| model.V007Input
-                         <| model.V008Input
-                         <| model.V009Input
+                         <| input model.V001Input model.OldCenikValues.V001
+                         <| input model.V002Input model.OldCenikValues.V002
+                         <| input model.V003Input model.OldCenikValues.V003
+                         <| input model.V004Input model.OldCenikValues.V004
+                         <| input model.V005Input model.OldCenikValues.V005
+                         <| input model.V006Input model.OldCenikValues.V006
+                         <| input model.V007Input model.OldCenikValues.V007
+                         <| input model.V008Input model.OldCenikValues.V008
+                         <| input model.V009Input model.OldCenikValues.V009
 
                      //Cmd.OfAsyncImmediate instead of Cmd.OfAsync
                      let cmd = Cmd.OfAsyncImmediate.perform sendCenikValuesApi.sendCenikValues buttonClickEvent NewCenikValues 
                      let cmd2 (cmd : Cmd<Msg>) delayedCmd = Cmd.batch <| seq { cmd; Cmd.ofSub delayedCmd }               
 
-                     let delayedCmd (dispatch: Msg -> unit): unit =                    
-                         let delayedDispatch: Async<unit> =                      
+                     let delayedCmd (dispatch : Msg -> unit) : unit =                    
+                         let delayedDispatch : Async<unit> =                      
                              async
                                  {
                                      let! completor = Async.StartChild (async { return dispatch SendOldCenikValuesToServer } ) 
@@ -304,7 +311,7 @@ module CMSCenik =
                                                     prop.children [
                                                         Html.td "Vstupní vyšetření"
                                                     
-                                                        Html.td "500"                                              
+                                                        Html.td SharedCenikValues.cenikValuesDomainDefault.V001 //"500"                                              
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -326,13 +333,10 @@ module CMSCenik =
                                                                     prop.id "content"
                                                                     prop.type' "text"
                                                                     prop.id "001"
-                                                                    prop.name ""
+                                                                    prop.name String.Empty
                                                                     prop.placeholder model.OldCenikValues.V001 
-                                                                    prop.onChange (SetV001Input >> dispatch) 
-                                                                    //prop.onChange (fun (ev: string) -> SetV001Input ev |> dispatch)    
-                                                                    //nasledujici nelze, bo event nemoze byt takeho typu, bohuzel
-                                                                    //prop.onChange (fun (ev: GetCenikValues) ->  SetInput ev.V001 |> dispatch)                                                                
-                                                                    prop.autoFocus true
+                                                                    prop.onChange (SetV001Input >> dispatch)                  
+                                                                    prop.autoFocus true                                                                  
                                                                 ]    
                                                             ]                                             
                                                     ]
@@ -344,7 +348,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Asistovaný nákup"
-                                                        Html.td "300"                                                  
+                                                        Html.td  SharedCenikValues.cenikValuesDomainDefault.V002 //"500"                                                  
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -381,7 +385,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Redukční balíček"
-                                                        Html.td "2500"                                                    
+                                                        Html.td SharedCenikValues.cenikValuesDomainDefault.V003 //"2500"                                                    
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -418,7 +422,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Kontrolní konzultace"
-                                                        Html.td "250"                                                    
+                                                        Html.td SharedCenikValues.cenikValuesDomainDefault.V004 //"250"                                                    
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -455,7 +459,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Sestavení jídelního lístku na týden"
-                                                        Html.td @"N/A"                                                     
+                                                        Html.td SharedCenikValues.cenikValuesDomainDefault.V005 //@"N/A"                                                     
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -492,7 +496,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Sestavení jídelního lístku na 2 týdny"
-                                                        Html.td @"N/A"
+                                                        Html.td SharedCenikValues.cenikValuesDomainDefault.V006 //@"N/A"
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -529,7 +533,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Sestavení jídelního lístku na 3 týdny"
-                                                        Html.td @"N/A" 
+                                                        Html.td SharedCenikValues.cenikValuesDomainDefault.V007 //@"N/A" 
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -566,7 +570,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Edukace diety (diabetologie)"
-                                                        Html.td "450" 
+                                                        Html.td SharedCenikValues.cenikValuesDomainDefault.V008 //"450" 
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -603,7 +607,7 @@ module CMSCenik =
                                                         ] 
                                                     prop.children [
                                                         Html.td "Edukace diety (dietologie)"
-                                                        Html.td "450"                                                    
+                                                        Html.td SharedCenikValues.cenikValuesDomainDefault.V009 //"450"                                                    
                                                         Html.td []
                                                         Html.td
                                                             [
@@ -652,8 +656,7 @@ module CMSCenik =
                                                                     ]
                                                                 prop.children
                                                                     [                                                            
-                                                                        Html.text model.DelayMsg
-                                                                   
+                                                                        Html.text model.DelayMsg                                                                   
                                                                     ]                                                                                                                
                                                             ]
                                                         yield! td 3
@@ -711,9 +714,11 @@ module CMSCenik =
                                                                 prop.type' "submit"
                                                                 prop.value "Uložit nové hodnoty"
                                                                 prop.id "Button1"
-                                                                prop.onClick (fun e -> e.preventDefault()
-                                                                                       dispatch SendCenikValuesToServer
-                                                                             )
+                                                                prop.onClick
+                                                                    <|
+                                                                    fun e ->
+                                                                           e.preventDefault()
+                                                                           dispatch SendCenikValuesToServer
                                                                 prop.style
                                                                     [
                                                                       style.width(200)

@@ -1,3 +1,6 @@
 "08/02/2024 21:51:59"["Error021 There is already an open DataReader associated with this Command which must be closed first."]
 "08/02/2024 22:03:36"["Error017 Invalid attempt to call Read when reader is closed."]
 "10/13/2024 01:23:20"["Error020X One or more errors occurred. (This SqlTransaction has completed; it is no longer usable.)"]
+"10/14/2024 01:45:54"["Error020X One or more errors occurred. (Transaction (Process ID 77) was deadlocked on lock resources with another process and has been chosen as the deadlock victim. Rerun the transaction.)"]
+"10/14/2024 02:07:05"["Error011: Failed to bind to address http://127.0.0.1:5000: address already in use."]
+"10/14/2024 04:44:51"["Error020W One or more errors occurred. (Timeout expired.  The timeout period elapsed prior to obtaining a connection from the pool.  This may have occurred because all pooled connections were in use and max pool size was reached.)"]
