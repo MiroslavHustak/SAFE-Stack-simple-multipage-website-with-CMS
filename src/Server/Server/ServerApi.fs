@@ -39,9 +39,15 @@ module ServerApi =
 
     let internal IGetApi connection errMsg =
         {            
-            login = fun login -> async { return (verifyLogin () login) }
+            login =
+                fun login
+                    ->
+                     async
+                         {
+                             return (verifyLogin () login)
+                         }
 
-            //************* plain SQL or Dapper.FSharp ********************
+            //************* plain SQL ********************
 
             sendCenikValues =  
                 fun sendCenikValues
@@ -136,7 +142,7 @@ module ServerApi =
                             return { dbSendCenikValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = exnSql1; Msg2 = errMsg } } 
                         }
 
-            //************* testing XML ********************
+            //************* XML ********************
             
             sendKontaktValues =
 
@@ -159,7 +165,8 @@ module ServerApi =
                                                 let sendKontaktValuesDtoXml = kontaktValuesTransformLayerDomainToXml sendKontaktValues
                                                 
                                                 match copyOrMoveFiles config Copy with
-                                                | Ok _      -> parseToXml3 sendKontaktValuesDtoXml pathToXml3
+                                                | Ok _      ->
+                                                             parseToXml3 sendKontaktValuesDtoXml pathToXml3
                                                 | Error err ->
                                                              logInfoMsg <| sprintf "Error005 %s" err
                                                              Error (sprintf"%s %s" "Zadané hodnoty nebyly uloženy, neb došlo k této chybě: " err)                                                                                                       
@@ -262,7 +269,7 @@ module ServerApi =
                              return { getKontaktValues with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = err } }                   
                          }
 
-            //************* testing JSON ********************
+            //************* JSON ********************
             
             sendLinkAndLinkNameValues =
                fun sendLinkAndLinkNameValues
