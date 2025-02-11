@@ -11,7 +11,7 @@ module Connection =
     //Switch between the databases (always comment out the option you will not use)
    
     //nutricniterapie.somee.com
-    let [<Literal>] connStringSomee = @"workstation id=nutricniterapie.mssql.somee.com;packet size=4096;user id=nutricniterapie_SQLLogin_1;pwd=twelgea3nb;data source=nutricniterapie.mssql.somee.com;persist security info=False;initial catalog=nutricniterapie;TrustServerCertificate=True"
+    let [<Literal>] connStringSomee = @"workstation id= ......"
 
     //nterapie.somee.com //testing website
     //let [<Literal>] internal connStringSomee = @"" 
@@ -24,8 +24,8 @@ module Connection =
         async
             {
                 try          
-                    //let connection = new SqlConnection(connStringLocal)
-                    let connection = new SqlConnection(connStringSomee)
+                    let connection = new SqlConnection(connStringLocal)
+                    //let connection = new SqlConnection(connStringSomee)
                     do! connection.OpenAsync() |> Async.AwaitTask
 
                     return Ok connection   
@@ -63,8 +63,8 @@ module Connection =
     //shall be in a tryWith block
     let internal getConnection () =
         
-        //let connection = new SqlConnection(connStringLocal)
-        let connection = new SqlConnection(connStringSomee)
+        let connection = new SqlConnection(connStringLocal)
+        //let connection = new SqlConnection(connStringSomee)
         connection.Open()
         connection
     
