@@ -17,7 +17,7 @@ module CMSRozcestnik =
     type Msg =
         | Dummy  
             
-    let internal init id: Model * Cmd<Msg> =
+    let internal init id : Model * Cmd<Msg> =
 
         let model =
             {
@@ -39,8 +39,10 @@ module CMSRozcestnik =
                
         let hiddenValue =
             match usr with
-            | "" -> true
-            | _  -> false
+            | _ when usr = String.empty
+                -> true
+            | _
+                -> false
 
         let returnButtonDiv = 
              Html.div [            

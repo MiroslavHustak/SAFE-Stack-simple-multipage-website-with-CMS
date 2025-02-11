@@ -96,7 +96,7 @@ module Cenik =
                             prop.id 28
                             prop.children [
                                 Html.text "Vstupní vyšetření a zhodnocení nutričního stavu pacienta, propočty a zhodnocení zaslaného jídelníčku k vyplnění"                       
-                                Html.text " .................................... "
+                                Html.text (sprintf " %s " (String.replicate 36 "."))
                                 Html.text model.CenikValues.V001
                                 Html.text ",- Kč"
                             ]
@@ -105,7 +105,7 @@ module Cenik =
                             prop.id 29
                             prop.children [
                                 Html.text "Asistovaný nákup s nutričním terapeutem (60 min)"                      
-                                Html.text " ........................ "
+                                Html.text (sprintf " %s " (String.replicate 24 "."))
                                 Html.text model.CenikValues.V002
                                 Html.text ",- Kč"
                             ]
@@ -121,7 +121,7 @@ module Cenik =
                             prop.id 31
                             prop.children [
                                 Html.text "Redukční balíček (individuální redukční plán, konzultace nutričním terapeutem (45 min), redukční dieta, propočty a zhodnocení jídelníčku, pitný režim, pohybový režim, edukační materiály)"
-                                Html.text " ............................................ "
+                                Html.text (sprintf " %s " (String.replicate 44 "."))
                                 Html.text model.CenikValues.V003
                                 Html.text ",- Kč"
                             ]
@@ -130,40 +130,11 @@ module Cenik =
                             prop.id 32
                             prop.children [
                                 Html.text "Kontrolní konzultace"                        
-                                Html.text " .................................................................... "
+                                Html.text (sprintf " %s " (String.replicate 68 "."))
                                 Html.text model.CenikValues.V004
                                 Html.text ",- Kč"
                             ]
                         ]
-                        (*
-                        Html.li [
-                            prop.id 33
-                            prop.children [
-                                Html.text "Sestavení jídelního lístku na týden"                       
-                                Html.text " ................................................ "
-                                Html.text model.CenikValues.V005
-                                Html.text ",- Kč"
-                            ]
-                        ]
-                        Html.li [
-                            prop.id 34
-                            prop.children [
-                                Html.text "Sestavení jídelního lístku na 2 týdny"                     
-                                Html.text " ............................................. "
-                                Html.text model.CenikValues.V006
-                                Html.text ",- Kč"
-                            ]
-                        ]
-                        Html.li [
-                            prop.id 35
-                            prop.children [
-                                Html.text "Sestavení jídelního lístku na 3 týdny"                       
-                                Html.text " ............................................. "
-                                Html.text model.CenikValues.V007
-                                Html.text ",- Kč"
-                            ]
-                        ]
-                        *)
                     ]
                     Html.br[]
                     Html.h3 [
@@ -175,7 +146,7 @@ module Cenik =
                             prop.id 37
                             prop.children [
                                 Html.text "Edukace diety nutričním terapeutem (cca 60 min)"                        
-                                Html.text " ......................... "
+                                Html.text (sprintf " %s " (String.replicate 25 "."))
                                 Html.text model.CenikValues.V008
                                 Html.text ",- Kč"
                             ]
@@ -202,7 +173,7 @@ module Cenik =
                             prop.id 39
                             prop.children [
                                 Html.text "Edukace dané diety nutričním terapeutem (cca 60 min)"                       
-                                Html.text " ................ "
+                                Html.text (sprintf " %s " (String.replicate 16 "."))
                                 Html.text model.CenikValues.V009
                                 Html.text ",- Kč"
                             ]

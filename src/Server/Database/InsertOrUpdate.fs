@@ -58,50 +58,54 @@ module InsertOrUpdate =
                                         let! exist = cmdExists.ExecuteScalarAsync() |> Async.AwaitTask
     
                                         match exist |> Option.ofNull with
-                                        | Some _ ->
-                                                  use cmdUpdate = new SqlCommand(queryUpdate, connection, transaction)
-                                                  cmdUpdate.Parameters.AddWithValue("@Id", idInt) |> ignore
+                                        | Some _
+                                            ->
+                                            use cmdUpdate = new SqlCommand(queryUpdate, connection, transaction)
+                                            cmdUpdate.Parameters.AddWithValue("@Id", idInt) |> ignore
     
-                                                  newParamList |> List.iter (fun (param, value) -> cmdUpdate.Parameters.AddWithValue(param, value) |> ignore)
+                                            newParamList |> List.iter (fun (param, value) -> cmdUpdate.Parameters.AddWithValue(param, value) |> ignore)
     
-                                                  let! rowsAffected = cmdUpdate.ExecuteNonQueryAsync() |> Async.AwaitTask
+                                            let! rowsAffected = cmdUpdate.ExecuteNonQueryAsync() |> Async.AwaitTask
 
-                                                  match rowsAffected > 0 with
-                                                  | true  ->
-                                                           do! transaction.CommitAsync() |> Async.AwaitTask
-                                                           return Ok ()
-                                                  | false ->
-                                                           do! transaction.RollbackAsync() |> Async.AwaitTask
-                                                           logInfoMsg <| sprintf "Error019C %s" String.Empty
-                                                           return Error InsertOrUpdateError    
-                                        | None   ->
-                                                  // Record does not exist, insert it
-                                                  use cmdInsert = new SqlCommand(queryInsert, connection, transaction)
-                                                  cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
+                                            match rowsAffected > 0 with
+                                            | true  ->
+                                                    do! transaction.CommitAsync() |> Async.AwaitTask
+                                                    return Ok ()
+                                            | false ->
+                                                    do! transaction.RollbackAsync() |> Async.AwaitTask
+                                                    logInfoMsg <| sprintf "Error019C %s" String.Empty
+                                                    return Error InsertOrUpdateError    
+                                        | None
+                                            ->
+                                            // Record does not exist, insert it
+                                            use cmdInsert = new SqlCommand(queryInsert, connection, transaction)
+                                            cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
     
-                                                  newParamList |> List.iter (fun (param, value) -> cmdInsert.Parameters.AddWithValue(param, value) |> ignore)
+                                            newParamList |> List.iter (fun (param, value) -> cmdInsert.Parameters.AddWithValue(param, value) |> ignore)
     
-                                                  let! rowsAffected = cmdInsert.ExecuteNonQueryAsync() |> Async.AwaitTask
+                                            let! rowsAffected = cmdInsert.ExecuteNonQueryAsync() |> Async.AwaitTask
 
-                                                  match rowsAffected > 0 with
-                                                  | true  ->
-                                                           do! transaction.CommitAsync() |> Async.AwaitTask
-                                                           return Ok ()
-                                                  | false ->
-                                                           do! transaction.RollbackAsync() |> Async.AwaitTask
-                                                           logInfoMsg <| sprintf "Error020C %s" String.Empty
-                                                           return Error InsertOrUpdateError
+                                            match rowsAffected > 0 with
+                                            | true  ->
+                                                    do! transaction.CommitAsync() |> Async.AwaitTask
+                                                    return Ok ()
+                                            | false ->
+                                                    do! transaction.RollbackAsync() |> Async.AwaitTask
+                                                    logInfoMsg <| sprintf "Error020C %s" String.Empty
+                                                    return Error InsertOrUpdateError
                                     }
                         finally
                             ()
                     with
-                    | ex ->                            
-                          logInfoMsg <| sprintf "Error020X %s" (string ex.Message)
-                          return Error InsertOrUpdateError                           
+                    | ex
+                        ->                            
+                        logInfoMsg <| sprintf "Error020X %s" (string ex.Message)
+                        return Error InsertOrUpdateError                           
 
-                | Error err ->
-                             logInfoMsg <| sprintf "Error020Y %s" err
-                             return Error InsertOrUpdateError
+                | Error err
+                    ->
+                    logInfoMsg <| sprintf "Error020Y %s" err
+                    return Error InsertOrUpdateError
             }
 
     //************************** Sync variant *********************************
@@ -139,38 +143,41 @@ module InsertOrUpdate =
                 cmdExists.Parameters.AddWithValue("@Id", idInt) |> ignore
 
                 match cmdExists.ExecuteScalar() |> Option.ofNull with
-                | Some _ ->
-                          use cmdUpdate = new SqlCommand(queryUpdate, connection, transaction)//non-nullable, ex caught with tryWith
-                          cmdUpdate.Parameters.AddWithValue("@Id", idInt) |> ignore
+                | Some _
+                    ->
+                    use cmdUpdate = new SqlCommand(queryUpdate, connection, transaction)//non-nullable, ex caught with tryWith
+                    cmdUpdate.Parameters.AddWithValue("@Id", idInt) |> ignore
                                                                                     
-                          newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore)
+                    newParamList |> List.iter (fun item -> cmdUpdate.Parameters.AddWithValue(item) |> ignore)
 
-                          cmdUpdate.ExecuteNonQuery() > 0 //rowsAffected, non-nullable, ex caught with tryWith
-                          |> function
-                              | false ->
-                                       transaction.Rollback()
-                                       logInfoMsg <| sprintf "Error019 %s" String.Empty
-                                       Error InsertOrUpdateError 
-                              | true  ->
-                                       Ok <| transaction.Commit()                                            
-                | None   ->
-                          use cmdInsert = new SqlCommand(queryInsert, connection, transaction) //non-nullable, ex caught with tryWith                                        
-                          cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
+                    cmdUpdate.ExecuteNonQuery() > 0 //rowsAffected, non-nullable, ex caught with tryWith
+                    |> function
+                        | false ->
+                                transaction.Rollback()
+                                logInfoMsg <| sprintf "Error019 %s" String.Empty
+                                Error InsertOrUpdateError 
+                        | true  ->
+                                Ok <| transaction.Commit()                                            
+                | None
+                    ->
+                    use cmdInsert = new SqlCommand(queryInsert, connection, transaction) //non-nullable, ex caught with tryWith                                        
+                    cmdInsert.Parameters.AddWithValue("@valId", idInt) |> ignore
 
-                          newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
+                    newParamList |> List.iter (fun item -> cmdInsert.Parameters.AddWithValue(item) |> ignore)
 
-                          cmdInsert.ExecuteNonQuery() > 0 //rowsAffected, non-nullable, ex caught with tryWith
-                          |> function
-                              | false ->
-                                       transaction.Rollback()
-                                       logInfoMsg <| sprintf "Error020 %s" String.Empty
-                                       Error InsertOrUpdateError 
-                              | true  ->
-                                       Ok <| transaction.Commit() 
+                    cmdInsert.ExecuteNonQuery() > 0 //rowsAffected, non-nullable, ex caught with tryWith
+                    |> function
+                        | false ->
+                                transaction.Rollback()
+                                logInfoMsg <| sprintf "Error020 %s" String.Empty
+                                Error InsertOrUpdateError 
+                        | true  ->
+                                Ok <| transaction.Commit() 
                                 
             finally
                 transaction.Dispose()
         with
-        | ex ->
-              logInfoMsg <| sprintf "Error021 %s" (string ex.Message)
-              Error InsertOrUpdateError
+        | ex
+            ->
+            logInfoMsg <| sprintf "Error021 %s" (string ex.Message)
+            Error InsertOrUpdateError
