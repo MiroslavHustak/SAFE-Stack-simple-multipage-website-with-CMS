@@ -27,7 +27,7 @@ module InsertOrUpdate =
                     try
                         let isolationLevel = System.Data.IsolationLevel.Serializable // Transaction locking behaviour
                         use! transaction = connection.BeginTransactionAsync(isolationLevel).AsTask() |> Async.AwaitTask // Transaction to be implemented for all commands linked to the connection
-
+\
                         try    
                             return!
                                 async

@@ -68,7 +68,7 @@ module Select =
                                                         use cmdSelect = new SqlCommand(querySelect, connection)
                                                         cmdSelect.Parameters.AddWithValue("@Id", idInt) |> ignore
     
-                                                        use! reader = cmdSelect.ExecuteReaderAsync() |> Async.AwaitTask 
+                                                        use! reader = cmdSelect.ExecuteReaderAsync() |> Async.AwaitTask
     
                                                         try
                                                             let records = 
