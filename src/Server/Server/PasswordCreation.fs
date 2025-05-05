@@ -24,12 +24,14 @@ module PasswordCreation =
 
             use sw = 
                 match Path.GetFullPath(pathToUberHashTxt) |> Option.ofNull with
-                | Some value ->
-                              new StreamWriter(Path.GetFullPath pathToUberHashTxt) //non-nullable, ex caught with tryWith
-                | None       ->
-                              //to be manually verified at this code location
-                              logInfoMsg <| sprintf "Error014 %s" String.Empty
-                              new StreamWriter(Path.GetFullPath String.Empty) //ex caught with tryWith      
+                | Some value
+                    ->
+                    new StreamWriter(Path.GetFullPath pathToUberHashTxt) //non-nullable, ex caught with tryWith
+                | None
+                    ->
+                    //to be manually verified at this code location
+                    logInfoMsg <| sprintf "Error014 %s" String.Empty
+                    new StreamWriter(Path.GetFullPath String.Empty) //ex caught with tryWith      
            
             mySeq
             |> Seq.iter (fun item -> do sw.WriteLine(item))

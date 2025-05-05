@@ -22,7 +22,7 @@ module ErrorPage =
 
     type Model =
         {        
-          Dummy: unit      
+          Dummy : unit      
         }
 
     type Msg =

@@ -51,16 +51,17 @@ module Logging =
     
     let private loggerFactory = 
         LoggerFactory.Create(
-            fun builder ->                                        
-                         builder.AddFile(
-                             logFileName, 
-                             fun fileLoggerOpts
-                                 ->     
-                                  fileLoggerOpts.FileSizeLimitBytes <- 52428800
-                                  fileLoggerOpts.MaxRollingFiles <- 10   
-                                  fileLoggerOpts.FormatLogEntry <- formatLogEntry
-                             ) 
-                             |> ignore
+            fun builder
+                ->                                        
+                builder.AddFile(
+                    logFileName, 
+                    fun fileLoggerOpts
+                        ->     
+                        fileLoggerOpts.FileSizeLimitBytes <- 52428800
+                        fileLoggerOpts.MaxRollingFiles <- 10   
+                        fileLoggerOpts.FormatLogEntry <- formatLogEntry
+                    ) 
+                    |> ignore
         )
        
     let private logger = 

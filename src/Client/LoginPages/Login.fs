@@ -94,11 +94,8 @@ module Login =
     let internal view (model : Model) (dispatch : Msg -> unit) =
 
         let proponClick =
-            prop.onClick (fun e ->
-                                 e.preventDefault()
-                                 dispatch SendUsrPswToServer
-                         )
-
+            prop.onClick (fun e -> e.preventDefault(); dispatch SendUsrPswToServer)
+                             
         let submitInput =
             Html.input [
                 prop.type' "submit"
@@ -395,7 +392,8 @@ module Parent =
 
     let private update (msg : Msg) (model : Model) =
         match msg with
-        | LoginMsg loginMsg ->        
+        | LoginMsg loginMsg
+            ->        
             let (loginModel, loginCmd, loginExtraMsg) = Login.update loginMsg model.Login
 
             // Here we can match over loginExtraMsg to do something

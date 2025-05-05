@@ -11,7 +11,7 @@ module Connection =
     //Switch between the databases (always comment out the option you will not use)
    
     //nutricniterapie.somee.com
-    //let [<Literal>] connStringSomee = @"workstation id= ..........."
+    let [<Literal>] connStringSomee = @"workstation id= ......"
 
     //nterapie.somee.com //testing website
     //let [<Literal>] internal connStringSomee = @"" 
@@ -31,8 +31,8 @@ module Connection =
                     return Ok connection   
                 with 
                 | ex ->
-                      logInfoMsg <| sprintf "Error020W %s" (string ex.Message)
-                      return Error <| string ex.Message
+                     logInfoMsg <| sprintf "Error020W %s" (string ex.Message)
+                     return Error <| string ex.Message
             }          
 
     let internal closeAsyncConnection (connection: Async<Result<SqlConnection, string>>) =  
@@ -52,9 +52,10 @@ module Connection =
                     with 
                     | ex -> return Error <| string ex.Message
 
-                | Error err ->
-                             logInfoMsg <| sprintf "Error020W %s" err
-                             return Error err
+                | Error err
+                    ->
+                    logInfoMsg <| sprintf "Error020W %s" err
+                    return Error err
             }
 
     //***************** Sync variant **********************

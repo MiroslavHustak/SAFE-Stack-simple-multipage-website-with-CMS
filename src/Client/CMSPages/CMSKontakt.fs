@@ -539,7 +539,7 @@ module CMSKontakt =
                                                                     ]
                                                                 prop.children
                                                                     [                                                            
-                                                                        Html.text "*********"
+                                                                        Html.text (String.replicate 9 "*")
                                                                     ]                                                                                                                
                                                             ]    
                                                         Html.td [
@@ -564,7 +564,7 @@ module CMSKontakt =
                                                                     ]
                                                                 prop.children
                                                                     [                                                            
-                                                                        Html.text "********************"
+                                                                        Html.text (String.replicate 20 "*")
                                                                     ]                                                                                            
                                                             ]    
                                                         Html.td [

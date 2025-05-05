@@ -29,23 +29,24 @@ module Proc =
 
         let print color (colored : string) (line: string) =
             lock locker
-                (fun () ->
-                         let currentColor = Console.ForegroundColor
-                         Console.ForegroundColor <- color
-                         Console.Write colored
-                         Console.ForegroundColor <- currentColor
-                         Console.WriteLine line
+                (fun ()
+                    ->
+                    let currentColor = Console.ForegroundColor
+                    Console.ForegroundColor <- color
+                    Console.Write colored
+                    Console.ForegroundColor <- currentColor
+                    Console.WriteLine line
                 )
 
         let onStdout index name (line : string) =
             let color = colors.[index % colors.Length]
             match isNull line with
             | true  ->
-                     print color $"{name}: --- END ---" ""
+                    print color $"{name}: --- END ---" ""
             | false ->
-                     match String.isNotNullOrEmpty line with
-                     | true  -> print color $"{name}: " line
-                     | false -> ()
+                    match String.isNotNullOrEmpty line with
+                    | true  -> print color $"{name}: " line
+                    | false -> ()
             //if isNull line then
                 //print color $"{name}: --- END ---" ""
             //else if String.isNotNullOrEmpty line then
@@ -91,12 +92,14 @@ let dotnet = createProcess "dotnet"
 let npm =
     let npmPath =
         match ProcessUtils.tryFindFileOnPath "npm" with
-        | Some path ->
-                     path
-        | None      ->
-                     "npm was not found in path. Please install it and make sure it's available from your path. " +
-                     "See https://safe-stack.github.io/docs/quickstart/#install-pre-requisites for more info"
-                     |> failwith
+        | Some path
+            ->
+            path
+        | None
+            ->
+            "npm was not found in path. Please install it and make sure it's available from your path. " +
+            "See https://safe-stack.github.io/docs/quickstart/#install-pre-requisites for more info"
+            |> failwith
 
     createProcess npmPath
 
@@ -116,6 +119,7 @@ let runOrDefault args =
         | [| target |] -> Target.runOrDefault target
         | _            -> Target.runOrDefault "Run"
         0
-    with e ->
-            printfn "%A" e
-            1
+    with e
+        ->
+        printfn "%A" e
+        1

@@ -56,63 +56,72 @@ module CopyOrMoveFilesFM =
                
         let f (source : Result<string, string>) (destination : Result<string, string>) : Result<unit, string> =
             match source, destination with
-            | Ok s, Ok d ->
-                          try
-                              match io with
-                              | Copy -> Ok (File.Copy(s, Path.Combine(d, config.fileName), true))
-                              | Move -> Ok (File.Move(s, Path.Combine(d, config.fileName), true))
-                          with
-                          | ex -> Error ex.Message
-            | Error e, _ ->
-                          Error e
-            | _, Error e ->
-                          Error e
+            | Ok s, Ok d
+                ->
+                try
+                    match io with
+                    | Copy -> Ok (File.Copy(s, Path.Combine(d, config.fileName), true))
+                    | Move -> Ok (File.Move(s, Path.Combine(d, config.fileName), true))
+                with
+                | ex -> Error ex.Message
+
+            | Error e, _
+                ->
+                Error e
+
+            | _, Error e
+                ->
+                Error e
 
         match clp with 
-        | Pure x                     ->
-                                      x
+        | Pure x
+            ->
+            x
 
-        | Free (SourceFilepath next) ->
-                                      let sourceFilepath source =                                        
-                                          pyramidOfDoom
-                                              {
-                                                  let! value = Path.GetFullPath source |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" source   
-                                                  let! value = 
-                                                      (
-                                                          let fInfodat: FileInfo = FileInfo value   
-                                                          Option.fromBool value fInfodat.Exists
-                                                      ), Error <| sprintf "Zdrojový soubor %s neexistuje" value
-                                                  return Ok value
-                                              }
+        | Free (SourceFilepath next)
+            ->
+            let sourceFilepath source =                                        
+                pyramidOfDoom
+                    {
+                        let! value = Path.GetFullPath source |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" source   
+                        let! value = 
+                            (
+                                let fInfodat: FileInfo = FileInfo value   
+                                Option.fromBool value fInfodat.Exists
+                            ), Error <| sprintf "Zdrojový soubor %s neexistuje" value
+                        return Ok value
+                    }
 
-                                      interpret config io (next (sourceFilepath config.source))
+            interpret config io (next (sourceFilepath config.source))
 
-        | Free (DestinFilepath next) ->
-                                      let destinFilepath destination =                                        
-                                          pyramidOfDoom
-                                              {
-                                                  let! value = Path.GetFullPath destination |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" destination
-                                                  (*
-                                                      let! value = 
-                                                          (
-                                                              let dInfodat: DirectoryInfo = DirectoryInfo value   
-                                                              Option.fromBool value dInfodat.Exists
-                                                          ), Error <| sprintf "Chyba při čtení cesty k %s" value
-                                                  *) 
-                                                  return Ok value
-                                              }
+        | Free (DestinFilepath next)
+            ->
+            let destinFilepath destination =                                        
+                pyramidOfDoom
+                    {
+                        let! value = Path.GetFullPath destination |> Option.ofNullEmpty, Error <| sprintf "Chyba při čtení cesty k %s" destination
+                        (*
+                            let! value = 
+                                (
+                                    let dInfodat: DirectoryInfo = DirectoryInfo value   
+                                    Option.fromBool value dInfodat.Exists
+                                ), Error <| sprintf "Chyba při čtení cesty k %s" value
+                        *) 
+                        return Ok value
+                    }
 
-                                      interpret config io (next (destinFilepath config.destination))
+            interpret config io (next (destinFilepath config.destination))
 
-        | Free (CopyOrMove (s, d))  ->
-                                     try
-                                         f s d 
-                                     with
-                                     | ex ->
-                                           match s, d with
-                                           | Ok s, Ok d -> Error <| sprintf "Chyba při kopírování nebo přemísťování souboru %s do %s. %s." s d (string ex.Message)
-                                           | Error e, _ -> Error e
-                                           | _, Error e -> Error e      
+        | Free (CopyOrMove (s, d))
+            ->
+            try
+                f s d 
+            with
+            | ex ->
+                match s, d with
+                | Ok s, Ok d -> Error <| sprintf "Chyba při kopírování nebo přemísťování souboru %s do %s. %s." s d (string ex.Message)
+                | Error e, _ -> Error e
+                | _, Error e -> Error e      
 
     let internal copyOrMoveFiles config io =
 

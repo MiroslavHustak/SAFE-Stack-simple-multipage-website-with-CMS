@@ -39,9 +39,10 @@ module ServerVerify =
                         return LegitimateTrue
                     }
             with
-            | ex ->
-                  logInfoMsg <| sprintf "Error012 %s" (string ex.Message)
-                  ExceptionError                   
+            | ex
+                ->
+                logInfoMsg <| sprintf "Error012 %s" (string ex.Message)
+                ExceptionError                   
 
         pyramidOfHell  
             {
@@ -84,9 +85,10 @@ module ServerVerify =
                                 return Ok value 
                             } 
                     with
-                    | ex ->
-                          logInfoMsg <| sprintf "Error013 %s" (string ex.Message)
-                          Error (string ex.Message)
+                    | ex
+                        ->
+                        logInfoMsg <| sprintf "Error013 %s" (string ex.Message)
+                        Error (string ex.Message)
 
                 let! _ = uberHash |> Result.isOk, UsernameOrPasswordIncorrect rc1                
                 let! _ = isValidLogin usr psw, UsernameOrPasswordIncorrect rc3

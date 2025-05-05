@@ -10,7 +10,7 @@ open Helpers.Client.Helper
 
 module Layout = 
 
-    let private myBody render (pageRecord: ReactPage) (links: LinkValuesShared) =
+    let private myBody render (pageRecord : ReactPage) (links : LinkValuesShared) =
 
         let errorMsg = sprintf "%s %s %s" links.Msgs.Msg1 links.Msgs.Msg2 links.Msgs.Msg3
 
