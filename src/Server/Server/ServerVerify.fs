@@ -121,3 +121,49 @@ module ServerVerify =
        match isValidLink () with
        | ()  -> Ok ()        
        //| _ -> Error _
+
+    (*
+    // applicatives
+
+    type Validation<'err, 'ok> =
+        | Ok of 'ok
+        | Error of 'err list
+    
+    module Validation =
+        let map f x =
+            match x with
+            | Ok x -> Ok (f x)
+            | Error errs -> Error errs
+    
+        let apply f x =
+            match f, x with
+            | Ok f, Ok x -> Ok (f x)
+            | Error e1, Error e2 -> Error (e1 @ e2)
+            | Error e, _ | _, Error e -> Error e
+    
+        let ofResult = function
+            | Result.Ok x -> Ok x
+            | Result.Error e -> Error [e]
+
+    let validateCenik v =
+        match isValidCenik v with
+        | true  -> Ok ()
+        | false -> Error ["Ceník invalid"]
+    
+    let validateKontakt v =
+        match isValidKontakt v with
+        | true  -> Ok ()
+        | false -> Error ["Kontakt invalid"]
+    
+    let validateLink v =
+        match isValidLink v with
+        | true  -> Ok ()
+        | false -> Error ["Link invalid"]
+    
+    let validateAll cenik kontakt link =
+        Ok (fun _ _ _ -> ()) // dummy combiner
+        |> Validation.apply (validateCenik cenik)
+        |> Validation.apply (validateKontakt kontakt)
+        |> Validation.apply (validateLink link)
+
+    *)
