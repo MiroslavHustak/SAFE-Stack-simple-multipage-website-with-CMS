@@ -11,15 +11,15 @@ module Connection =
     //Switch between the databases (always comment out the option you will not use)
    
     //nutricniterapie.somee.com
-    let [<Literal>] connStringSomee = @"workstation id= ......"
+    let [<Literal>] private connStringSomee = @"workstation id= ......"
 
     //nterapie.somee.com //testing website
     //let [<Literal>] internal connStringSomee = @"" 
 
     //localhost
-    let [<Literal>] internal connStringLocal = @"Data Source=Misa\SQLEXPRESS;Initial Catalog=nterapieLocal;Integrated Security=True"
+    let [<Literal>] private connStringLocal = @"Data Source=Misa\SQLEXPRESS;Initial Catalog=nterapieLocal;Integrated Security=True"
 
-    let getAsyncConnection () =
+    let internal getAsyncConnection () =
 
         async
             {

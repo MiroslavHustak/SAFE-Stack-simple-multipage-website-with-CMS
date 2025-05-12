@@ -457,21 +457,21 @@ module ServerApi =
         async
             {
                 try
-                    let createAsyncConnection = getAsyncConnection()
+                    let asyncConnection = getAsyncConnection()
 
                     try                      
                         //failwith "DB connection exception test"
                         let dbCenikValues = { SharedCenikValues.cenikValuesDomainDefault with Msgs = { SharedMessageDefaultValues.messageDefault with Msg1 = "First run" } }
                         let cenikValuesSend = cenikValuesTransformLayerToStorage dbCenikValues
-                        let! result = insertOrUpdateAsync createAsyncConnection cenikValuesSend 
+                        let! result = insertOrUpdateAsync asyncConnection cenikValuesSend 
                         let exnSql = errorMsgBoxIU result true //true == first run
 
-                        return (app exnSql) >> run <| createAsyncConnection                           
+                        return (app exnSql) >> run <| asyncConnection                           
 
                     finally
                         async
                             {
-                                match! closeAsyncConnection createAsyncConnection with
+                                match! closeAsyncConnection asyncConnection with
                                 | Ok _      -> ()
                                 | Error err -> logInfoMsg <| sprintf "Error011X %s" err  
                                             
